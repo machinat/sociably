@@ -1,5 +1,5 @@
 import { MessengerChat } from '@sociably/messenger';
-import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
+import type { MarshallableInstance } from '@sociably/core/base/Marshaler.js';
 import InstagramAgent from './Agent.js';
 import { INSTAGRAM, IG } from './constant.js';
 import type { MessagingTarget } from './types.js';

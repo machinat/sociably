@@ -1,5 +1,5 @@
 import type { SociablyProfile } from '@sociably/core';
-import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
+import type { MarshallableInstance } from '@sociably/core/base/Marshaler.js';
 import Tweet from './Tweet.js';
 import { TWITTER } from './constant.js';
 import type { RawUser, RawSettings } from './types.js';

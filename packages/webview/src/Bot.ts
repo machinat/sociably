@@ -10,7 +10,7 @@ import Engine from '@sociably/core/engine';
 import Renderer from '@sociably/core/renderer';
 import Queue from '@sociably/core/queue';
 import { serviceProviderClass } from '@sociably/core/service';
-import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
+import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities.js';
 import type { DispatchResponse } from '@sociably/core/engine';
 import type { AnyServerAuthenticator } from '@sociably/auth';
 import WebSocket, { WebSocketWorker } from '@sociably/websocket';

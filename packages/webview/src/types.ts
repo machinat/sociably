@@ -6,7 +6,7 @@ import type {
   DispatchMiddleware,
   NativeComponent,
 } from '@sociably/core';
-import { AnyMarshalType } from '@sociably/core/base/Marshaler';
+import { AnyMarshalType } from '@sociably/core/base/Marshaler.js';
 import type { UnitSegment } from '@sociably/core/renderer';
 import type { DispatchFrame } from '@sociably/core/engine';
 import type { MaybeContainer, ServiceProvider } from '@sociably/core/service';

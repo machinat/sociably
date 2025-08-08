@@ -3,7 +3,7 @@ import fetch from 'node-fetch';
 import type { SociablyNode } from '@sociably/core';
 import { formatNode } from '@sociably/core/utils';
 import { serviceProviderClass } from '@sociably/core/service';
-import StateRepositoryI from '@sociably/core/base/StateRepository';
+import StateRepositoryI from '@sociably/core/base/StateRepository.js';
 import Http from '@sociably/http';
 import {
   MetaAssetsManager,

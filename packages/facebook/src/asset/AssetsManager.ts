@@ -1,6 +1,6 @@
 import Http from '@sociably/http';
 import { serviceProviderClass } from '@sociably/core/service';
-import StateRepositoryI from '@sociably/core/base/StateRepository';
+import StateRepositoryI from '@sociably/core/base/StateRepository.js';
 import {
   SetMetaAppSubscriptionOptions,
   DeleteMetaAppSubscriptionOptions,

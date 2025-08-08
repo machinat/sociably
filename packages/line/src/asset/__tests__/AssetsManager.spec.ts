@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import nock from 'nock';
-import type StateRepositoryI from '@sociably/core/base/StateRepository';
+import type StateRepositoryI from '@sociably/core/base/StateRepository.js';
 import LineChannel from '../../Channel.js';
 import type { LineBot } from '../../Bot.js';
 import { LineAssetsManager } from '../AssetsManager.js';

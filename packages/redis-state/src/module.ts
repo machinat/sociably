@@ -4,7 +4,7 @@ import {
   serviceProviderFactory,
   serviceContainer,
 } from '@sociably/core/service';
-import StateRepositoryI from '@sociably/core/base/StateRepository';
+import StateRepositoryI from '@sociably/core/base/StateRepository.js';
 
 import { RepositoryP } from './RedisStateRepository.js';
 import { ConfigsI, ClientI } from './interface.js';

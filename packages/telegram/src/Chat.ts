@@ -1,5 +1,5 @@
 import type { SociablyThread } from '@sociably/core';
-import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
+import type { MarshallableInstance } from '@sociably/core/base/Marshaler.js';
 import { TELEGRAM, TG } from './constant.js';
 import ChatProfile from './ChatProfile.js';
 import type { TelegramChatType, RawChat, RawUser } from './types.js';

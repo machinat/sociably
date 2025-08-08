@@ -18,12 +18,7 @@
     "./queue": "./lib/queue/index.js",
     "./renderer": "./lib/renderer/index.js",
     "./service": "./lib/service/index.js",
-    "./base/Bot": "./lib/base/Bot.js",
-    "./base/IntentRecognizer": "./lib/base/IntentRecognizer.js",
-    "./base/Marshaler": "./lib/base/Marshaler.js",
-    "./base/ModuleUtilities": "./lib/base/ModuleUtilities.js",
-    "./base/Profiler": "./lib/base/Profiler.js",
-    "./base/StateRepository": "./lib/base/StateRepository.js",
+    "./base/*": "./lib/base/*",
     "./iterator": "./lib/iterator/index.js",
     "./utils": "./lib/utils/index.js"
   },

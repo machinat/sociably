@@ -1,5 +1,5 @@
 import type { SociablyUser } from '@sociably/core';
-import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
+import type { MarshallableInstance } from '@sociably/core/base/Marshaler.js';
 import UserProfile from './UserProfile.js';
 import { WHATSAPP, WA } from './constant.js';
 import { UserProfileData } from './types.js';

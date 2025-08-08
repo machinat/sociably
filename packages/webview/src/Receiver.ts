@@ -1,6 +1,6 @@
 import type { PopEventWrapper, PopEventFn, PopErrorFn } from '@sociably/core';
 import { serviceProviderClass } from '@sociably/core/service';
-import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
+import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities.js';
 import {
   AnyServerAuthenticator,
   UserOfAuthenticator,

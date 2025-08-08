@@ -1,4 +1,4 @@
-import StateRepositoryI from '@sociably/core/base/StateRepository';
+import StateRepositoryI from '@sociably/core/base/StateRepository.js';
 import {
   MetaApiBot,
   MetaApiChannel,

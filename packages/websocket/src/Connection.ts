@@ -1,5 +1,5 @@
 import type { SociablyThread } from '@sociably/core';
-import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
+import type { MarshallableInstance } from '@sociably/core/base/Marshaler.js';
 import { WEBSOCKET } from './constant.js';
 import type { ConnectionTarget } from './types.js';
 

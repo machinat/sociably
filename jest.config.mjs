@@ -24,6 +24,7 @@ const baseConfigs = {
   },
   testEnvironment: 'node',
   moduleNameMapper: {
+    [`^@sociably/${pkgNamesMatcher}(.*).js$`]: '<rootDir>/packages/$1/src$2.ts',
     [`^@sociably/${pkgNamesMatcher}(.*)$`]: '<rootDir>/packages/$1/src$2',
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },

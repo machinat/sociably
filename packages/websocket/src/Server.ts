@@ -6,7 +6,7 @@ import type { WebSocketServer as WsServer } from 'ws';
 import uniqid from 'uniqid';
 import type { SociablyUser } from '@sociably/core';
 import { serviceProviderClass } from '@sociably/core/service';
-import Marshaler from '@sociably/core/base/Marshaler';
+import Marshaler from '@sociably/core/base/Marshaler.js';
 import { HttpRequestInfo } from '@sociably/http';
 
 import {

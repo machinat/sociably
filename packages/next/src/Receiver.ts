@@ -7,7 +7,7 @@ import {
   createEmptyScope,
   ServiceScope,
 } from '@sociably/core/service';
-import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
+import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities.js';
 import type { PopErrorFn } from '@sociably/core';
 import type {
   RequestHandler,

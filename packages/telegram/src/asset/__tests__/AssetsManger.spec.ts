@@ -1,5 +1,5 @@
 import moxy from '@moxyjs/moxy';
-import type StateRepositoryI from '@sociably/core/base/StateRepository';
+import type StateRepositoryI from '@sociably/core/base/StateRepository.js';
 import { TelegramBot } from '../../Bot.js';
 import TelegramUser from '../../User.js';
 import { TelegramAssetsManager } from '../AssetsManager.js';

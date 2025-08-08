@@ -1,5 +1,5 @@
 import Sociably from '@sociably/core';
-import StateRepositoryI from '@sociably/core/base/StateRepository';
+import StateRepositoryI from '@sociably/core/base/StateRepository.js';
 import InMemoryState from '../module.js';
 import { RepositoryP as InMemoryStateRepository } from '../InMemoryStateRepository.js';
 

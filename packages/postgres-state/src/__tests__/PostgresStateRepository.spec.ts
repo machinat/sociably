@@ -1,7 +1,7 @@
 import { Pool } from 'pg';
 import moxy, { isMoxy } from '@moxyjs/moxy';
 import { SociablyThread, SociablyChannel, SociablyUser } from '@sociably/core';
-import { StateAccessor } from '@sociably/core/base/StateRepository';
+import { StateAccessor } from '@sociably/core/base/StateRepository.js';
 import {
   DEFAULT_GLOBAL_STATE_TABLE_NAME,
   DEFAULT_CHANNEL_STATE_TABLE_NAME,
@@ -446,8 +446,8 @@ describe.each<[string, Record<string, string>]>([
       expect(getQueryCallsValues(pgPool.query.mock.calls)).toMatchSnapshot();
     });
 
-    test('.getAllKeysStartWith(prefix)', async () => {
-      await expect(state.getAllKeysStartWith('key')).resolves.toEqual(
+    test('.getAllStartWithKey(prefix)', async () => {
+      await expect(state.getAllStartWithKey('key')).resolves.toEqual(
         new Map<string, unknown>([
           ['key2', 'foo'],
           ['key3', 123],
@@ -457,7 +457,7 @@ describe.each<[string, Record<string, string>]>([
         ]),
       );
 
-      await expect(state.getAllKeysStartWith('key2')).resolves.toEqual(
+      await expect(state.getAllStartWithKey('key2')).resolves.toEqual(
         new Map([['key2', 'foo']]),
       );
 

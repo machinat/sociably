@@ -1,5 +1,5 @@
 import Sociably from '@sociably/core';
-import IntentRecognizerI from '@sociably/core/base/IntentRecognizer';
+import IntentRecognizerI from '@sociably/core/base/IntentRecognizer.js';
 import Dialogflow from '../module.js';
 import { DialogflowIntentRecognizer as Recognizer } from '../recognizer.js';
 

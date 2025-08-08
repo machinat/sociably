@@ -1,5 +1,5 @@
 import { SociablyThread, SociablyUser } from '@sociably/core';
-import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
+import type { MarshallableInstance } from '@sociably/core/base/Marshaler.js';
 import { WEBVIEW } from '../../constant.js';
 import { MEMO } from './constant.js';
 

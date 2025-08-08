@@ -314,8 +314,8 @@ describe.each([
     );
   });
 
-  test('.getAllKeysStartWith(prefix)', async () => {
-    await expect(fooState.getAllKeysStartWith('key')).resolves.toEqual(
+  test('.getAllStartWithKey(prefix)', async () => {
+    await expect(fooState.getAllStartWithKey('key')).resolves.toEqual(
       new Map(),
     );
     expect(client.hscan).toHaveBeenCalledTimes(1);
@@ -330,7 +330,7 @@ describe.each([
     client.hscan.mock.fake(
       resolveCallback(['0', ['key1', '"foo"', 'key2', '{"bar":"baz"}']]),
     );
-    await expect(fooState.getAllKeysStartWith('key')).resolves.toEqual(
+    await expect(fooState.getAllStartWithKey('key')).resolves.toEqual(
       new Map([
         ['key1', 'foo'],
         ['key2', { bar: 'baz' }],

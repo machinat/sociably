@@ -8,7 +8,7 @@ import type {
 import Engine, { DispatchError } from '@sociably/core/engine';
 import Queue from '@sociably/core/queue';
 import Renderer from '@sociably/core/renderer';
-import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
+import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities.js';
 import { serviceProviderClass } from '@sociably/core/service';
 import {
   MetaApiWorker,

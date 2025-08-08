@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
-import type StateRepositoryI from '@sociably/core/base/StateRepository';
+import type StateRepositoryI from '@sociably/core/base/StateRepository.js';
 import TwitterUser from '../../User.js';
 import type { TwitterBot } from '../../Bot.js';
 import { Photo } from '../../components/Media.js';

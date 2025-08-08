@@ -1,6 +1,6 @@
 import { join as joinPath } from 'path';
 import { Marshaler, StateRepository } from '@sociably/core';
-import ModuleUtilities from '@sociably/core/base/ModuleUtilities';
+import ModuleUtilities from '@sociably/core/base/ModuleUtilities.js';
 import { serviceInterface, serviceProviderClass } from '@sociably/core/service';
 import Http from '@sociably/http';
 import Auth, { AuthController, AuthHttpOperator } from '@sociably/auth';

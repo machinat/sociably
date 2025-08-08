@@ -1,5 +1,5 @@
-import type { SociablyProfile } from '@sociably/core/base/Profiler';
-import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
+import type { SociablyProfile } from '@sociably/core/base/Profiler.js';
+import type { MarshallableInstance } from '@sociably/core/base/Marshaler.js';
 import type { LineRawUserProfile } from './types.js';
 import { LINE } from './constant.js';
 

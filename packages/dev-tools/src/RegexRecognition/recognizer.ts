@@ -4,7 +4,7 @@ import type {
   IntentRecognizer,
   DetectIntentResult,
   DetectTextOptions,
-} from '@sociably/core/base/IntentRecognizer';
+} from '@sociably/core/base/IntentRecognizer.js';
 import { ConfigsI } from './interface.js';
 import { RegexRecognitionConfigs } from './types.js';
 

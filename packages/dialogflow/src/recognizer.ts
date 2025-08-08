@@ -13,7 +13,7 @@ import type {
   DetectIntentResult,
   IntentRecognizer,
   RecognitionData,
-} from '@sociably/core/base/IntentRecognizer';
+} from '@sociably/core/base/IntentRecognizer.js';
 import hashObject from 'object-hash';
 import { ConfigsI } from './interface.js';
 import {

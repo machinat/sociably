@@ -1,7 +1,7 @@
 import { parse as parseUrl } from 'url';
 import EventEmitter from 'events';
 import moxy, { Moxy } from '@moxyjs/moxy';
-import { BaseMarshaler as _BaseMarshaler } from '@sociably/core/base/Marshaler';
+import { BaseMarshaler as _BaseMarshaler } from '@sociably/core/base/Marshaler.js';
 import { Connector as _Connector } from '@sociably/websocket/client';
 import _AuthClient from '@sociably/auth/client';
 import WebviewConnection from '../../Connection.js';

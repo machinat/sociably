@@ -1,5 +1,5 @@
-import type { SociablyProfile } from '@sociably/core/base/Profiler';
-import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
+import type { SociablyProfile } from '@sociably/core/base/Profiler.js';
+import type { MarshallableInstance } from '@sociably/core/base/Marshaler.js';
 import type { RawUserProfile } from './types.js';
 import { INSTAGRAM } from './constant.js';
 

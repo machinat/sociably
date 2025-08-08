@@ -1,4 +1,4 @@
-import StateRepositoryI from '@sociably/core/base/StateRepository';
+import StateRepositoryI from '@sociably/core/base/StateRepository.js';
 import type { SociablyThread } from '@sociably/core';
 import { ServiceScope, serviceProviderClass } from '@sociably/core/service';
 import { SCRIPT_RUNTIME_STATE_KEY } from './constant.js';

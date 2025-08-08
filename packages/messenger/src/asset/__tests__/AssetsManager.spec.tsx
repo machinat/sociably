@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
-import type StateRepositoryI from '@sociably/core/base/StateRepository';
+import type StateRepositoryI from '@sociably/core/base/StateRepository.js';
 import { MetaApiChannel } from '@sociably/meta-api';
 import { MessengerAssetsManager } from '../AssetsManager.js';
 import { MessengerBot } from '../../types.js';

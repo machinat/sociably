@@ -1,7 +1,7 @@
 import moxy, { Moxy } from '@moxyjs/moxy';
 import { Pool as _Pool } from 'pg';
 import Sociably from '@sociably/core';
-import StateRepositoryI from '@sociably/core/base/StateRepository';
+import StateRepositoryI from '@sociably/core/base/StateRepository.js';
 import PostgresState from '../module.js';
 import { RepositoryP as PostgresStateRepository } from '../PostgresStateRepository.js';
 

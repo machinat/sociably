@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 import moxy, { Moxy } from '@moxyjs/moxy';
 import _redis, { RedisClient } from 'redis';
 import Sociably from '@sociably/core';
-import StateRepositoryI from '@sociably/core/base/StateRepository';
+import StateRepositoryI from '@sociably/core/base/StateRepository.js';
 import RedisState from '../module.js';
 import { RepositoryP as RedisStateRepository } from '../RedisStateRepository.js';
 

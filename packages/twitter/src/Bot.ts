@@ -11,7 +11,7 @@ import Renderer from '@sociably/core/renderer';
 import Queue from '@sociably/core/queue';
 import Engine, { DispatchError } from '@sociably/core/engine';
 import { formatNode, getTimeId } from '@sociably/core/utils';
-import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
+import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities.js';
 import { serviceProviderClass } from '@sociably/core/service';
 import {
   createTweetJobs,

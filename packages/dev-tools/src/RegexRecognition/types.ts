@@ -1,4 +1,4 @@
-import type { RecognitionData } from '@sociably/core/base/IntentRecognizer';
+import type { RecognitionData } from '@sociably/core/base/IntentRecognizer.js';
 
 export type RegexRecognitionConfigs<
   Language extends string,

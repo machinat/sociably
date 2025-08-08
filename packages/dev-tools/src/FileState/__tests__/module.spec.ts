@@ -1,5 +1,5 @@
 import Sociably from '@sociably/core';
-import BaseStateRepositoryI from '@sociably/core/base/StateRepository';
+import BaseStateRepositoryI from '@sociably/core/base/StateRepository.js';
 import { tmpNameSync } from 'tmp';
 import FileState from '../module.js';
 import { RepositoryP as FileStateRepository } from '../FileStateRepository.js';

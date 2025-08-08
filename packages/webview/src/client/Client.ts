@@ -1,5 +1,8 @@
 /// <reference lib="DOM" />
-import { AnyMarshalType, BaseMarshaler } from '@sociably/core/base/Marshaler';
+import {
+  AnyMarshalType,
+  BaseMarshaler,
+} from '@sociably/core/base/Marshaler.js';
 import AuthClient from '@sociably/auth/client';
 import type {
   UserOfAuthenticator,

@@ -1,5 +1,5 @@
 import { serviceProviderClass } from '@sociably/core/service';
-import type { UserProfiler } from '@sociably/core/base/Profiler';
+import type { UserProfiler } from '@sociably/core/base/Profiler.js';
 import BotP from './Bot.js';
 import type LineChnnel from './Channel.js';
 import type LineChat from './Chat.js';

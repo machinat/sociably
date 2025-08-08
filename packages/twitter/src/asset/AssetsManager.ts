@@ -1,6 +1,6 @@
 import { SociablyNode } from '@sociably/core';
 import { serviceProviderClass } from '@sociably/core/service';
-import StateRepositoryI from '@sociably/core/base/StateRepository';
+import StateRepositoryI from '@sociably/core/base/StateRepository.js';
 import BotP from '../Bot.js';
 import TwitterUser from '../User.js';
 import { TWTR } from '../constant.js';

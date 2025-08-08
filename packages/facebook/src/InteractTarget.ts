@@ -1,5 +1,5 @@
 import type { SociablyThread } from '@sociably/core';
-import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
+import type { MarshallableInstance } from '@sociably/core/base/Marshaler.js';
 import FacebookPage from './Page.js';
 import { FACEBOOK, FB } from './constant.js';
 

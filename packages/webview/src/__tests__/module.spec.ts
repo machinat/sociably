@@ -1,8 +1,8 @@
 import moxy, { Moxy } from '@moxyjs/moxy';
 import NextJs from 'next';
 import Sociably from '@sociably/core';
-import BaseBot from '@sociably/core/base/Bot';
-import BaseMarshaler from '@sociably/core/base/Marshaler';
+import BaseBot from '@sociably/core/base/Bot.js';
+import BaseMarshaler from '@sociably/core/base/Marshaler.js';
 import Auth from '@sociably/auth';
 import BasicAuthenticator from '@sociably/auth/basicAuth';
 import Http from '@sociably/http';

@@ -5,7 +5,7 @@ import type {
   PopErrorFn,
 } from '@sociably/core';
 import { serviceProviderClass } from '@sociably/core/service';
-import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
+import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities.js';
 import type { HttpRequestInfo } from '@sociably/http';
 
 import WebSocketConnection from './Connection.js';

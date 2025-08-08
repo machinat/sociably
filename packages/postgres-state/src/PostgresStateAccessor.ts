@@ -1,6 +1,6 @@
 import { Pool } from 'pg';
-import BaseMarshaler from '@sociably/core/base/Marshaler';
-import type { StateAccessor } from '@sociably/core/base/StateRepository';
+import BaseMarshaler from '@sociably/core/base/Marshaler.js';
+import type { StateAccessor } from '@sociably/core/base/StateRepository.js';
 import {
   FIELD_STATE_DATA,
   FIELD_STATE_ID,
@@ -117,7 +117,7 @@ export class PostgresStateAccessor implements StateAccessor {
     );
   }
 
-  async getAllKeysStartWith<T>(prefix: string): Promise<Map<string, T>> {
+  async getAllStartWithKey<T>(prefix: string): Promise<Map<string, T>> {
     const result = await this._pool.query<BasicStateEntity>(
       this._selectStatesQuery(null, false, [
         {

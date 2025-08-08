@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
-import type StateRepositoryI from '@sociably/core/base/StateRepository';
+import type StateRepositoryI from '@sociably/core/base/StateRepository.js';
 import type { FacebookBot } from '../../Bot.js';
 import FacebookPage from '../../Page.js';
 import { FacebookAssetsManager } from '../AssetsManager.js';

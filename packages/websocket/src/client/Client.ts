@@ -1,5 +1,8 @@
 import type { SociablyUser } from '@sociably/core';
-import { AnyMarshalType, BaseMarshaler } from '@sociably/core/base/Marshaler';
+import {
+  AnyMarshalType,
+  BaseMarshaler,
+} from '@sociably/core/base/Marshaler.js';
 import WebSocketConnection from '../Connection.js';
 import createEvent from '../utils/createEvent.js';
 import Connector from './Connector.js';

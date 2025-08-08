@@ -1,5 +1,5 @@
 import Sociably from '@sociably/core';
-import StateRepositoryI from '@sociably/core/base/StateRepository';
+import StateRepositoryI from '@sociably/core/base/StateRepository.js';
 import type { SociablyThread, SociablyNode } from '@sociably/core';
 import { ServiceScope } from '@sociably/core/service';
 import execute from './execute.js';

@@ -7,7 +7,7 @@ import type {
 import Engine from '@sociably/core/engine';
 import Renderer from '@sociably/core/renderer';
 import Queue from '@sociably/core/queue';
-import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
+import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities.js';
 import { serviceProviderClass } from '@sociably/core/service';
 
 import { WEBSOCKET } from './constant.js';

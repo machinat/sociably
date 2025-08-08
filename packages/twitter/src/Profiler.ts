@@ -1,5 +1,5 @@
 import { serviceProviderClass } from '@sociably/core/service';
-import type { UserProfiler } from '@sociably/core/base/Profiler';
+import type { UserProfiler } from '@sociably/core/base/Profiler.js';
 import type TwitterUser from './User.js';
 import TwitterUserProfile from './UserProfile.js';
 import BotP from './Bot.js';

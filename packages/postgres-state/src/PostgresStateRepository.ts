@@ -5,11 +5,11 @@ import type {
   SociablyThread,
 } from '@sociably/core';
 import { serviceProviderClass } from '@sociably/core/service';
-import BaseMarshaler from '@sociably/core/base/Marshaler';
+import BaseMarshaler from '@sociably/core/base/Marshaler.js';
 import type {
   BaseStateRepository,
   StateAccessor,
-} from '@sociably/core/base/StateRepository';
+} from '@sociably/core/base/StateRepository.js';
 import {
   DEFAULT_GLOBAL_STATE_TABLE_NAME,
   DEFAULT_CHANNEL_STATE_TABLE_NAME,

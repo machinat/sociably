@@ -2,7 +2,7 @@
 import { EventEmitter } from 'events';
 import type TypedEmitter from 'typed-emitter';
 import type { SociablyUser } from '@sociably/core';
-import type { Marshaler } from '@sociably/core/base/Marshaler';
+import type { Marshaler } from '@sociably/core/base/Marshaler.js';
 import type {
   default as Socket,
   ConnectBody,

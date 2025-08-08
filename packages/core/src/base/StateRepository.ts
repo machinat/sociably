@@ -33,7 +33,7 @@ export type StateAccessor = {
   delete(key: string): Promise<boolean>;
   keys(): Promise<string[]>;
   getAll<T>(): Promise<Map<string, T>>;
-  getAllKeysStartWith<T>(prefix: string): Promise<Map<string, T>>;
+  getAllStartWithKey<T>(prefix: string): Promise<Map<string, T>>;
   clear(): Promise<undefined | number>;
 };
 

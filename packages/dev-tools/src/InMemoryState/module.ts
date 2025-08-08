@@ -1,5 +1,5 @@
 import type { ServiceModule } from '@sociably/core';
-import StateRepositoryI from '@sociably/core/base/StateRepository';
+import StateRepositoryI from '@sociably/core/base/StateRepository.js';
 import { RepositoryP } from './InMemoryStateRepository.js';
 
 /** @category Root */

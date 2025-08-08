@@ -1,6 +1,6 @@
 import type { v2, protos } from '@google-cloud/dialogflow';
 import type { ClientOptions } from 'google-gax';
-import type { RecognitionData } from '@sociably/core/base/IntentRecognizer';
+import type { RecognitionData } from '@sociably/core/base/IntentRecognizer.js';
 
 export type { ClientOptions } from 'google-gax'; // eslint-disable-line import/no-extraneous-dependencies
 

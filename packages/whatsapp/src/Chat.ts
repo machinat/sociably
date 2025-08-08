@@ -1,5 +1,5 @@
 import type { SociablyThread } from '@sociably/core';
-import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
+import type { MarshallableInstance } from '@sociably/core/base/Marshaler.js';
 import { WHATSAPP, WA } from './constant.js';
 import WhatsAppAgent from './Agent.js';
 import WhatsAppUser from './User.js';

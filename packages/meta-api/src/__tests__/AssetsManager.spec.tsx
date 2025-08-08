@@ -1,5 +1,5 @@
 import moxy from '@moxyjs/moxy';
-import type StateRepositoryI from '@sociably/core/base/StateRepository';
+import type StateRepositoryI from '@sociably/core/base/StateRepository.js';
 import { MetaAssetsManager } from '../AssetsManager.js';
 import { MetaApiBot } from '../types.js';
 

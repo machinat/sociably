@@ -4,9 +4,9 @@ import {
   serviceProviderFactory,
   ServiceProvision,
 } from '@sociably/core/service';
-import BaseBot from '@sociably/core/base/Bot';
-import BaseProfiler from '@sociably/core/base/Profiler';
-import BaseMarshaler from '@sociably/core/base/Marshaler';
+import BaseBot from '@sociably/core/base/Bot.js';
+import BaseProfiler from '@sociably/core/base/Profiler.js';
+import BaseMarshaler from '@sociably/core/base/Marshaler.js';
 import Http from '@sociably/http';
 import type { RequestRoute } from '@sociably/http';
 import { MetaApiJob, MetaApiResult } from '@sociably/meta-api';

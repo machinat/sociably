@@ -7,7 +7,7 @@ import type {
 import Renderer from '@sociably/core/renderer';
 import Queue from '@sociably/core/queue';
 import Engine, { DispatchError } from '@sociably/core/engine';
-import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities';
+import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities.js';
 import { serviceProviderClass } from '@sociably/core/service';
 
 import { createChatJobs, createMulticastJobs } from './job.js';

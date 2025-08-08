@@ -1,4 +1,4 @@
-import type { MarshallableInstance } from '@sociably/core/base/Marshaler';
+import type { MarshallableInstance } from '@sociably/core/base/Marshaler.js';
 import { MetaApiChannel } from '@sociably/meta-api';
 import { FACEBOOK, FB } from './constant.js';
 

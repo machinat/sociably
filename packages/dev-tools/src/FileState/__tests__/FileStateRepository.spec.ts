@@ -165,7 +165,7 @@ describe('.getAll()', () => {
   });
 });
 
-describe('.getAllKeysStartWith(prefix)', () => {
+describe('.getAllStartWithKey(prefix)', () => {
   test('get all keys start with prefix from storage file', async () => {
     const tmpPath = tmpNameSync();
     fs.writeFileSync(tmpPath, initialContent);
@@ -173,7 +173,7 @@ describe('.getAllKeysStartWith(prefix)', () => {
     const repository = new FileStateRepository({ path: tmpPath });
 
     await expect(
-      repository.channelState(booChannel).getAllKeysStartWith('key'),
+      repository.channelState(booChannel).getAllStartWithKey('key'),
     ).resolves.toEqual(
       new Map<string, unknown>([
         ['key1', 'boo'],
@@ -181,7 +181,7 @@ describe('.getAllKeysStartWith(prefix)', () => {
       ]),
     );
     await expect(
-      repository.threadState(fooThread).getAllKeysStartWith('key'),
+      repository.threadState(fooThread).getAllStartWithKey('key'),
     ).resolves.toEqual(
       new Map<string, unknown>([
         ['key1', 'foo'],
@@ -189,7 +189,7 @@ describe('.getAllKeysStartWith(prefix)', () => {
       ]),
     );
     await expect(
-      repository.userState(barUser).getAllKeysStartWith('key'),
+      repository.userState(barUser).getAllStartWithKey('key'),
     ).resolves.toEqual(
       new Map<string, unknown>([
         ['key1', 'bar'],
@@ -197,7 +197,7 @@ describe('.getAllKeysStartWith(prefix)', () => {
       ]),
     );
     await expect(
-      repository.globalState('baz').getAllKeysStartWith('key'),
+      repository.globalState('baz').getAllStartWithKey('key'),
     ).resolves.toEqual(
       new Map<string, unknown>([
         ['key1', { baz: true }],

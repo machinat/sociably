@@ -13,8 +13,8 @@ import { serviceProviderClass } from '@sociably/core/service';
 import {
   BaseStateRepository,
   StateAccessor,
-} from '@sociably/core/base/StateRepository';
-import BaseMarshaler from '@sociably/core/base/Marshaler';
+} from '@sociably/core/base/StateRepository.js';
+import BaseMarshaler from '@sociably/core/base/Marshaler.js';
 import { ConfigsI, SerializerI } from './interface.js';
 import type { FileStateConfigs } from './types.js';
 
@@ -85,7 +85,7 @@ export class FileStateAccessor implements StateAccessor {
     );
   }
 
-  async getAllKeysStartWith<T>(prefix: string): Promise<Map<string, T>> {
+  async getAllStartWithKey<T>(prefix: string): Promise<Map<string, T>> {
     const data = await this._getData();
     return new Map(
       Object.entries(data)

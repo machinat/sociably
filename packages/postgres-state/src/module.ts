@@ -1,7 +1,7 @@
 import Pg from 'pg';
 import type { ServiceModule } from '@sociably/core';
 import { serviceProviderFactory } from '@sociably/core/service';
-import StateRepositoryI from '@sociably/core/base/StateRepository';
+import StateRepositoryI from '@sociably/core/base/StateRepository.js';
 
 import { RepositoryP } from './PostgresStateRepository.js';
 import { ConfigsI, ConnectionPoolI } from './interface.js';

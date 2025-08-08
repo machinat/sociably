@@ -6,11 +6,11 @@ import type {
   SociablyThread,
 } from '@sociably/core';
 import { serviceProviderClass } from '@sociably/core/service';
-import BaseMarshaler from '@sociably/core/base/Marshaler';
+import BaseMarshaler from '@sociably/core/base/Marshaler.js';
 import type {
   BaseStateRepository,
   StateAccessor,
-} from '@sociably/core/base/StateRepository';
+} from '@sociably/core/base/StateRepository.js';
 import { ClientI } from './interface.js';
 
 type CallClientFn = (method: string, ...params: string[]) => Promise<any>;
@@ -91,7 +91,7 @@ export class RedisStateAccessor implements StateAccessor {
     );
   }
 
-  async getAllKeysStartWith<T>(prefix: string): Promise<Map<string, T>> {
+  async getAllStartWithKey<T>(prefix: string): Promise<Map<string, T>> {
     let start = 0;
     const result = new Map<string, T>();
 

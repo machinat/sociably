@@ -1,6 +1,6 @@
 import { Readable } from 'stream';
 import { serviceProviderClass } from '@sociably/core/service';
-import type { UserProfiler } from '@sociably/core/base/Profiler';
+import type { UserProfiler } from '@sociably/core/base/Profiler.js';
 import type TelegramUser from './User.js';
 import TelegramChat from './Chat.js';
 import TelegramChatSender from './ChatSender.js';

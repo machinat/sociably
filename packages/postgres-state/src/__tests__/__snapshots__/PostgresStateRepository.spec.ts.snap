@@ -102,14 +102,14 @@ exports[`default table channel state .getAll() 2`] = `
 ]
 `;
 
-exports[`default table channel state .getAllKeysStartWith(prefix) 1`] = `
+exports[`default table channel state .getAllStartWithKey(prefix) 1`] = `
 "
         SELECT * FROM "SociablyChannelStates"
         WHERE "id" = $1 AND "key" LIKE $2;
       "
 `;
 
-exports[`default table channel state .getAllKeysStartWith(prefix) 2`] = `
+exports[`default table channel state .getAllStartWithKey(prefix) 2`] = `
 [
   [
     "test.foo",
@@ -495,14 +495,14 @@ exports[`default table channel state with scope id .getAll() 2`] = `
 ]
 `;
 
-exports[`default table channel state with scope id .getAllKeysStartWith(prefix) 1`] = `
+exports[`default table channel state with scope id .getAllStartWithKey(prefix) 1`] = `
 "
         SELECT * FROM "SociablyChannelStates"
         WHERE "id" = $1 AND "key" LIKE $2;
       "
 `;
 
-exports[`default table channel state with scope id .getAllKeysStartWith(prefix) 2`] = `
+exports[`default table channel state with scope id .getAllStartWithKey(prefix) 2`] = `
 [
   [
     "test.foo.1",
@@ -888,14 +888,14 @@ exports[`default table global state .getAll() 2`] = `
 ]
 `;
 
-exports[`default table global state .getAllKeysStartWith(prefix) 1`] = `
+exports[`default table global state .getAllStartWithKey(prefix) 1`] = `
 "
         SELECT * FROM "SociablyGlobalStates"
         WHERE "id" = $1 AND "key" LIKE $2;
       "
 `;
 
-exports[`default table global state .getAllKeysStartWith(prefix) 2`] = `
+exports[`default table global state .getAllStartWithKey(prefix) 2`] = `
 [
   [
     "MY_SUPER_STATE",
@@ -1281,14 +1281,14 @@ exports[`default table thread state .getAll() 2`] = `
 ]
 `;
 
-exports[`default table thread state .getAllKeysStartWith(prefix) 1`] = `
+exports[`default table thread state .getAllStartWithKey(prefix) 1`] = `
 "
         SELECT * FROM "SociablyThreadStates"
         WHERE "id" = $1 AND "key" LIKE $2;
       "
 `;
 
-exports[`default table thread state .getAllKeysStartWith(prefix) 2`] = `
+exports[`default table thread state .getAllStartWithKey(prefix) 2`] = `
 [
   [
     "test.foo",
@@ -1674,14 +1674,14 @@ exports[`default table thread state with scope id .getAll() 2`] = `
 ]
 `;
 
-exports[`default table thread state with scope id .getAllKeysStartWith(prefix) 1`] = `
+exports[`default table thread state with scope id .getAllStartWithKey(prefix) 1`] = `
 "
         SELECT * FROM "SociablyThreadStates"
         WHERE "id" = $1 AND "key" LIKE $2;
       "
 `;
 
-exports[`default table thread state with scope id .getAllKeysStartWith(prefix) 2`] = `
+exports[`default table thread state with scope id .getAllStartWithKey(prefix) 2`] = `
 [
   [
     "test.foo.1",
@@ -2067,14 +2067,14 @@ exports[`default table user state .getAll() 2`] = `
 ]
 `;
 
-exports[`default table user state .getAllKeysStartWith(prefix) 1`] = `
+exports[`default table user state .getAllStartWithKey(prefix) 1`] = `
 "
         SELECT * FROM "SociablyUserStates"
         WHERE "id" = $1 AND "key" LIKE $2;
       "
 `;
 
-exports[`default table user state .getAllKeysStartWith(prefix) 2`] = `
+exports[`default table user state .getAllStartWithKey(prefix) 2`] = `
 [
   [
     "test.foo.john",
@@ -2460,14 +2460,14 @@ exports[`default table user state with scope id .getAll() 2`] = `
 ]
 `;
 
-exports[`default table user state with scope id .getAllKeysStartWith(prefix) 1`] = `
+exports[`default table user state with scope id .getAllStartWithKey(prefix) 1`] = `
 "
         SELECT * FROM "SociablyUserStates"
         WHERE "id" = $1 AND "key" LIKE $2;
       "
 `;
 
-exports[`default table user state with scope id .getAllKeysStartWith(prefix) 2`] = `
+exports[`default table user state with scope id .getAllStartWithKey(prefix) 2`] = `
 [
   [
     "test.foo.jane",
@@ -2853,14 +2853,14 @@ exports[`specified schema & table channel state .getAll() 2`] = `
 ]
 `;
 
-exports[`specified schema & table channel state .getAllKeysStartWith(prefix) 1`] = `
+exports[`specified schema & table channel state .getAllStartWithKey(prefix) 1`] = `
 "
         SELECT * FROM "my_schema"."my_channel_state"
         WHERE "id" = $1 AND "key" LIKE $2;
       "
 `;
 
-exports[`specified schema & table channel state .getAllKeysStartWith(prefix) 2`] = `
+exports[`specified schema & table channel state .getAllStartWithKey(prefix) 2`] = `
 [
   [
     "test.foo",
@@ -3246,14 +3246,14 @@ exports[`specified schema & table channel state with scope id .getAll() 2`] = `
 ]
 `;
 
-exports[`specified schema & table channel state with scope id .getAllKeysStartWith(prefix) 1`] = `
+exports[`specified schema & table channel state with scope id .getAllStartWithKey(prefix) 1`] = `
 "
         SELECT * FROM "my_schema"."my_channel_state"
         WHERE "id" = $1 AND "key" LIKE $2;
       "
 `;
 
-exports[`specified schema & table channel state with scope id .getAllKeysStartWith(prefix) 2`] = `
+exports[`specified schema & table channel state with scope id .getAllStartWithKey(prefix) 2`] = `
 [
   [
     "test.foo.1",
@@ -3639,14 +3639,14 @@ exports[`specified schema & table global state .getAll() 2`] = `
 ]
 `;
 
-exports[`specified schema & table global state .getAllKeysStartWith(prefix) 1`] = `
+exports[`specified schema & table global state .getAllStartWithKey(prefix) 1`] = `
 "
         SELECT * FROM "my_schema"."my_global_state"
         WHERE "id" = $1 AND "key" LIKE $2;
       "
 `;
 
-exports[`specified schema & table global state .getAllKeysStartWith(prefix) 2`] = `
+exports[`specified schema & table global state .getAllStartWithKey(prefix) 2`] = `
 [
   [
     "MY_SUPER_STATE",
@@ -4032,14 +4032,14 @@ exports[`specified schema & table thread state .getAll() 2`] = `
 ]
 `;
 
-exports[`specified schema & table thread state .getAllKeysStartWith(prefix) 1`] = `
+exports[`specified schema & table thread state .getAllStartWithKey(prefix) 1`] = `
 "
         SELECT * FROM "my_schema"."my_thread_state"
         WHERE "id" = $1 AND "key" LIKE $2;
       "
 `;
 
-exports[`specified schema & table thread state .getAllKeysStartWith(prefix) 2`] = `
+exports[`specified schema & table thread state .getAllStartWithKey(prefix) 2`] = `
 [
   [
     "test.foo",
@@ -4425,14 +4425,14 @@ exports[`specified schema & table thread state with scope id .getAll() 2`] = `
 ]
 `;
 
-exports[`specified schema & table thread state with scope id .getAllKeysStartWith(prefix) 1`] = `
+exports[`specified schema & table thread state with scope id .getAllStartWithKey(prefix) 1`] = `
 "
         SELECT * FROM "my_schema"."my_thread_state"
         WHERE "id" = $1 AND "key" LIKE $2;
       "
 `;
 
-exports[`specified schema & table thread state with scope id .getAllKeysStartWith(prefix) 2`] = `
+exports[`specified schema & table thread state with scope id .getAllStartWithKey(prefix) 2`] = `
 [
   [
     "test.foo.1",
@@ -4818,14 +4818,14 @@ exports[`specified schema & table user state .getAll() 2`] = `
 ]
 `;
 
-exports[`specified schema & table user state .getAllKeysStartWith(prefix) 1`] = `
+exports[`specified schema & table user state .getAllStartWithKey(prefix) 1`] = `
 "
         SELECT * FROM "my_schema"."my_user_state"
         WHERE "id" = $1 AND "key" LIKE $2;
       "
 `;
 
-exports[`specified schema & table user state .getAllKeysStartWith(prefix) 2`] = `
+exports[`specified schema & table user state .getAllStartWithKey(prefix) 2`] = `
 [
   [
     "test.foo.john",
@@ -5211,14 +5211,14 @@ exports[`specified schema & table user state with scope id .getAll() 2`] = `
 ]
 `;
 
-exports[`specified schema & table user state with scope id .getAllKeysStartWith(prefix) 1`] = `
+exports[`specified schema & table user state with scope id .getAllStartWithKey(prefix) 1`] = `
 "
         SELECT * FROM "my_schema"."my_user_state"
         WHERE "id" = $1 AND "key" LIKE $2;
       "
 `;
 
-exports[`specified schema & table user state with scope id .getAllKeysStartWith(prefix) 2`] = `
+exports[`specified schema & table user state with scope id .getAllStartWithKey(prefix) 2`] = `
 [
   [
     "test.foo.jane",
@@ -5604,14 +5604,14 @@ exports[`specified table channel state .getAll() 2`] = `
 ]
 `;
 
-exports[`specified table channel state .getAllKeysStartWith(prefix) 1`] = `
+exports[`specified table channel state .getAllStartWithKey(prefix) 1`] = `
 "
         SELECT * FROM "my_channel_state"
         WHERE "id" = $1 AND "key" LIKE $2;
       "
 `;
 
-exports[`specified table channel state .getAllKeysStartWith(prefix) 2`] = `
+exports[`specified table channel state .getAllStartWithKey(prefix) 2`] = `
 [
   [
     "test.foo",
@@ -5997,14 +5997,14 @@ exports[`specified table channel state with scope id .getAll() 2`] = `
 ]
 `;
 
-exports[`specified table channel state with scope id .getAllKeysStartWith(prefix) 1`] = `
+exports[`specified table channel state with scope id .getAllStartWithKey(prefix) 1`] = `
 "
         SELECT * FROM "my_channel_state"
         WHERE "id" = $1 AND "key" LIKE $2;
       "
 `;
 
-exports[`specified table channel state with scope id .getAllKeysStartWith(prefix) 2`] = `
+exports[`specified table channel state with scope id .getAllStartWithKey(prefix) 2`] = `
 [
   [
     "test.foo.1",
@@ -6390,14 +6390,14 @@ exports[`specified table global state .getAll() 2`] = `
 ]
 `;
 
-exports[`specified table global state .getAllKeysStartWith(prefix) 1`] = `
+exports[`specified table global state .getAllStartWithKey(prefix) 1`] = `
 "
         SELECT * FROM "my_global_state"
         WHERE "id" = $1 AND "key" LIKE $2;
       "
 `;
 
-exports[`specified table global state .getAllKeysStartWith(prefix) 2`] = `
+exports[`specified table global state .getAllStartWithKey(prefix) 2`] = `
 [
   [
     "MY_SUPER_STATE",
@@ -6783,14 +6783,14 @@ exports[`specified table thread state .getAll() 2`] = `
 ]
 `;
 
-exports[`specified table thread state .getAllKeysStartWith(prefix) 1`] = `
+exports[`specified table thread state .getAllStartWithKey(prefix) 1`] = `
 "
         SELECT * FROM "my_thread_state"
         WHERE "id" = $1 AND "key" LIKE $2;
       "
 `;
 
-exports[`specified table thread state .getAllKeysStartWith(prefix) 2`] = `
+exports[`specified table thread state .getAllStartWithKey(prefix) 2`] = `
 [
   [
     "test.foo",
@@ -7176,14 +7176,14 @@ exports[`specified table thread state with scope id .getAll() 2`] = `
 ]
 `;
 
-exports[`specified table thread state with scope id .getAllKeysStartWith(prefix) 1`] = `
+exports[`specified table thread state with scope id .getAllStartWithKey(prefix) 1`] = `
 "
         SELECT * FROM "my_thread_state"
         WHERE "id" = $1 AND "key" LIKE $2;
       "
 `;
 
-exports[`specified table thread state with scope id .getAllKeysStartWith(prefix) 2`] = `
+exports[`specified table thread state with scope id .getAllStartWithKey(prefix) 2`] = `
 [
   [
     "test.foo.1",
@@ -7569,14 +7569,14 @@ exports[`specified table user state .getAll() 2`] = `
 ]
 `;
 
-exports[`specified table user state .getAllKeysStartWith(prefix) 1`] = `
+exports[`specified table user state .getAllStartWithKey(prefix) 1`] = `
 "
         SELECT * FROM "my_user_state"
         WHERE "id" = $1 AND "key" LIKE $2;
       "
 `;
 
-exports[`specified table user state .getAllKeysStartWith(prefix) 2`] = `
+exports[`specified table user state .getAllStartWithKey(prefix) 2`] = `
 [
   [
     "test.foo.john",
@@ -7962,14 +7962,14 @@ exports[`specified table user state with scope id .getAll() 2`] = `
 ]
 `;
 
-exports[`specified table user state with scope id .getAllKeysStartWith(prefix) 1`] = `
+exports[`specified table user state with scope id .getAllStartWithKey(prefix) 1`] = `
 "
         SELECT * FROM "my_user_state"
         WHERE "id" = $1 AND "key" LIKE $2;
       "
 `;
 
-exports[`specified table user state with scope id .getAllKeysStartWith(prefix) 2`] = `
+exports[`specified table user state with scope id .getAllStartWithKey(prefix) 2`] = `
 [
   [
     "test.foo.jane",

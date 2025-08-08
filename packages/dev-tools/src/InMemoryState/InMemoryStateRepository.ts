@@ -6,7 +6,7 @@ import type {
 import type {
   BaseStateRepository,
   StateAccessor,
-} from '@sociably/core/base/StateRepository';
+} from '@sociably/core/base/StateRepository.js';
 import { serviceProviderClass } from '@sociably/core/service';
 
 export class InMemoryStateAccessor implements StateAccessor {
@@ -56,7 +56,7 @@ export class InMemoryStateAccessor implements StateAccessor {
     return this._stateData as Map<string, T>;
   }
 
-  async getAllKeysStartWith<T>(prefix: string): Promise<Map<string, T>> {
+  async getAllStartWithKey<T>(prefix: string): Promise<Map<string, T>> {
     const result = new Map<string, T>();
     for (const [key, value] of this._stateData.entries()) {
       if (key.startsWith(prefix)) {
