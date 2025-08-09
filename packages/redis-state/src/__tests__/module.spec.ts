@@ -15,7 +15,7 @@ jest.mock('redis', () =>
 );
 
 test('export interfaces', () => {
-  expect(RedisState.Controller).toBe(RedisStateRepository);
+  expect(RedisState.Repository).toBe(RedisStateRepository);
   expect(RedisState.Configs).toMatchInlineSnapshot(`
     {
       "$$multi": false,

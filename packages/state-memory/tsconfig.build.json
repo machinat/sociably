@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src/**/*.ts"],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./lib",
+    "baseUrl": ".",
+    "paths": {
+      "@sociably/core": ["../core/src/index.js"],
+      "@sociably/core/*": ["../core/src/*/index.js", "../core/src/*.js"]
+    }
+  },
+  "references": [
+    { "path": "../core/tsconfig.build.json" }
+  ]
+}

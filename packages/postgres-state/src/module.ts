@@ -13,8 +13,8 @@ const initConnectionPool = serviceProviderFactory({
 
 /** @category Root */
 namespace PostgresState {
-  export const Controller = RepositoryP;
-  export type Controller = RepositoryP;
+  export const Repository = RepositoryP;
+  export type Repository = RepositoryP;
 
   export const ConnectionPool = ConnectionPoolI;
   export type ConnectionPool = ConnectionPoolI;

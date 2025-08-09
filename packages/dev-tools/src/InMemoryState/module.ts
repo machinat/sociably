@@ -4,8 +4,8 @@ import { RepositoryP } from './InMemoryStateRepository.js';
 
 /** @category Root */
 namespace InMemoryState {
-  export const Controller = RepositoryP;
-  export type Controller = RepositoryP;
+  export const Repository = RepositoryP;
+  export type Repository = RepositoryP;
 
   export const initModule = (): ServiceModule => ({
     provisions: [

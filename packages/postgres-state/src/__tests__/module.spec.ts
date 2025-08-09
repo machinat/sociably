@@ -14,7 +14,7 @@ jest.mock('pg', () =>
 );
 
 test('export interfaces', () => {
-  expect(PostgresState.Controller).toBe(PostgresStateRepository);
+  expect(PostgresState.Repository).toBe(PostgresStateRepository);
   expect(PostgresState.Configs).toMatchInlineSnapshot(`
     {
       "$$multi": false,

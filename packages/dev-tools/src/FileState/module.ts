@@ -5,8 +5,8 @@ import { ConfigsI, SerializerI } from './interface.js';
 
 /** @category Root */
 namespace FileState {
-  export const Controller = RepositoryP;
-  export type Controller = RepositoryP;
+  export const Repository = RepositoryP;
+  export type Repository = RepositoryP;
 
   export const Serializer = SerializerI;
   export type Serializer = SerializerI;

@@ -1,0 +1,34 @@
+{
+  "name": "@sociably/state-memory",
+  "version": "0.9.0-alpha.26",
+  "type": "module",
+  "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/machinat/sociably.git",
+    "directory": "packages/session"
+  },
+  "homepage": "https://github.com/machinat/sociably#readme",
+  "bugs": "https://github.com/machinat/sociably/issues",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js"
+  },
+  "files": [
+    "lib/*",
+    "README.md"
+  ],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "prepack": "make -f ../../package.mk prepack"
+  },
+  "dependencies": {
+    "nanoid": "^5.1.5"
+  },
+  "peerDependencies": {
+    "@sociably/core": "^0.9.0-alpha"
+  }
+}

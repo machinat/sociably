@@ -7,7 +7,7 @@ import { RepositoryP as FileStateRepository } from '../FileStateRepository.js';
 const storageFilePath = tmpNameSync();
 
 test('export interfaces', () => {
-  expect(FileState.Controller).toBe(FileStateRepository);
+  expect(FileState.Repository).toBe(FileStateRepository);
   expect(FileState.Configs).toMatchInlineSnapshot(`
     {
       "$$multi": false,

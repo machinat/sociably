@@ -16,8 +16,8 @@ const createRedisClient = serviceProviderFactory({
 
 /** @category Root */
 namespace RedisState {
-  export const Controller = RepositoryP;
-  export type Controller = RepositoryP;
+  export const Repository = RepositoryP;
+  export type Repository = RepositoryP;
 
   export const Client = ClientI;
   export type Client = ClientI;
