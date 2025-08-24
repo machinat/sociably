@@ -1,0 +1,59 @@
+{
+  "name": "@sociably/twitter-platform",
+  "version": "0.9.0-alpha.45",
+  "type": "module",
+  "description": "Twitter platform of Sociably.js",
+  "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/machinat/sociably.git",
+    "directory": "packages/twitter-platform"
+  },
+  "homepage": "https://github.com/machinat/sociably#readme",
+  "bugs": "https://github.com/machinat/sociably/issues",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./components": "./lib/components/index.js",
+    "./webview": "./lib/webview/index.js",
+    "./webview/client": "./lib/webview/client.js"
+  },
+  "files": [
+    "lib/*",
+    "README.md"
+  ],
+  "scripts": {
+    "prepack": "make -f ../../package.mk prepack"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "bowser": "^2.11.0",
+    "formstream": "^1.3.1",
+    "invariant": "^2.2.4",
+    "json-bigint": "^1.0.0",
+    "nanoid": "^3.3.1",
+    "node-fetch": "^3.3.2",
+    "twitter-text": "^3.1.0",
+    "warning": "^4.0.2"
+  },
+  "peerDependencies": {
+    "@sociably/auth": "^0.9.0-alpha",
+    "@sociably/core": "^0.9.0-alpha",
+    "@sociably/http": "^0.9.0-alpha",
+    "@sociably/webview": "^0.9.0-alpha"
+  },
+  "peerDependenciesMeta": {
+    "@sociably/auth": {
+      "optional": true
+    },
+    "@sociably/webview": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/twitter-text": "^3.1.1"
+  }
+}

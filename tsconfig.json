@@ -14,16 +14,52 @@
       ],
       "@sociably/dev-tools": ["./packages/dev-tools/src/index.js"],
       "@sociably/dev-tools/*": ["./packages/dev-tools/src/*/index.js"],
+      "@sociably/facebook-platform": [
+        "./packages/facebook-platform/src/index.js"
+      ],
+      "@sociably/facebook-platform/*": [
+        "./packages/facebook-platform/src/*/index.js"
+      ],
       "@sociably/http": ["./packages/http/src/index.js"],
       "@sociably/http/*": ["./packages/http/src/*/index.js"],
+      "@sociably/instagram-platform": [
+        "./packages/instagram-platform/src/index.js"
+      ],
+      "@sociably/instagram-platform/*": [
+        "./packages/instagram-platform/src/*/index.js"
+      ],
+      "@sociably/line-platform": ["./packages/line-platform/src/index.js"],
+      "@sociably/line-platform/*": ["./packages/line-platform/src/*/index.js"],
       "@sociably/meta-api": ["./packages/meta-api/src/index.js"],
-      "@sociably/messenger": ["./packages/messenger/src/index.js"],
-      "@sociably/messenger/*": ["./packages/messenger/src/*/index.js"],
+      "@sociably/meta-messenger-platform-base": [
+        "./packages/meta-messenger-platform-base/src/index.js"
+      ],
+      "@sociably/meta-messenger-platform-base/*": [
+        "./packages/meta-messenger-platform-base/src/*/index.js"
+      ],
       "@sociably/next": ["./packages/next/src/index.js"],
+      "@sociably/telegram-platform": [
+        "./packages/telegram-platform/src/index.js"
+      ],
+      "@sociably/telegram-platform/*": [
+        "./packages/telegram-platform/src/*/index.js"
+      ],
+      "@sociably/twitter-platform": [
+        "./packages/twitter-platform/src/index.js"
+      ],
+      "@sociably/twitter-platform/*": [
+        "./packages/twitter-platform/src/*/index.js"
+      ],
       "@sociably/websocket": ["./packages/websocket/src/index.js"],
       "@sociably/websocket/*": ["./packages/websocket/src/*/index.js"],
       "@sociably/webview": ["./packages/webview/src/index.js"],
-      "@sociably/webview/*": ["./packages/webview/src/*/index.js"]
+      "@sociably/webview/*": ["./packages/webview/src/*/index.js"],
+      "@sociably/whatsapp-platform": [
+        "./packages/whatsapp-platform/src/index.js"
+      ],
+      "@sociably/whatsapp-platform/*": [
+        "./packages/whatsapp-platform/src/*/index.js"
+      ]
     }
   }
 }

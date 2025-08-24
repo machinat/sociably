@@ -5,7 +5,7 @@ export default ({ platforms, withWebview }: CreateAppContext): string => `
 import ${when(platforms.includes('telegram'))`Sociably, `}{
     serviceContainer,
 } from '@sociably/core';${when(platforms.includes('telegram'))`
-import { AnswerCallbackQuery } from '@sociably/telegram/components';`}
+import { AnswerCallbackQuery } from '@sociably/telegram-platform/components';`}
 import { Stream } from '@sociably/stream';
 import { filter } from '@sociably/stream/operators';
 import Script from '@sociably/script';

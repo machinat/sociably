@@ -8,28 +8,30 @@ export default ({
 }: CreateAppContext): string => `
 import Sociably from '@sociably/core';
 import Http from '@sociably/http';${when(platforms.includes('facebook'))`
-import Facebook from '@sociably/facebook';${when(withWebview)`
-import FacebookWebview from '@sociably/facebook/webview';`}`}${when(
+import Facebook from '@sociably/facebook-platform';${when(withWebview)`
+import FacebookWebview from '@sociably/facebook-platform/webview';`}`}${when(
   platforms.includes('instagram'),
 )`
-import Instagram from '@sociably/instagram';${when(withWebview)`
-import InstagramWebview from '@sociably/instagram/webview';`}`}${when(
+import Instagram from '@sociably/instagram-platform';${when(withWebview)`
+import InstagramWebview from '@sociably/instagram-platform/webview';`}`}${when(
   platforms.includes('whatsapp'),
 )`
-import WhatsApp from '@sociably/whatsapp';${when(withWebview)`
-import WhatsAppWebview from '@sociably/whatsapp/webview';`}`}${when(
+import WhatsApp from '@sociably/whatsapp-platform';${when(withWebview)`
+import WhatsAppWebview from '@sociably/whatsapp-platform/webview';`}`}${when(
   platforms.includes('twitter'),
 )`
-import Twitter from '@sociably/twitter';${when(withWebview)`
-import TwitterWebview from '@sociably/twitter/webview';`}`}${when(
+import Twitter from '@sociably/twitter-platform';${when(withWebview)`
+import TwitterWebview from '@sociably/twitter-platform/webview';`}`}${when(
   platforms.includes('telegram'),
 )`
-import Telegram from '@sociably/telegram';${when(withWebview)`
-import TelegramWebview from '@sociably/telegram/webview';`}`}${when(
+import Telegram from '@sociably/telegram-platform';${when(withWebview)`
+import TelegramWebview from '@sociably/telegram-platform/webview';`}`}${when(
   platforms.includes('line'),
 )`
-import Line from '@sociably/line';${when(withWebview)`
-import LineWebview from '@sociably/line/webview';`}`}${when(withWebview)`
+import Line from '@sociably/line-platform';${when(withWebview)`
+import LineWebview from '@sociably/line-platform/webview';`}`}${when(
+  withWebview,
+)`
 import Webview from '@sociably/webview';`}
 import Script from '@sociably/script';
 import RedisState from '@sociably/redis-state';

@@ -1,0 +1,56 @@
+{
+  "name": "@sociably/instagram-platform",
+  "version": "0.9.0-alpha.45",
+  "type": "module",
+  "description": "Instagram platform of Sociably.js",
+  "author": "Patrick Liu <zeldalink0515@gmail.com>  (https://github.com/lrills)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/machinat/sociably.git",
+    "directory": "packages/instagram-platform"
+  },
+  "homepage": "https://github.com/machinat/sociably#readme",
+  "bugs": "https://github.com/machinat/sociably/issues",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./components": "./lib/components/index.js",
+    "./asset": "./lib/asset/index.js",
+    "./webview": "./lib/webview/index.js",
+    "./webview/client": "./lib/webview/client.js"
+  },
+  "files": [
+    "lib/*",
+    "README.md"
+  ],
+  "scripts": {
+    "prepack": "make -f ../../package.mk prepack"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@sociably/meta-messenger-platform-base": "^0.9.0-alpha.26",
+    "@sociably/meta-api": "^0.9.0-alpha.40",
+    "invariant": "^2.2.4",
+    "warning": "^4.0.2"
+  },
+  "peerDependencies": {
+    "@sociably/auth": "^0.9.0-alpha",
+    "@sociably/core": "^0.9.0-alpha",
+    "@sociably/http": "^0.9.0-alpha",
+    "@sociably/webview": "^0.9.0-alpha"
+  },
+  "peerDependenciesMeta": {
+    "@sociably/auth": {
+      "optional": true
+    },
+    "@sociably/webview": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "jsdom": "^16.6.0"
+  }
+}

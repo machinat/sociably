@@ -3,28 +3,38 @@ import { CreateAppContext } from '../../../types.js';
 
 export default ({ platforms, withWebview }: CreateAppContext): string => `
 import Sociably from '@sociably/core';${when(platforms.includes('facebook'))`
-import * as Facebook from '@sociably/facebook/components';${when(withWebview)`
-import { WebviewButton as FacebookWebviewButton } from '@sociably/facebook/webview';`}`}${when(
+import * as Facebook from '@sociably/facebook-platform/components';${when(
+  withWebview,
+)`
+import { WebviewButton as FacebookWebviewButton } from '@sociably/facebook-platform/webview';`}`}${when(
   platforms.includes('instagram'),
 )`
-import * as Instagram from '@sociably/instagram/components';${when(withWebview)`
-import { WebviewButton as InstagramWebviewButton } from '@sociably/instagram/webview';`}`}${when(
+import * as Instagram from '@sociably/instagram-platform/components';${when(
+  withWebview,
+)`
+import { WebviewButton as InstagramWebviewButton } from '@sociably/instagram-platform/webview';`}`}${when(
   platforms.includes('whatsapp'),
 )`
-import * as WhatsApp from '@sociably/whatsapp/components';${when(withWebview)`
-import { WebviewButtonParam as WhatsAppWebviewButtonParam } from '@sociably/whatsapp/webview';`}`}${when(
+import * as WhatsApp from '@sociably/whatsapp-platform/components';${when(
+  withWebview,
+)`
+import { WebviewButtonParam as WhatsAppWebviewButtonParam } from '@sociably/whatsapp-platform/webview';`}`}${when(
   platforms.includes('twitter'),
 )`
-import * as Twitter from '@sociably/twitter/components';${when(withWebview)`
-import { WebviewButton as TwitterWebviewButton } from '@sociably/twitter/webview';`}`}${when(
+import * as Twitter from '@sociably/twitter-platform/components';${when(
+  withWebview,
+)`
+import { WebviewButton as TwitterWebviewButton } from '@sociably/twitter-platform/webview';`}`}${when(
   platforms.includes('telegram'),
 )`
-import * as Telegram from '@sociably/telegram/components';${when(withWebview)`
-import { WebviewButton as TelegramWebviewButton } from '@sociably/telegram/webview';`}`}${when(
+import * as Telegram from '@sociably/telegram-platform/components';${when(
+  withWebview,
+)`
+import { WebviewButton as TelegramWebviewButton } from '@sociably/telegram-platform/webview';`}`}${when(
   platforms.includes('line'),
 )`
-import * as Line from '@sociably/line/components';${when(withWebview)`
-import { WebviewAction as LineWebviewAction } from '@sociably/line/webview';`}`}
+import * as Line from '@sociably/line-platform/components';${when(withWebview)`
+import { WebviewAction as LineWebviewAction } from '@sociably/line-platform/webview';`}`}
 
 
 type HelloWithMenuProps = {

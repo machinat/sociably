@@ -10,22 +10,22 @@ import { default as getConfig } from 'next/config.js';
 import { useClient, useEventReducer } from '@sociably/webview/client';${when(
   platforms.includes('facebook'),
 )`
-import FacebookWebview from '@sociably/facebook/webview/client';`}${when(
+import FacebookWebview from '@sociably/facebook-platform/webview/client';`}${when(
   platforms.includes('instagram'),
 )`
-import InstagramWebview from '@sociably/instagram/webview/client';`}${when(
+import InstagramWebview from '@sociably/instagram-platform/webview/client';`}${when(
   platforms.includes('whatsapp'),
 )`
-import WhatsAppWebview from '@sociably/whatsapp/webview/client';`}${when(
+import WhatsAppWebview from '@sociably/whatsapp-platform/webview/client';`}${when(
   platforms.includes('twitter'),
 )`
-import TwitterWebview from '@sociably/twitter/webview/client';`}${when(
+import TwitterWebview from '@sociably/twitter-platform/webview/client';`}${when(
   platforms.includes('telegram'),
 )`
-import TelegramWebview from '@sociably/telegram/webview/client';`}${when(
+import TelegramWebview from '@sociably/telegram-platform/webview/client';`}${when(
   platforms.includes('line'),
 )`
-import LineWebview from '@sociably/line/webview/client';`}
+import LineWebview from '@sociably/line-platform/webview/client';`}
 
 const {
   publicRuntimeConfig: {${when(platforms.includes('telegram'))`

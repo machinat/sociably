@@ -5,7 +5,7 @@ export default ({ platforms }: CreateAppContext): string => when(
   platforms.includes('twitter'),
 )`
 #!/usr/bin/env node
-import Twitter from '@sociably/twitter';
+import Twitter from '@sociably/twitter-platform';
 import createApp from '../app.js';
 
 const { TWITTER_WEBHOOK_ENV } = process.env;

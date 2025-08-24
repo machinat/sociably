@@ -183,11 +183,13 @@ const createSociablyApp = async ({
     '@sociably/stream',
     '@sociably/script',
     withWebview ? '@sociably/webview' : undefined,
-    platforms.includes('facebook') ? '@sociably/facebook' : undefined,
-    platforms.includes('instagram') ? '@sociably/instagram' : undefined,
-    platforms.includes('whatsapp') ? '@sociably/whatsapp' : undefined,
-    platforms.includes('telegram') ? '@sociably/telegram' : undefined,
-    platforms.includes('line') ? '@sociably/line' : undefined,
+    platforms.includes('facebook') ? '@sociably/facebook-platform' : undefined,
+    platforms.includes('instagram')
+      ? '@sociably/instagram-platform'
+      : undefined,
+    platforms.includes('whatsapp') ? '@sociably/whatsapp-platform' : undefined,
+    platforms.includes('telegram') ? '@sociably/telegram-platform' : undefined,
+    platforms.includes('line') ? '@sociably/line-platform' : undefined,
     recognizer === 'dialogflow' ? '@sociably/dialogflow' : undefined,
   ]
     .filter((pkgName) => !!pkgName)

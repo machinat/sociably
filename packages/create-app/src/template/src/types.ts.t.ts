@@ -5,38 +5,42 @@ export default ({
   platforms,
   withWebview,
 }: CreateAppContext): string => `${when(platforms.includes('facebook'))`
-import type { FacebookEventContext } from '@sociably/facebook';${when(
+import type { FacebookEventContext } from '@sociably/facebook-platform';${when(
   withWebview,
 )`
-import type FacebookWebview from '@sociably/facebook/webview';`}`}${when(
+import type FacebookWebview from '@sociably/facebook-platform/webview';`}`}${when(
   platforms.includes('instagram'),
 )`
-import type { InstagramEventContext } from '@sociably/instagram';${when(
+import type { InstagramEventContext } from '@sociably/instagram-platform';${when(
   withWebview,
 )`
-import type InstagramWebview from '@sociably/instagram/webview';`}`}${when(
+import type InstagramWebview from '@sociably/instagram-platform/webview';`}`}${when(
   platforms.includes('whatsapp'),
 )`
-import type { WhatsAppEventContext } from '@sociably/whatsapp';${when(
+import type { WhatsAppEventContext } from '@sociably/whatsapp-platform';${when(
   withWebview,
 )`
-import type WhatsAppWebview from '@sociably/whatsapp/webview';`}`}${when(
+import type WhatsAppWebview from '@sociably/whatsapp-platform/webview';`}`}${when(
   platforms.includes('twitter'),
 )`
-import type { TwitterEventContext } from '@sociably/twitter';${when(
+import type { TwitterEventContext } from '@sociably/twitter-platform';${when(
   withWebview,
 )`
-import type TwitterWebview from '@sociably/twitter/webview';`}`}${when(
+import type TwitterWebview from '@sociably/twitter-platform/webview';`}`}${when(
   platforms.includes('telegram'),
 )`
-import type { TelegramEventContext } from '@sociably/telegram';${when(
+import type { TelegramEventContext } from '@sociably/telegram-platform';${when(
   withWebview,
 )`
-import type TelegramWebview from '@sociably/telegram/webview';`}`}${when(
+import type TelegramWebview from '@sociably/telegram-platform/webview';`}`}${when(
   platforms.includes('line'),
 )`
-import type { LineEventContext } from '@sociably/line';${when(withWebview)`
-import type LineWebview from '@sociably/line/webview';`}`}${when(withWebview)`
+import type { LineEventContext } from '@sociably/line-platform';${when(
+  withWebview,
+)`
+import type LineWebview from '@sociably/line-platform/webview';`}`}${when(
+  withWebview,
+)`
 import type { WebviewEventContext } from '@sociably/webview';`}
 
 export type ChatEventContext =${when(platforms.includes('facebook'))`

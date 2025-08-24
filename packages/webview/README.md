@@ -35,8 +35,8 @@ Assume you have the Next.js app directory at `./webview`, set up webview platfor
 import Sociably from '@sociably/core';
 import Http from '@sociably/http';
 import Webview from '@sociably/webview';
-import Facebook from '@sociably/facebook';
-import FacebookWebviewAuth from '@sociably/facebook/webview';
+import Facebook from '@sociably/facebook-platform';
+import FacebookWebviewAuth from '@sociably/facebook-platform/webview';
 import nextConfigs from '../webview/next.config.js';
 
 const { DOMAIN, WEBVIEW_AUTH_SECRET, NODE_ENV, FACEBOOK_APP_ID } = process.env;
@@ -44,10 +44,14 @@ const DEV = NODE_ENV !== 'production';
 
 const app = Sociably.createApp({
   modules: [
-    Http.initModule({/* ... */}),
+    Http.initModule({
+      /* ... */
+    }),
   ],
   platforms: [
-    Facebook.initModule({/* ... */}),
+    Facebook.initModule({
+      /* ... */
+    }),
     Webview.intiModule({
       webviewHost: DOMAIN,
       webviewPath: 'webview', // have to match `basePath` in next.config.js
@@ -57,9 +61,9 @@ const app = Sociably.createApp({
         FacebookWebviewAuth,
       ],
       nextServerOptions: {
-        dev: DEV,              // use dev mode or not
-        dir: './webview',      // the front-end app dir
-        conf: nextConfigs,     // import configs from next.config.js
+        dev: DEV, // use dev mode or not
+        dir: './webview', // the front-end app dir
+        conf: nextConfigs, // import configs from next.config.js
       },
     }),
   ],
@@ -85,8 +89,8 @@ Set up the Next.js app like this:
 ```js
 // webview/next.config.js
 module.exports = {
-  distDir: '../dist',     // the path of built front-end codes
-  basePath: '/webview',   // have to match `webviewPath` on back-end
+  distDir: '../dist', // the path of built front-end codes
+  basePath: '/webview', // have to match `webviewPath` on back-end
   publicRuntimeConfig: {
     // export settings to front-end if needed
     facebookAppId: process.env.FACEBOOK_APP_ID,
@@ -101,7 +105,7 @@ Then you can use `WebviewClient` in the front-end pages like this:
 import { useEffect } from 'react';
 import getConfig from 'next/config';
 import WebviewClient from '@sociably/webview/client';
-import FacebookWebviewAuth from '@sociably/facebook/webview/client';
+import FacebookWebviewAuth from '@sociably/facebook-platform/webview/client';
 
 // get settings if needed
 const { publicRuntimeConfig } = getConfig();
@@ -122,15 +126,12 @@ const client = new WebviewClient({
 export default function Home() {
   const greetingMsg = useEventReducer(
     client,
-    (msg, event) => event.type === 'hello' ? event.payload : msg,
-    null
+    (msg, event) => (event.type === 'hello' ? event.payload : msg),
+    null,
   );
-  useEffect(
-    () => {
-      client.send({ type: 'hello', payload: 'hello from webview' });
-    },
-    [greetingMsg]
-  )
-  return <h1>{greetingMsg} || 'connecting...'</h1>
+  useEffect(() => {
+    client.send({ type: 'hello', payload: 'hello from webview' });
+  }, [greetingMsg]);
+  return <h1>{greetingMsg} || 'connecting...'</h1>;
 }
 ```

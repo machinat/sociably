@@ -5,20 +5,22 @@ export default ({ platforms }: CreateAppContext): string => `
 import { serviceContainer } from '@sociably/core';${when(
   platforms.includes('facebook'),
 )`
-import Facebook from '@sociably/facebook';`}${when(
+import Facebook from '@sociably/facebook-platform';`}${when(
   platforms.includes('instagram'),
 )`
-import Instagram from '@sociably/instagram';`}${when(
+import Instagram from '@sociably/instagram-platform';`}${when(
   platforms.includes('whatsapp'),
 )`
-import WhatsApp from '@sociably/whatsapp';`}${when(
+import WhatsApp from '@sociably/whatsapp-platform';`}${when(
   platforms.includes('twitter'),
 )`
-import Twitter from '@sociably/twitter';`}${when(
+import Twitter from '@sociably/twitter-platform';`}${when(
   platforms.includes('telegram'),
 )`
-import Telegram from '@sociably/telegram';`}${when(platforms.includes('line'))`
-import Line from '@sociably/line';`}
+import Telegram from '@sociably/telegram-platform';`}${when(
+  platforms.includes('line'),
+)`
+import Line from '@sociably/line-platform';`}
 
 const {
   DOMAIN,${when(platforms.includes('facebook'))`

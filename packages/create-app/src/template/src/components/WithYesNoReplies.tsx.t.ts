@@ -5,22 +5,22 @@ export default ({ platforms }: CreateAppContext): string => `
 import Sociably, { SociablyNode } from '@sociably/core';${when(
   platforms.includes('facebook'),
 )`
-import * as Facebook from '@sociably/facebook/components';`}${when(
+import * as Facebook from '@sociably/facebook-platform/components';`}${when(
   platforms.includes('instagram'),
 )`
-import * as Instagram from '@sociably/instagram/components';`}${when(
+import * as Instagram from '@sociably/instagram-platform/components';`}${when(
   platforms.includes('whatsapp'),
 )`
-import * as WhatsApp from '@sociably/whatsapp/components';`}${when(
+import * as WhatsApp from '@sociably/whatsapp-platform/components';`}${when(
   platforms.includes('twitter'),
 )`
-import * as Twitter from '@sociably/twitter/components';`}${when(
+import * as Twitter from '@sociably/twitter-platform/components';`}${when(
   platforms.includes('telegram'),
 )`
-import * as Telegram from '@sociably/telegram/components';`}${when(
+import * as Telegram from '@sociably/telegram-platform/components';`}${when(
   platforms.includes('line'),
 )`
-import * as Line from '@sociably/line/components';`}
+import * as Line from '@sociably/line-platform/components';`}
 
 type WithYesNoRepliesProps = {
   children: SociablyNode;

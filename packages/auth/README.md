@@ -27,7 +27,7 @@ import Sociably, { serviceProviderFactory } from '@sociably/core';
 import Http from '@sociably/http';
 import Auth from '@sociably/auth';
 // add the platforms and the authenticator you need
-import { LineServerAuthenticator } from '@sociably/line/webview';
+import { LineServerAuthenticator } from '@sociably/line-platform/webview';
 
 const app = Sociably.createApp({
   modules: [
@@ -69,13 +69,17 @@ app.start();
 
 ```js
 import AuthClient from '@sociably/auth/client';
-import LineClientAuthenticator from '@sociably/line/webview/client';
+import LineClientAuthenticator from '@sociably/line-platform/webview/client';
 
-(async function main () {
+(async function main() {
   const authClient = new AuthClient({
     platform: 'line',
     serverUrl: '/auth',
-    authenticators: [new LineClientAuthenticator({ /* ... */ })],
+    authenticators: [
+      new LineClientAuthenticator({
+        /* ... */
+      }),
+    ],
   });
 
   const { token, context } = await authClient.auth();

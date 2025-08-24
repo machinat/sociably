@@ -5,7 +5,7 @@ export default ({ platforms }: CreateAppContext): string => when(
   platforms.includes('instagram'),
 )`
 #!/usr/bin/env node
-import Instagram from '@sociably/instagram';
+import Instagram from '@sociably/instagram-platform';
 import createApp from '../app.js';
 
 const { INSTAGRAM_ACCESS_TOKEN } = process.env;
