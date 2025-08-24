@@ -1,7 +1,7 @@
 import { MessengerUser } from '@sociably/messenger';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler.js';
 import FacebookPage from './Page.js';
-import { FACEBOOK, FB } from './constant.js';
+import { FACEBOOK } from './constant.js';
 
 type FacebookUserValue = {
   page: string;
@@ -11,7 +11,7 @@ type FacebookUserValue = {
 export default class FacebookUser
   implements MessengerUser, MarshallableInstance<FacebookUserValue>
 {
-  static typeName = 'FbUser';
+  static typeName = 'FacebookUser';
 
   static fromJSONValue(value: FacebookUserValue): FacebookUser {
     const { page, id } = value;
@@ -29,7 +29,7 @@ export default class FacebookUser
   }
 
   get uid(): string {
-    return `${FB}.${this.pageId}.${this.id}`;
+    return `${FACEBOOK}.${this.pageId}.${this.id}`;
   }
 
   get page(): FacebookPage {

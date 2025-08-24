@@ -1,5 +1,4 @@
 export const FACEBOOK = 'facebook' as const;
-export const FB = 'fb' as const;
 
 export const PATH_PERSONAS = 'me/personas' as const;
 

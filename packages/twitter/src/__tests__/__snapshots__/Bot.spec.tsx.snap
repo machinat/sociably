@@ -146,7 +146,7 @@ exports[`.render(thread, content) send direct message 1`] = `
     {
       "accomplishRequest": [Function],
       "asApplication": false,
-      "key": "twtr.1234567890.9876543210",
+      "key": "twitter.1234567890.9876543210",
       "mediaSources": null,
       "refreshTarget": null,
       "request": {
@@ -177,7 +177,7 @@ exports[`.render(thread, content) send direct message 1`] = `
     {
       "accomplishRequest": [Function],
       "asApplication": false,
-      "key": "twtr.1234567890.9876543210",
+      "key": "twitter.1234567890.9876543210",
       "mediaSources": null,
       "refreshTarget": null,
       "request": {
@@ -228,7 +228,7 @@ exports[`.render(thread, content) send direct message 1`] = `
         {
           "accomplishRequest": [Function],
           "asApplication": false,
-          "key": "twtr.1234567890.9876543210",
+          "key": "twitter.1234567890.9876543210",
           "mediaSources": null,
           "refreshTarget": null,
           "request": {
@@ -259,7 +259,7 @@ exports[`.render(thread, content) send direct message 1`] = `
         {
           "accomplishRequest": [Function],
           "asApplication": false,
-          "key": "twtr.1234567890.9876543210",
+          "key": "twitter.1234567890.9876543210",
           "mediaSources": null,
           "refreshTarget": null,
           "request": {

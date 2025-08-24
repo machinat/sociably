@@ -58,7 +58,7 @@ test('fetch profile from api', async () => {
     }
   `);
 
-  expect(profile?.typeName()).toBe('FbUserProfile');
+  expect(profile?.typeName()).toBe('FacebookUserProfile');
   expect(profile?.toJSONValue()).toMatchInlineSnapshot(`
     {
       "first_name": "Peter",
@@ -113,7 +113,7 @@ it('query additional optionalProfileFields if given', async () => {
     }
   `);
 
-  expect(profile?.typeName()).toBe('FbUserProfile');
+  expect(profile?.typeName()).toBe('FacebookUserProfile');
   expect(profile?.toJSONValue()).toMatchInlineSnapshot(`
     {
       "first_name": "Peter",

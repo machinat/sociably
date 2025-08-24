@@ -3,7 +3,7 @@ import { serviceProviderClass } from '@sociably/core/service';
 import StateRepositoryI from '@sociably/core/base/StateRepository.js';
 import BotP from '../Bot.js';
 import TwitterUser from '../User.js';
-import { TWTR } from '../constant.js';
+import { TWITTER } from '../constant.js';
 import { RenderMediaResponse } from '../types.js';
 
 const MEDIA = 'media';
@@ -24,7 +24,7 @@ type CreateCustomProfileResult = {
 /* eslint-enable camelcase */
 
 const makeResourceToken = (agentId: string, resource: string): string =>
-  `$${TWTR}.${resource}.${agentId}`;
+  `$${TWITTER}.${resource}.${agentId}`;
 
 /**
  * TwitterAssetsManager stores ids of assets created at Twitter platform.

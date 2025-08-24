@@ -1,7 +1,7 @@
 import { MessengerUser } from '@sociably/messenger';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler.js';
 import InstagramAgent from './Agent.js';
-import { INSTAGRAM, IG } from './constant.js';
+import { INSTAGRAM } from './constant.js';
 
 type InstagramUserValue = {
   agent: string;
@@ -11,7 +11,7 @@ type InstagramUserValue = {
 export default class InstagramUser
   implements MessengerUser, MarshallableInstance<InstagramUserValue>
 {
-  static typeName = 'IgUser';
+  static typeName = 'InstagramUser';
 
   static fromJSONValue(value: InstagramUserValue): InstagramUser {
     const { agent, id } = value;
@@ -29,7 +29,7 @@ export default class InstagramUser
   }
 
   get uid(): string {
-    return `${IG}.${this.agentId}.${this.id}`;
+    return `${INSTAGRAM}.${this.agentId}.${this.id}`;
   }
 
   get agent(): InstagramAgent {

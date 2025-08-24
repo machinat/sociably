@@ -1,7 +1,7 @@
 import type { SociablyThread } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler.js';
 import TwitterUser from './User.js';
-import { TWITTER, TWTR } from './constant.js';
+import { TWITTER } from './constant.js';
 
 type SerializedTweetTarget = {
   agent: string;
@@ -13,7 +13,7 @@ const DEFAULT_FEED_SIGN = '-';
 export default class TwitterTweetTarget
   implements SociablyThread, MarshallableInstance<SerializedTweetTarget>
 {
-  static typeName = 'TwtrTweetTarget';
+  static typeName = 'TwitterTweetTarget';
   static fromJSONValue(val: SerializedTweetTarget): TwitterTweetTarget {
     return new TwitterTweetTarget(val.agent, val.tweet);
   }
@@ -35,7 +35,7 @@ export default class TwitterTweetTarget
   }
 
   get uid(): string {
-    return `${TWTR}.${this.agentId}.${this.tweetId || DEFAULT_FEED_SIGN}`;
+    return `${TWITTER}.${this.agentId}.${this.tweetId || DEFAULT_FEED_SIGN}`;
   }
 
   get agent(): TwitterUser {

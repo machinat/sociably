@@ -1,7 +1,7 @@
 import type { SociablyThread } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler.js';
 import TwitterUser from './User.js';
-import { TWITTER, TWTR } from './constant.js';
+import { TWITTER } from './constant.js';
 
 type SerializedChatValue = {
   agent: string;
@@ -11,7 +11,7 @@ type SerializedChatValue = {
 export default class TwitterChat
   implements SociablyThread, MarshallableInstance<SerializedChatValue>
 {
-  static typeName = 'TwtrChat';
+  static typeName = 'TwitterChat';
   static fromJSONValue({ agent, user }: SerializedChatValue): TwitterChat {
     return new TwitterChat(agent, user);
   }
@@ -31,7 +31,7 @@ export default class TwitterChat
 
   /** The unique id of the direct message thread */
   get uid(): string {
-    return `${TWTR}.${this.agentId}.${this.userId}`;
+    return `${TWITTER}.${this.agentId}.${this.userId}`;
   }
 
   get agent(): TwitterUser {

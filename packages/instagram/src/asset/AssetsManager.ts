@@ -12,7 +12,7 @@ import {
 } from '@sociably/messenger';
 import BotP from '../Bot.js';
 import InstagramAgent from '../Agent.js';
-import { IG } from '../constant.js';
+import { INSTAGRAM } from '../constant.js';
 import { ConfigsI, AgentSettingsAccessorI } from '../interface.js';
 
 // NOTE: instagram subscription fields are not aligned between app and page API
@@ -46,7 +46,7 @@ export class InstagramAssetsManager extends MessengerAssetsManager<InstagramAgen
     agentSettingsAccessor: AgentSettingsAccessorI,
     defaultSettings: DefaultSettings = {},
   ) {
-    super(stateManager, bot, IG);
+    super(stateManager, bot, INSTAGRAM);
     this.defaultSettings = defaultSettings;
     this.agentSettingsAccessor = agentSettingsAccessor;
   }

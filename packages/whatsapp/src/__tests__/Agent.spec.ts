@@ -6,13 +6,13 @@ test('attributes', () => {
   expect(user.platform).toBe('whatsapp');
   expect(user.id).toBe('1234567890');
 
-  expect(user.uid).toMatchInlineSnapshot(`"wa.1234567890"`);
+  expect(user.uid).toMatchInlineSnapshot(`"whatsapp.1234567890"`);
 });
 
 test('marshallable', () => {
   const user = new WhatsAppAgent('1234567890');
 
-  expect(user.typeName()).toBe('WaAgent');
+  expect(user.typeName()).toBe('WhatsAppAgent');
   expect(user.toJSONValue()).toMatchInlineSnapshot(`
     {
       "id": "1234567890",

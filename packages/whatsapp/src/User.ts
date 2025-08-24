@@ -1,7 +1,7 @@
 import type { SociablyUser } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler.js';
 import UserProfile from './UserProfile.js';
-import { WHATSAPP, WA } from './constant.js';
+import { WHATSAPP } from './constant.js';
 import { UserProfileData } from './types.js';
 
 type WhatsAppUserValue = {
@@ -11,7 +11,7 @@ type WhatsAppUserValue = {
 class WhatsAppUser
   implements SociablyUser, MarshallableInstance<WhatsAppUserValue>
 {
-  static typeName = 'WaUser';
+  static typeName = 'WhatsAppUser';
 
   static fromJSONValue({ id }: WhatsAppUserValue): WhatsAppUser {
     return new WhatsAppUser(id);
@@ -35,7 +35,7 @@ class WhatsAppUser
   }
 
   get uid(): string {
-    return `${WA}.${this.numberId}`;
+    return `${WHATSAPP}.${this.numberId}`;
   }
 
   toJSONValue(): WhatsAppUserValue {

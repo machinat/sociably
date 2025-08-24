@@ -1,7 +1,7 @@
 import { MessengerChat } from '@sociably/messenger';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler.js';
 import InstagramAgent from './Agent.js';
-import { INSTAGRAM, IG } from './constant.js';
+import { INSTAGRAM } from './constant.js';
 import type { MessagingTarget } from './types.js';
 
 type InstagramChatType = 'user' | 'comment' | 'unknown';
@@ -12,7 +12,7 @@ type ChatValue = {
 };
 
 class InstagramChat implements MessengerChat, MarshallableInstance<ChatValue> {
-  static typeName = 'IgChat';
+  static typeName = 'InstagramChat';
   static fromJSONValue(value: ChatValue): InstagramChat {
     const { agent, target } = value;
     return new InstagramChat(agent, target);
@@ -51,7 +51,7 @@ class InstagramChat implements MessengerChat, MarshallableInstance<ChatValue> {
   }
 
   get uid(): string {
-    return `${IG}.${this.agentId}.${this.id}`;
+    return `${INSTAGRAM}.${this.agentId}.${this.id}`;
   }
 
   toJSONValue(): ChatValue {

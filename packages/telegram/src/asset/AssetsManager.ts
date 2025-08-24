@@ -3,12 +3,12 @@ import Http from '@sociably/http';
 import BotP from '../Bot.js';
 import TelegramUser from '../User.js';
 import { ConfigsI } from '../interface.js';
-import { TG } from '../constant.js';
+import { TELEGRAM } from '../constant.js';
 
 const FILE = 'file';
 
 const makeResourceToken = (botId: number, resource: string): string =>
-  `$${TG}.${resource}.${botId}`;
+  `$${TELEGRAM}.${resource}.${botId}`;
 
 type DefaultSettings = {
   secretToken?: string;

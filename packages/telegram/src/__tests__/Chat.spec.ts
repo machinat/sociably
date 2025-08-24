@@ -2,7 +2,7 @@ import TelegramChat from '../Chat.js';
 import ChatProfile from '../ChatProfile.js';
 
 test('marshallable type meta', () => {
-  expect(TelegramChat.typeName).toBe('TgChat');
+  expect(TelegramChat.typeName).toBe('TelegramChat');
   expect(TelegramChat.fromJSONValue({ bot: 12345, id: 67890 })).toEqual(
     new TelegramChat(12345, 67890),
   );
@@ -25,9 +25,9 @@ test('private chat', () => {
   expect(chat.data).toEqual(data);
   expect(chat.profile).toStrictEqual(new ChatProfile(data));
 
-  expect(chat.uid).toMatchInlineSnapshot(`"tg.12345.67890"`);
+  expect(chat.uid).toMatchInlineSnapshot(`"telegram.12345.67890"`);
 
-  expect(chat.typeName()).toBe('TgChat');
+  expect(chat.typeName()).toBe('TelegramChat');
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
     {
       "bot": 12345,
@@ -47,9 +47,9 @@ test('group chat', () => {
   expect(chat.data).toEqual(data);
   expect(chat.profile).toStrictEqual(new ChatProfile(data));
 
-  expect(chat.uid).toMatchInlineSnapshot(`"tg.12345.67890"`);
+  expect(chat.uid).toMatchInlineSnapshot(`"telegram.12345.67890"`);
 
-  expect(chat.typeName()).toBe('TgChat');
+  expect(chat.typeName()).toBe('TelegramChat');
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
     {
       "bot": 12345,
@@ -68,9 +68,9 @@ test('without raw data', () => {
   expect(chat.data).toEqual(null);
   expect(chat.profile).toBe(null);
 
-  expect(chat.uid).toMatchInlineSnapshot(`"tg.12345.67890"`);
+  expect(chat.uid).toMatchInlineSnapshot(`"telegram.12345.67890"`);
 
-  expect(chat.typeName()).toBe('TgChat');
+  expect(chat.typeName()).toBe('TelegramChat');
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
     {
       "bot": 12345,
@@ -87,9 +87,9 @@ test('without raw data', () => {
   expect(chat.data).toEqual(null);
   expect(chat.profile).toBe(null);
 
-  expect(chat.uid).toMatchInlineSnapshot(`"tg.12345.@foo_channel"`);
+  expect(chat.uid).toMatchInlineSnapshot(`"telegram.12345.@foo_channel"`);
 
-  expect(chat.typeName()).toBe('TgChat');
+  expect(chat.typeName()).toBe('TelegramChat');
   expect(chat.toJSONValue()).toMatchInlineSnapshot(`
     {
       "bot": 12345,

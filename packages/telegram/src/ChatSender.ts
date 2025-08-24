@@ -1,6 +1,6 @@
 import type { SociablyUser } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler.js';
-import { TELEGRAM, TG } from './constant.js';
+import { TELEGRAM } from './constant.js';
 import ChatProfile from './ChatProfile.js';
 import type { TelegramChatType, RawChat } from './types.js';
 
@@ -12,7 +12,7 @@ type TelegramChatSenderValue = {
 class TelegramChatSender
   implements SociablyUser, MarshallableInstance<TelegramChatSenderValue>
 {
-  static typeName = 'TgChatSender';
+  static typeName = 'TelegramChatSender';
   static fromJSONValue(value: TelegramChatSenderValue): TelegramChatSender {
     const { type, id } = value;
     return new TelegramChatSender({ id, type });
@@ -39,7 +39,7 @@ class TelegramChatSender
 
   /** Unique id of the chat sender user */
   get uid(): string {
-    return `${TG}.${this.id}`;
+    return `${TELEGRAM}.${this.id}`;
   }
 
   /** Profile of the chat */

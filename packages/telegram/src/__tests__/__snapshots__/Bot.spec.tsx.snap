@@ -96,7 +96,7 @@ exports[`.render(thread, message, options) send rendered messages to telegram ap
     {
       "agentId": 12345,
       "files": undefined,
-      "key": "tg.12345.67890",
+      "key": "telegram.12345.67890",
       "method": "sendMessage",
       "params": {
         "chat_id": 67890,
@@ -108,7 +108,7 @@ exports[`.render(thread, message, options) send rendered messages to telegram ap
     {
       "agentId": 12345,
       "files": undefined,
-      "key": "tg.12345.67890",
+      "key": "telegram.12345.67890",
       "method": "sendPhoto",
       "params": {
         "caption": undefined,
@@ -144,7 +144,7 @@ exports[`.render(thread, message, options) send rendered messages to telegram ap
         {
           "agentId": 12345,
           "files": undefined,
-          "key": "tg.12345.67890",
+          "key": "telegram.12345.67890",
           "method": "sendMessage",
           "params": {
             "chat_id": 67890,
@@ -156,7 +156,7 @@ exports[`.render(thread, message, options) send rendered messages to telegram ap
         {
           "agentId": 12345,
           "files": undefined,
-          "key": "tg.12345.67890",
+          "key": "telegram.12345.67890",
           "method": "sendPhoto",
           "params": {
             "caption": undefined,

@@ -1,6 +1,6 @@
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler.js';
 import { MetaApiChannel } from '@sociably/meta-api';
-import { FACEBOOK, FB } from './constant.js';
+import { FACEBOOK } from './constant.js';
 
 type FacebookPageValue = {
   page: string;
@@ -9,7 +9,7 @@ type FacebookPageValue = {
 class FacebookPage
   implements MetaApiChannel, MarshallableInstance<FacebookPageValue>
 {
-  static typeName = 'FbPage';
+  static typeName = 'FacebookPage';
   static fromJSONValue(value: FacebookPageValue): FacebookPage {
     const { page } = value;
     return new FacebookPage(page);
@@ -24,7 +24,7 @@ class FacebookPage
   }
 
   get uid(): string {
-    return `${FB}.${this.id}`;
+    return `${FACEBOOK}.${this.id}`;
   }
 
   toJSONValue(): FacebookPageValue {

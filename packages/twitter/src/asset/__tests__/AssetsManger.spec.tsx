@@ -52,10 +52,10 @@ test('get asset id', async () => {
   expect(stateRepository.globalState.mock.calls.map((c) => c.args[0]))
     .toMatchInlineSnapshot(`
     [
-      "$twtr.foo.1234567890",
-      "$twtr.media.1234567890",
-      "$twtr.custom_profile.1234567890",
-      "$twtr.welcome_message.1234567890",
+      "$twitter.foo.1234567890",
+      "$twitter.media.1234567890",
+      "$twitter.custom_profile.1234567890",
+      "$twitter.welcome_message.1234567890",
     ]
   `);
   expect(state.get).toHaveBeenCalledTimes(4);
@@ -113,10 +113,10 @@ test('save asset id', async () => {
   expect(stateRepository.globalState.mock.calls.map(({ args }) => args[0]))
     .toMatchInlineSnapshot(`
     [
-      "$twtr.foo.1234567890",
-      "$twtr.media.1234567890",
-      "$twtr.custom_profile.1234567890",
-      "$twtr.welcome_message.1234567890",
+      "$twitter.foo.1234567890",
+      "$twitter.media.1234567890",
+      "$twitter.custom_profile.1234567890",
+      "$twitter.welcome_message.1234567890",
     ]
   `);
 
@@ -166,10 +166,10 @@ test('get all assets', async () => {
   expect(stateRepository.globalState.mock.calls.map(({ args }) => args[0]))
     .toMatchInlineSnapshot(`
     [
-      "$twtr.foo.1234567890",
-      "$twtr.media.1234567890",
-      "$twtr.custom_profile.1234567890",
-      "$twtr.welcome_message.1234567890",
+      "$twitter.foo.1234567890",
+      "$twitter.media.1234567890",
+      "$twitter.custom_profile.1234567890",
+      "$twitter.welcome_message.1234567890",
     ]
   `);
   expect(state.getAll).toHaveBeenCalledTimes(4);
@@ -209,10 +209,10 @@ test('unsave asset id', async () => {
   expect(stateRepository.globalState.mock.calls.map(({ args }) => args[0]))
     .toMatchInlineSnapshot(`
     [
-      "$twtr.foo.1234567890",
-      "$twtr.media.1234567890",
-      "$twtr.custom_profile.1234567890",
-      "$twtr.welcome_message.1234567890",
+      "$twitter.foo.1234567890",
+      "$twitter.media.1234567890",
+      "$twitter.custom_profile.1234567890",
+      "$twitter.welcome_message.1234567890",
     ]
   `);
   expect(state.delete).toHaveBeenCalledTimes(4);
@@ -265,7 +265,7 @@ describe('.uploadMedia(tag, media)', () => {
 
     expect(
       stateRepository.globalState.mock.calls[0].args[0],
-    ).toMatchInlineSnapshot(`"$twtr.media.1234567890"`);
+    ).toMatchInlineSnapshot(`"$twitter.media.1234567890"`);
 
     expect(state.set).toHaveBeenCalledTimes(1);
     expect(state.set).toHaveBeenCalledWith('foo', '111111111111111111');
@@ -310,7 +310,7 @@ test('.createWelcomeMessage(name, message)', async () => {
 
   expect(
     stateRepository.globalState.mock.calls[0].args[0],
-  ).toMatchInlineSnapshot(`"$twtr.welcome_message.1234567890"`);
+  ).toMatchInlineSnapshot(`"$twitter.welcome_message.1234567890"`);
   expect(state.set).toHaveBeenCalledWith('my_welcome_message', '844385345234');
 
   bot.createWelcomeMessage.mock.fake(async () => null);
@@ -341,7 +341,7 @@ test('.deleteWelcomeMessage(name)', async () => {
 
   expect(
     stateRepository.globalState.mock.calls[0].args[0],
-  ).toMatchInlineSnapshot(`"$twtr.welcome_message.1234567890"`);
+  ).toMatchInlineSnapshot(`"$twitter.welcome_message.1234567890"`);
   expect(state.delete).toHaveBeenCalledWith('my_welcome_message');
 
   state.get.mock.fake(async () => undefined);
@@ -394,7 +394,7 @@ test('.createCustomProfile(tag, name, img)', async () => {
 
   expect(
     stateRepository.globalState.mock.calls[0].args[0],
-  ).toMatchInlineSnapshot(`"$twtr.custom_profile.1234567890"`);
+  ).toMatchInlineSnapshot(`"$twitter.custom_profile.1234567890"`);
   expect(state.set).toHaveBeenCalledWith('my_custom_profile', '1234567890');
 
   expect(bot.requestApi).toHaveBeenCalledTimes(1);
@@ -420,7 +420,7 @@ test('.deleteCustomProfile(name)', async () => {
 
   expect(
     stateRepository.globalState.mock.calls[0].args[0],
-  ).toMatchInlineSnapshot(`"$twtr.custom_profile.1234567890"`);
+  ).toMatchInlineSnapshot(`"$twitter.custom_profile.1234567890"`);
   expect(state.delete).toHaveBeenCalledWith('my_custom_profile');
 
   state.get.mock.fake(async () => undefined);

@@ -6,7 +6,7 @@ import { INSTAGRAM } from './constant.js';
 class InstagramUserProfile
   implements SociablyProfile, MarshallableInstance<RawUserProfile>
 {
-  static typeName = 'IgUserProfile';
+  static typeName = 'InstagramUserProfile';
 
   static fromJSONValue(data: RawUserProfile): InstagramUserProfile {
     return new InstagramUserProfile(data);

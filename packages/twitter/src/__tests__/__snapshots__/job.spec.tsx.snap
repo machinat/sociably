@@ -5,7 +5,7 @@ exports[`createDmSegmentValue(chat, segment) jobs from all kinds og segment 1`] 
   {
     "accomplishRequest": [Function],
     "asApplication": false,
-    "key": "twtr.12345.67890",
+    "key": "twitter.12345.67890",
     "mediaSources": null,
     "refreshTarget": null,
     "request": {
@@ -36,7 +36,7 @@ exports[`createDmSegmentValue(chat, segment) jobs from all kinds og segment 1`] 
   {
     "accomplishRequest": [Function],
     "asApplication": false,
-    "key": "twtr.12345.67890",
+    "key": "twitter.12345.67890",
     "mediaSources": [
       {
         "id": "11111",
@@ -77,7 +77,7 @@ exports[`createDmSegmentValue(chat, segment) jobs from all kinds og segment 1`] 
   {
     "accomplishRequest": [Function],
     "asApplication": false,
-    "key": "twtr.12345.67890",
+    "key": "twitter.12345.67890",
     "mediaSources": [
       {
         "id": "22222",
@@ -118,7 +118,7 @@ exports[`createDmSegmentValue(chat, segment) jobs from all kinds og segment 1`] 
   {
     "accomplishRequest": null,
     "asApplication": false,
-    "key": "twtr.12345.67890",
+    "key": "twitter.12345.67890",
     "mediaSources": null,
     "refreshTarget": null,
     "request": {

@@ -65,7 +65,7 @@ test('fetch profile from api', async () => {
     }
   `);
 
-  expect(profile?.typeName()).toBe('IgUserProfile');
+  expect(profile?.typeName()).toBe('InstagramUserProfile');
   expect(profile?.toJSONValue()).toMatchInlineSnapshot(`
     {
       "follower_count": 123,

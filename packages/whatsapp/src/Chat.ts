@@ -1,6 +1,6 @@
 import type { SociablyThread } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler.js';
-import { WHATSAPP, WA } from './constant.js';
+import { WHATSAPP } from './constant.js';
 import WhatsAppAgent from './Agent.js';
 import WhatsAppUser from './User.js';
 
@@ -12,7 +12,7 @@ type WhatsAppChatValue = {
 class WhatsAppChat
   implements SociablyThread, MarshallableInstance<WhatsAppChatValue>
 {
-  static typeName = 'WaChat';
+  static typeName = 'WhatsAppChat';
   static fromUser(agentNumberId: string, contact: WhatsAppUser): WhatsAppChat {
     return new WhatsAppChat(agentNumberId, contact.numberId);
   }
@@ -34,7 +34,7 @@ class WhatsAppChat
   }
 
   get uid(): string {
-    return `${WA}.${this.agentNumberId}.${this.userNumberId}`;
+    return `${WHATSAPP}.${this.agentNumberId}.${this.userNumberId}`;
   }
 
   get agent(): WhatsAppAgent {

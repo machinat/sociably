@@ -53,10 +53,10 @@ test('get asset id', async () => {
   expect(stateRepository.globalState.mock.calls.map((c) => c.args[0]))
     .toMatchInlineSnapshot(`
     [
-      "$tg.foo.12345",
-      "$tg.file.12345",
-      "$tg.foo.12345",
-      "$tg.file.12345",
+      "$telegram.foo.12345",
+      "$telegram.file.12345",
+      "$telegram.foo.12345",
+      "$telegram.file.12345",
     ]
   `);
 
@@ -81,8 +81,8 @@ test('set asset id', async () => {
   expect(stateRepository.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     [
-      "$tg.foo.12345",
-      "$tg.file.12345",
+      "$telegram.foo.12345",
+      "$telegram.file.12345",
     ]
   `);
 
@@ -124,10 +124,10 @@ test('get all assets', async () => {
   expect(stateRepository.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     [
-      "$tg.foo.12345",
-      "$tg.file.12345",
-      "$tg.foo.12345",
-      "$tg.file.12345",
+      "$telegram.foo.12345",
+      "$telegram.file.12345",
+      "$telegram.foo.12345",
+      "$telegram.file.12345",
     ]
   `);
 
@@ -154,10 +154,10 @@ test('remove asset id', async () => {
   expect(stateRepository.globalState.mock.calls.map((call) => call.args[0]))
     .toMatchInlineSnapshot(`
     [
-      "$tg.foo.12345",
-      "$tg.file.12345",
-      "$tg.foo.12345",
-      "$tg.file.12345",
+      "$telegram.foo.12345",
+      "$telegram.file.12345",
+      "$telegram.foo.12345",
+      "$telegram.file.12345",
     ]
   `);
 

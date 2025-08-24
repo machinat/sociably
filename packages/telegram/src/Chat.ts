@@ -1,6 +1,6 @@
 import type { SociablyThread } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler.js';
-import { TELEGRAM, TG } from './constant.js';
+import { TELEGRAM } from './constant.js';
 import ChatProfile from './ChatProfile.js';
 import type { TelegramChatType, RawChat, RawUser } from './types.js';
 
@@ -12,7 +12,7 @@ type TelegramChatValue = {
 class TelegramChat
   implements SociablyThread, MarshallableInstance<TelegramChatValue>
 {
-  static typeName = 'TgChat';
+  static typeName = 'TelegramChat';
 
   static fromJSONValue(value: TelegramChatValue): TelegramChat {
     const { bot, id } = value;
@@ -48,7 +48,7 @@ class TelegramChat
 
   /** Unique id of the chat thread */
   get uid(): string {
-    return `${TG}.${this.botId}.${this.id}`;
+    return `${TELEGRAM}.${this.botId}.${this.id}`;
   }
 
   /** Profile of the chat */

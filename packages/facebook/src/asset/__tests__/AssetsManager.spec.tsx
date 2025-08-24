@@ -472,9 +472,9 @@ describe('assets management', () => {
     expect(stateRepository.globalState.mock.calls.map((call) => call.args[0]))
       .toMatchInlineSnapshot(`
       [
-        "$fb.foo.1234567890",
-        "$fb.attachment.1234567890",
-        "$fb.persona.1234567890",
+        "$facebook.foo.1234567890",
+        "$facebook.attachment.1234567890",
+        "$facebook.persona.1234567890",
       ]
     `);
 
@@ -517,9 +517,9 @@ describe('assets management', () => {
     expect(stateRepository.globalState.mock.calls.map((call) => call.args[0]))
       .toMatchInlineSnapshot(`
       [
-        "$fb.foo.1234567890",
-        "$fb.attachment.1234567890",
-        "$fb.persona.1234567890",
+        "$facebook.foo.1234567890",
+        "$facebook.attachment.1234567890",
+        "$facebook.persona.1234567890",
       ]
     `);
 
@@ -556,9 +556,9 @@ describe('assets management', () => {
     expect(stateRepository.globalState.mock.calls.map((call) => call.args[0]))
       .toMatchInlineSnapshot(`
       [
-        "$fb.foo.1234567890",
-        "$fb.attachment.1234567890",
-        "$fb.persona.1234567890",
+        "$facebook.foo.1234567890",
+        "$facebook.attachment.1234567890",
+        "$facebook.persona.1234567890",
       ]
     `);
 
@@ -588,9 +588,9 @@ describe('assets management', () => {
     expect(stateRepository.globalState.mock.calls.map((call) => call.args[0]))
       .toMatchInlineSnapshot(`
       [
-        "$fb.foo.1234567890",
-        "$fb.attachment.1234567890",
-        "$fb.persona.1234567890",
+        "$facebook.foo.1234567890",
+        "$facebook.attachment.1234567890",
+        "$facebook.persona.1234567890",
       ]
     `);
 

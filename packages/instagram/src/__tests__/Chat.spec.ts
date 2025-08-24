@@ -4,8 +4,8 @@ test('from id', () => {
   const chat = new InstagramChat('12345', { id: '67890' });
 
   expect(chat.platform).toBe('instagram');
-  expect(chat.typeName()).toMatchInlineSnapshot(`"IgChat"`);
-  expect(chat.uid).toMatchInlineSnapshot(`"ig.12345.67890"`);
+  expect(chat.typeName()).toMatchInlineSnapshot(`"InstagramChat"`);
+  expect(chat.uid).toMatchInlineSnapshot(`"instagram.12345.67890"`);
 
   expect(chat.id).toBe('67890');
   expect(chat.type).toBe('user');
@@ -28,8 +28,8 @@ test('from comment', () => {
   });
 
   expect(chat.platform).toBe('instagram');
-  expect(chat.typeName()).toMatchInlineSnapshot(`"IgChat"`);
-  expect(chat.uid).toMatchInlineSnapshot(`"ig.12345._COMMENT_ID_"`);
+  expect(chat.typeName()).toMatchInlineSnapshot(`"InstagramChat"`);
+  expect(chat.uid).toMatchInlineSnapshot(`"instagram.12345._COMMENT_ID_"`);
 
   expect(chat.id).toBe('_COMMENT_ID_');
   expect(chat.type).toBe('comment');

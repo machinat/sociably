@@ -1,7 +1,7 @@
 import type { SociablyThread } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler.js';
 import FacebookPage from './Page.js';
-import { FACEBOOK, FB } from './constant.js';
+import { FACEBOOK } from './constant.js';
 
 type InteractTargetValue = {
   page: string;
@@ -12,7 +12,7 @@ type InteractTargetValue = {
 class FacebookInteractTarget
   implements SociablyThread, MarshallableInstance<InteractTargetValue>
 {
-  static typeName = 'FbInteractTarget';
+  static typeName = 'FacebookInteractTarget';
   static fromJSONValue(val: InteractTargetValue): FacebookInteractTarget {
     const { page, id, type } = val;
     return new FacebookInteractTarget(page, id, type);
@@ -36,7 +36,7 @@ class FacebookInteractTarget
   }
 
   get uid(): string {
-    return `${FB}.${this.pageId}.${this.id}`;
+    return `${FACEBOOK}.${this.pageId}.${this.id}`;
   }
 
   toJSONValue(): InteractTargetValue {

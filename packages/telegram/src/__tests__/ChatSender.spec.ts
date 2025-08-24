@@ -2,7 +2,7 @@ import TelegramChatSender from '../ChatSender.js';
 import TelegramChatProfile from '../ChatProfile.js';
 
 test('marshallable type meta', () => {
-  expect(TelegramChatSender.typeName).toBe('TgChatSender');
+  expect(TelegramChatSender.typeName).toBe('TelegramChatSender');
   expect(
     TelegramChatSender.fromJSONValue({ type: 'channel', id: 12345 }),
   ).toEqual(new TelegramChatSender({ type: 'channel', id: 12345 }));
@@ -22,9 +22,9 @@ test('supergroup sender', () => {
   expect(sender.data).toEqual(data);
   expect(sender.profile).toStrictEqual(new TelegramChatProfile(data));
 
-  expect(sender.uid).toMatchInlineSnapshot(`"tg.12345"`);
+  expect(sender.uid).toMatchInlineSnapshot(`"telegram.12345"`);
 
-  expect(sender.typeName()).toBe('TgChatSender');
+  expect(sender.typeName()).toBe('TelegramChatSender');
   expect(sender.toJSONValue()).toMatchInlineSnapshot(`
     {
       "id": 12345,

@@ -213,11 +213,11 @@ describe('assets management', () => {
     expect(stateRepository.globalState).toHaveBeenCalledTimes(2);
     expect(stateRepository.globalState.mock.calls.map((call) => call.args[0]))
       .toMatchInlineSnapshot(`
-          [
-            "$wa.foo.1111111111",
-            "$wa.media.1111111111",
-          ]
-      `);
+      [
+        "$whatsapp.foo.1111111111",
+        "$whatsapp.media.1111111111",
+      ]
+    `);
 
     expect(state.get).toHaveBeenCalledTimes(2);
     expect(state.get).toHaveBeenNthCalledWith(1, 'bar');
@@ -248,11 +248,11 @@ describe('assets management', () => {
     expect(stateRepository.globalState).toHaveBeenCalledTimes(2);
     expect(stateRepository.globalState.mock.calls.map((call) => call.args[0]))
       .toMatchInlineSnapshot(`
-          [
-            "$wa.foo.1111111111",
-            "$wa.media.1111111111",
-          ]
-      `);
+      [
+        "$whatsapp.foo.1111111111",
+        "$whatsapp.media.1111111111",
+      ]
+    `);
 
     expect(state.set).toHaveBeenCalledTimes(2);
     expect(state.set).toHaveBeenNthCalledWith(1, 'bar', 'baz');
@@ -277,11 +277,11 @@ describe('assets management', () => {
     expect(stateRepository.globalState).toHaveBeenCalledTimes(2);
     expect(stateRepository.globalState.mock.calls.map((call) => call.args[0]))
       .toMatchInlineSnapshot(`
-          [
-            "$wa.foo.1111111111",
-            "$wa.media.1111111111",
-          ]
-      `);
+      [
+        "$whatsapp.foo.1111111111",
+        "$whatsapp.media.1111111111",
+      ]
+    `);
 
     expect(state.getAll).toHaveBeenCalledTimes(2);
 
@@ -308,11 +308,11 @@ describe('assets management', () => {
     expect(stateRepository.globalState).toHaveBeenCalledTimes(2);
     expect(stateRepository.globalState.mock.calls.map((call) => call.args[0]))
       .toMatchInlineSnapshot(`
-          [
-            "$wa.foo.1111111111",
-            "$wa.media.1111111111",
-          ]
-      `);
+      [
+        "$whatsapp.foo.1111111111",
+        "$whatsapp.media.1111111111",
+      ]
+    `);
 
     expect(state.delete).toHaveBeenCalledTimes(2);
     expect(state.delete).toHaveBeenNthCalledWith(1, 'bar');

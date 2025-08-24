@@ -4,8 +4,8 @@ test('attributes', () => {
   const agent = new InstagramAgent('12345', 'jojodoe123');
 
   expect(agent.platform).toBe('instagram');
-  expect(agent.typeName()).toMatchInlineSnapshot(`"IgAgent"`);
-  expect(agent.uid).toMatchInlineSnapshot(`"ig.12345"`);
+  expect(agent.typeName()).toMatchInlineSnapshot(`"InstagramAgent"`);
+  expect(agent.uid).toMatchInlineSnapshot(`"instagram.12345"`);
 
   expect(agent.id).toBe('12345');
   expect(agent.username).toBe('jojodoe123');

@@ -5,9 +5,9 @@ test('constructing', () => {
   const chat = new WhatsAppChat('1234567890', '9876543210');
 
   expect(chat.platform).toBe('whatsapp');
-  expect(chat.typeName()).toBe('WaChat');
+  expect(chat.typeName()).toBe('WhatsAppChat');
 
-  expect(chat.uid).toMatchInlineSnapshot(`"wa.1234567890.9876543210"`);
+  expect(chat.uid).toMatchInlineSnapshot(`"whatsapp.1234567890.9876543210"`);
 
   expect(chat.agentNumberId).toBe('1234567890');
   expect(chat.userNumberId).toBe('9876543210');

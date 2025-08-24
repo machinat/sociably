@@ -48,7 +48,7 @@ describe('createChatJob(thread, segments)', () => {
         {
           "agentId": 12345,
           "files": undefined,
-          "key": "tg.12345.67890",
+          "key": "telegram.12345.67890",
           "method": "sendMesage",
           "params": {
             "chat_id": 67890,
@@ -74,7 +74,7 @@ describe('createChatJob(thread, segments)', () => {
               },
             },
           ],
-          "key": "tg.12345.67890",
+          "key": "telegram.12345.67890",
           "method": "sendPhoto",
           "params": {
             "caption": "bar",
@@ -85,7 +85,7 @@ describe('createChatJob(thread, segments)', () => {
         {
           "agentId": 12345,
           "files": [],
-          "key": "tg.12345.67890",
+          "key": "telegram.12345.67890",
           "method": "sendMessage",
           "params": {
             "chat_id": 67890,

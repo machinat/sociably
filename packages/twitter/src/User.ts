@@ -1,7 +1,7 @@
 import type { SociablyUser, SociablyChannel } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler.js';
 import UserProfile from './UserProfile.js';
-import { TWITTER, TWTR } from './constant.js';
+import { TWITTER } from './constant.js';
 import type { RawUser } from './types.js';
 
 type SerializedUser = {
@@ -14,7 +14,7 @@ export default class TwitterUser
     SociablyChannel,
     MarshallableInstance<SerializedUser>
 {
-  static typeName = 'TwtrUser';
+  static typeName = 'TwitterUser';
   static fromJSONValue({ id }: SerializedUser): TwitterUser {
     return new TwitterUser(id);
   }
@@ -32,7 +32,7 @@ export default class TwitterUser
   }
 
   get uid(): string {
-    return `${TWTR}.${this.id}`;
+    return `${TWITTER}.${this.id}`;
   }
 
   get profile(): null | UserProfile {

@@ -15,7 +15,7 @@ import {
 import BotP from '../Bot.js';
 import WhatsAppAgent from '../Agent.js';
 import { ConfigsI } from '../interface.js';
-import { WA } from '../constant.js';
+import { WHATSAPP } from '../constant.js';
 
 const MEDIA = 'media';
 const DEFAULT_SUBSCRIPTION_FIELDS = ['messages'];
@@ -179,7 +179,7 @@ export class WhatsAppAssetsManager extends MetaAssetsManager<
     bot: BotP,
     defaultSettings: DefaultSettings = {},
   ) {
-    super(stateRepository, bot, WA);
+    super(stateRepository, bot, WHATSAPP);
     this.defaultSettings = {
       ...defaultSettings,
       subscriptionFields:
@@ -390,8 +390,10 @@ export class WhatsAppAssetsManager extends MetaAssetsManager<
 
     const contentLength =
       contentLengthInput ??
-      (typeof data === 'string' || Buffer.isBuffer(data)
+      (typeof data === 'string'
         ? Buffer.from(data).length
+        : Buffer.isBuffer(data)
+        ? data.length
         : undefined);
     if (contentLength === undefined) {
       throw new Error(

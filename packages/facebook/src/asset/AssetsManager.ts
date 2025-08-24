@@ -13,7 +13,7 @@ import {
 import snakecaseKeys from 'snakecase-keys';
 import BotP from '../Bot.js';
 import FacebookPage from '../Page.js';
-import { PATH_PERSONAS, FB } from '../constant.js';
+import { PATH_PERSONAS, FACEBOOK } from '../constant.js';
 import { ConfigsI } from '../interface.js';
 
 const PERSONA = 'persona';
@@ -39,7 +39,7 @@ export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> 
     bot: BotP,
     defaultSettings: DefaultSettings = {},
   ) {
-    super(stateManager, bot, FB);
+    super(stateManager, bot, FACEBOOK);
     this.defaultSettings = defaultSettings;
   }
 

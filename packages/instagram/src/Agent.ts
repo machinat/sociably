@@ -1,6 +1,6 @@
 import type { MetaApiChannel } from '@sociably/meta-api';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler.js';
-import { INSTAGRAM, IG } from './constant.js';
+import { INSTAGRAM } from './constant.js';
 
 type InstagramAgentValue = {
   id: string;
@@ -9,7 +9,7 @@ type InstagramAgentValue = {
 class InstagramAgent
   implements MetaApiChannel, MarshallableInstance<InstagramAgentValue>
 {
-  static typeName = 'IgAgent';
+  static typeName = 'InstagramAgent';
   static fromJSONValue({ id }: InstagramAgentValue): InstagramAgent {
     return new InstagramAgent(id);
   }
@@ -25,7 +25,7 @@ class InstagramAgent
   }
 
   get uid(): string {
-    return `${IG}.${this.id}`;
+    return `${INSTAGRAM}.${this.id}`;
   }
 
   toJSONValue(): InstagramAgentValue {

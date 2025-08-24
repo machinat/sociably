@@ -558,8 +558,8 @@ describe('assets management', () => {
     expect(stateRepository.globalState.mock.calls.map((call) => call.args[0]))
       .toMatchInlineSnapshot(`
       [
-        "$ig.foo.__PAGE_ID__",
-        "$ig.attachment.__PAGE_ID__",
+        "$instagram.foo.__PAGE_ID__",
+        "$instagram.attachment.__PAGE_ID__",
       ]
     `);
 
@@ -599,8 +599,8 @@ describe('assets management', () => {
     expect(stateRepository.globalState.mock.calls.map((call) => call.args[0]))
       .toMatchInlineSnapshot(`
       [
-        "$ig.foo.__PAGE_ID__",
-        "$ig.attachment.__PAGE_ID__",
+        "$instagram.foo.__PAGE_ID__",
+        "$instagram.attachment.__PAGE_ID__",
       ]
     `);
 
@@ -636,8 +636,8 @@ describe('assets management', () => {
     expect(stateRepository.globalState.mock.calls.map((call) => call.args[0]))
       .toMatchInlineSnapshot(`
       [
-        "$ig.foo.__PAGE_ID__",
-        "$ig.attachment.__PAGE_ID__",
+        "$instagram.foo.__PAGE_ID__",
+        "$instagram.attachment.__PAGE_ID__",
       ]
     `);
 
@@ -673,8 +673,8 @@ describe('assets management', () => {
     expect(stateRepository.globalState.mock.calls.map((call) => call.args[0]))
       .toMatchInlineSnapshot(`
       [
-        "$ig.foo.__PAGE_ID__",
-        "$ig.attachment.__PAGE_ID__",
+        "$instagram.foo.__PAGE_ID__",
+        "$instagram.attachment.__PAGE_ID__",
       ]
     `);
 

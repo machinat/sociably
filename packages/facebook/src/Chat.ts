@@ -1,7 +1,7 @@
 import { MessengerChat } from '@sociably/messenger';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler.js';
 import FacebookPage from './Page.js';
-import { FACEBOOK, FB } from './constant.js';
+import { FACEBOOK } from './constant.js';
 import type { MessagingTarget } from './types.js';
 
 type ChatValue = {
@@ -14,7 +14,7 @@ type ChatType = 'user' | 'user_ref' | 'comment' | 'post';
 class FacebookChat<Type extends ChatType = ChatType>
   implements MessengerChat, MarshallableInstance<ChatValue>
 {
-  static typeName = 'FbChat';
+  static typeName = 'FacebookChat';
   static fromJSONValue<Type extends ChatType = ChatType>(
     value: ChatValue,
   ): FacebookChat<Type> {
@@ -65,7 +65,7 @@ class FacebookChat<Type extends ChatType = ChatType>
   }
 
   get uid(): string {
-    return `${FB}.${this.pageId}.${this.id}`;
+    return `${FACEBOOK}.${this.pageId}.${this.id}`;
   }
 
   toJSONValue(): ChatValue {
