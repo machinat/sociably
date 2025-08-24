@@ -18,7 +18,7 @@ const chat = new WhatsAppChat('9876543210', '1234567890');
 const agent = new WhatsAppAgent('9876543210');
 const plainJob = {
   request: { method: 'POST', url: 'foo' },
-  channel: agent,
+  agent,
 };
 
 it('do nothing when job has no assetTag', async () => {

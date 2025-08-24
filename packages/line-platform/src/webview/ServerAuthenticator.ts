@@ -249,19 +249,19 @@ export class LineServerAuthenticator
     try {
       if (chat.type === 'user') {
         await this.bot.requestApi({
-          channel: chat.channel,
+          agent: chat.channel,
           method: 'GET',
           url: `v2/bot/profile/${chat.id}`,
         });
       } else if (chat.type === 'group') {
         await this.bot.requestApi({
-          channel: chat.channel,
+          agent: chat.channel,
           method: 'GET',
           url: `v2/bot/group/${chat.id}/member/${userId}`,
         });
       } else if (chat.type === 'room') {
         await this.bot.requestApi({
-          channel: chat.channel,
+          agent: chat.channel,
           method: 'GET',
           url: `v2/bot/room/${chat.id}/member/${userId}`,
         });

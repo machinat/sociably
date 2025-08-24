@@ -69,7 +69,7 @@ test('.checkAuthData(data)', () => {
     ok: true,
     contextDetails: {
       agentUsername: 'jojodoe123',
-      channel: new InstagramAgent('1234567890', 'jojodoe123'),
+      agent: new InstagramAgent('1234567890', 'jojodoe123'),
       thread: new InstagramChat('1234567890', { id: '9876543210' }),
       user: new InstagramUser('1234567890', '9876543210'),
       userProfile: null,
@@ -96,7 +96,7 @@ test('.checkAuthData(data)', () => {
     ok: true,
     contextDetails: {
       agentUsername: 'janedoe123',
-      channel: new InstagramAgent('7777777777', 'janedoe123'),
+      agent: new InstagramAgent('7777777777', 'janedoe123'),
       thread: new InstagramChat('7777777777', { id: '8888888888' }),
       user: new InstagramUser('7777777777', '8888888888'),
       userProfile: new UserProfile(profileData),

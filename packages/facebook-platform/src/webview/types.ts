@@ -20,7 +20,7 @@ export type FacebookAuthData = {
 export type FacebookAuthContext = {
   platform: typeof FACEBOOK;
   thread: FacebookChat;
-  channel: FacebookPage;
+  agent: FacebookPage;
   user: null | FacebookUser;
   userProfile: null | UserProfile;
   pageId: string;

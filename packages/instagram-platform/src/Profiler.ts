@@ -42,7 +42,7 @@ export class InstagramProfiler
     const userId = typeof user === 'string' ? user : user.id;
 
     const rawProfile = await this.bot.requestApi<RawUserProfile>({
-      channel: agent,
+      agent,
       method: 'GET',
       url: userId,
       params: { fields: this.profileFieldsStr },

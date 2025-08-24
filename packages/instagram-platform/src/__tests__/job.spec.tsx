@@ -27,7 +27,7 @@ describe('createPostJobs', () => {
     const jobs = createPostJobs(userAccessToken)(agent, segments);
     expect(jobs).toEqual([
       {
-        channel: agent,
+        agent,
         key: agent.uid,
         accessToken: '_USER_ACCESS_TOKEN_',
         request: {
@@ -42,7 +42,7 @@ describe('createPostJobs', () => {
         registerResultKey: expect.any(String),
       },
       {
-        channel: agent,
+        agent,
         key: agent.uid,
         accessToken: '_USER_ACCESS_TOKEN_',
         request: {
@@ -113,7 +113,7 @@ describe('createPostJobs', () => {
     const jobs = createPostJobs(userAccessToken)(agent, segments);
     expect(jobs).toEqual([
       {
-        channel: agent,
+        agent,
         key: agent.uid,
         accessToken: '_USER_ACCESS_TOKEN_',
         request: {
@@ -127,7 +127,7 @@ describe('createPostJobs', () => {
         registerResultKey: expect.any(String),
       },
       {
-        channel: agent,
+        agent,
         key: agent.uid,
         accessToken: '_USER_ACCESS_TOKEN_',
         request: {
@@ -141,7 +141,7 @@ describe('createPostJobs', () => {
         registerResultKey: expect.any(String),
       },
       {
-        channel: agent,
+        agent,
         key: agent.uid,
         accessToken: '_USER_ACCESS_TOKEN_',
         request: {
@@ -159,7 +159,7 @@ describe('createPostJobs', () => {
         },
       },
       {
-        channel: agent,
+        agent,
         key: agent.uid,
         accessToken: '_USER_ACCESS_TOKEN_',
         request: {

@@ -1,4 +1,4 @@
-import type { SociablyChannel } from '@sociably/core';
+import type { SociablyAgent } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler.js';
 import { WHATSAPP } from './constant.js';
 
@@ -7,7 +7,7 @@ type WhatsAppAgentValue = {
 };
 
 class WhatsAppAgent
-  implements SociablyChannel, MarshallableInstance<WhatsAppAgentValue>
+  implements SociablyAgent, MarshallableInstance<WhatsAppAgentValue>
 {
   static typeName = 'WhatsAppAgent';
 
@@ -18,7 +18,7 @@ class WhatsAppAgent
   id: string;
 
   readonly platform = WHATSAPP;
-  readonly $$typeofChannel = true;
+  readonly $$typeofAgent = true;
 
   constructor(id: string) {
     this.id = id;

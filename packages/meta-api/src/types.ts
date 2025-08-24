@@ -1,6 +1,6 @@
 import { Readable } from 'stream';
 import type {
-  SociablyChannel,
+  SociablyAgent,
   EventContext,
   SociablyEvent,
   AnySociablyBot,
@@ -29,7 +29,7 @@ export type MetaApiUploadingFile = {
 
 export type MetaApiJob = {
   request: MetaApiJobRequest;
-  channel?: SociablyChannel;
+  agent?: SociablyAgent;
   asApp?: boolean;
   accessToken?: string;
   key?: string;
@@ -92,13 +92,13 @@ export type ListeningPlatformOptions<Context extends MetaApiEventContext> = {
   popEvent: (ctx: Context) => Promise<null>;
 };
 
-export type MetaApiChannel = SociablyChannel & {
+export type MetaApiAgent = SociablyAgent & {
   id: string;
 };
 
-export type MetaRequestApiOptions<Channel extends MetaApiChannel> = {
-  /** The channel to execute the operation with */
-  channel?: string | Channel;
+export type MetaRequestApiOptions<Agent extends MetaApiAgent> = {
+  /** The agent to execute the operation with */
+  agent?: string | Agent;
   /** HTTP method */
   method?: string;
   /** API request URL relative to https://graph.facebook.com/{version}/ */
@@ -111,9 +111,9 @@ export type MetaRequestApiOptions<Channel extends MetaApiChannel> = {
   accessToken?: string;
 };
 
-export type MetaApiBot<Channel extends MetaApiChannel> = {
+export type MetaApiBot<Agent extends MetaApiAgent> = {
   requestApi<ResBody extends MetaApiResponseBody>(
-    options: MetaRequestApiOptions<Channel>,
+    options: MetaRequestApiOptions<Agent>,
   ): Promise<ResBody>;
 };
 

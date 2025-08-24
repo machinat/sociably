@@ -1,10 +1,10 @@
 import { DispatchMiddleware, SociablyThread } from '@sociably/core';
 import { DispatchError, DispatchFrame } from '@sociably/core/engine';
-import { MetaApiJob, MetaApiResult, MetaApiChannel } from '@sociably/meta-api';
+import { MetaApiJob, MetaApiResult, MetaApiAgent } from '@sociably/meta-api';
 import MessengerAssetsManager from './AssetsManager.js';
 
 const updateAssetsFromSuccessfulJobs = async (
-  manager: MessengerAssetsManager<MetaApiChannel>,
+  manager: MessengerAssetsManager<MetaApiAgent>,
   jobs: MetaApiJob[],
   results: (void | MetaApiResult)[],
 ) => {
@@ -13,13 +13,13 @@ const updateAssetsFromSuccessfulJobs = async (
   for (let i = 0; i < jobs.length; i += 1) {
     const result = results[i];
     if (result) {
-      const { channel, assetTag } = jobs[i];
+      const { agent, assetTag } = jobs[i];
       const { body } = result;
 
-      if (channel && assetTag && body.attachment_id) {
+      if (agent && assetTag && body.attachment_id) {
         updatingAssets.push(
           manager.saveAttachment(
-            (channel as MetaApiChannel).id,
+            (agent as MetaApiAgent).id,
             assetTag,
             body.attachment_id,
           ),
@@ -37,7 +37,7 @@ const updateAssetsFromSuccessfulJobs = async (
  */
 const saveReusableAttachments =
   (
-    manager: MessengerAssetsManager<MetaApiChannel>,
+    manager: MessengerAssetsManager<MetaApiAgent>,
   ): DispatchMiddleware<
     MetaApiJob,
     DispatchFrame<SociablyThread, MetaApiJob>,

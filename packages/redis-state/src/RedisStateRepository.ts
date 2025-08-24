@@ -1,9 +1,9 @@
 import { RedisClient } from 'redis';
 import thenifiedly from 'thenifiedly';
 import type {
-  SociablyChannel,
-  SociablyUser,
+  SociablyAgent,
   SociablyThread,
+  SociablyUser,
 } from '@sociably/core';
 import { serviceProviderClass } from '@sociably/core/service';
 import BaseMarshaler from '@sociably/core/base/Marshaler.js';
@@ -144,13 +144,13 @@ export class RedisStateRepository implements BaseStateRepository {
     };
   }
 
-  channelState(channel: string | SociablyChannel): RedisStateAccessor {
-    const channelUid = typeof channel === 'string' ? channel : channel.uid;
+  agentState(agent: string | SociablyAgent): RedisStateAccessor {
+    const agentUid = typeof agent === 'string' ? agent : agent.uid;
 
     return new RedisStateAccessor(
       this._callClientFn,
       this._marshaler,
-      `$channel:${channelUid}`,
+      `$agent:${agentUid}`,
     );
   }
 

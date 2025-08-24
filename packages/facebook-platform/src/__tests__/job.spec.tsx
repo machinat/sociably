@@ -44,8 +44,8 @@ describe('createPostJobs()', () => {
     ).toMatchInlineSnapshot(`
       [
         {
-          "channel": FacebookPage {
-            "$$typeofChannel": true,
+          "agent": FacebookPage {
+            "$$typeofAgent": true,
             "id": "1234567890",
             "platform": "facebook",
           },
@@ -80,8 +80,8 @@ describe('createPostJobs()', () => {
     ).toMatchInlineSnapshot(`
       [
         {
-          "channel": FacebookPage {
-            "$$typeofChannel": true,
+          "agent": FacebookPage {
+            "$$typeofAgent": true,
             "id": "1234567890",
             "platform": "facebook",
           },
@@ -122,8 +122,8 @@ describe('createPostJobs()', () => {
     ).toMatchInlineSnapshot(`
       [
         {
-          "channel": FacebookPage {
-            "$$typeofChannel": true,
+          "agent": FacebookPage {
+            "$$typeofAgent": true,
             "id": "1234567890",
             "platform": "facebook",
           },
@@ -173,8 +173,8 @@ describe('createPostJobs()', () => {
     ).toMatchInlineSnapshot(`
       [
         {
-          "channel": FacebookPage {
-            "$$typeofChannel": true,
+          "agent": FacebookPage {
+            "$$typeofAgent": true,
             "id": "1234567890",
             "platform": "facebook",
           },
@@ -222,8 +222,8 @@ describe('createPostJobs()', () => {
     ).toMatchInlineSnapshot(`
       [
         {
-          "channel": FacebookPage {
-            "$$typeofChannel": true,
+          "agent": FacebookPage {
+            "$$typeofAgent": true,
             "id": "1234567890",
             "platform": "facebook",
           },
@@ -277,8 +277,8 @@ describe('createPostJobs()', () => {
     expect(jobs).toMatchInlineSnapshot(`
       [
         {
-          "channel": FacebookPage {
-            "$$typeofChannel": true,
+          "agent": FacebookPage {
+            "$$typeofAgent": true,
             "id": "1234567890",
             "platform": "facebook",
           },
@@ -295,8 +295,8 @@ describe('createPostJobs()', () => {
           },
         },
         {
-          "channel": FacebookPage {
-            "$$typeofChannel": true,
+          "agent": FacebookPage {
+            "$$typeofAgent": true,
             "id": "1234567890",
             "platform": "facebook",
           },
@@ -321,8 +321,8 @@ describe('createPostJobs()', () => {
           },
         },
         {
-          "channel": FacebookPage {
-            "$$typeofChannel": true,
+          "agent": FacebookPage {
+            "$$typeofAgent": true,
             "id": "1234567890",
             "platform": "facebook",
           },
@@ -404,8 +404,8 @@ describe('createPostJobs()', () => {
     ).toMatchInlineSnapshot(`
       [
         {
-          "channel": FacebookPage {
-            "$$typeofChannel": true,
+          "agent": FacebookPage {
+            "$$typeofAgent": true,
             "id": "1234567890",
             "platform": "facebook",
           },
@@ -422,8 +422,8 @@ describe('createPostJobs()', () => {
           },
         },
         {
-          "channel": FacebookPage {
-            "$$typeofChannel": true,
+          "agent": FacebookPage {
+            "$$typeofAgent": true,
             "id": "1234567890",
             "platform": "facebook",
           },
@@ -511,8 +511,8 @@ describe('createInteractJobs()', () => {
     ).toMatchInlineSnapshot(`
       [
         {
-          "channel": FacebookPage {
-            "$$typeofChannel": true,
+          "agent": FacebookPage {
+            "$$typeofAgent": true,
             "id": "_PAGE_ID_",
             "platform": "facebook",
           },
@@ -549,8 +549,8 @@ describe('createInteractJobs()', () => {
     ).toMatchInlineSnapshot(`
       [
         {
-          "channel": FacebookPage {
-            "$$typeofChannel": true,
+          "agent": FacebookPage {
+            "$$typeofAgent": true,
             "id": "_PAGE_ID_",
             "platform": "facebook",
           },
@@ -592,8 +592,8 @@ describe('createInteractJobs()', () => {
     expect(jobs).toMatchInlineSnapshot(`
       [
         {
-          "channel": FacebookPage {
-            "$$typeofChannel": true,
+          "agent": FacebookPage {
+            "$$typeofAgent": true,
             "id": "_PAGE_ID_",
             "platform": "facebook",
           },
@@ -615,8 +615,8 @@ describe('createInteractJobs()', () => {
           },
         },
         {
-          "channel": FacebookPage {
-            "$$typeofChannel": true,
+          "agent": FacebookPage {
+            "$$typeofAgent": true,
             "id": "_PAGE_ID_",
             "platform": "facebook",
           },
@@ -693,8 +693,8 @@ describe('createInteractJobs()', () => {
     expect(jobs).toMatchInlineSnapshot(`
       [
         {
-          "channel": FacebookPage {
-            "$$typeofChannel": true,
+          "agent": FacebookPage {
+            "$$typeofAgent": true,
             "id": "_PAGE_ID_",
             "platform": "facebook",
           },
@@ -709,8 +709,8 @@ describe('createInteractJobs()', () => {
           },
         },
         {
-          "channel": FacebookPage {
-            "$$typeofChannel": true,
+          "agent": FacebookPage {
+            "$$typeofAgent": true,
             "id": "_PAGE_ID_",
             "platform": "facebook",
           },
@@ -730,8 +730,8 @@ describe('createInteractJobs()', () => {
           },
         },
         {
-          "channel": FacebookPage {
-            "$$typeofChannel": true,
+          "agent": FacebookPage {
+            "$$typeofAgent": true,
             "id": "_PAGE_ID_",
             "platform": "facebook",
           },
@@ -746,8 +746,8 @@ describe('createInteractJobs()', () => {
           },
         },
         {
-          "channel": FacebookPage {
-            "$$typeofChannel": true,
+          "agent": FacebookPage {
+            "$$typeofAgent": true,
             "id": "_PAGE_ID_",
             "platform": "facebook",
           },

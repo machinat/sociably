@@ -10,8 +10,8 @@ export type PostgresStateConfigs = {
   schemaName?: string;
   /** The table used to store global state data */
   globalStateTableName?: string;
-  /** The table used to store channel state data */
-  channelStateTableName?: string;
+  /** The table used to store agent state data */
+  agentStateTableName?: string;
   /** The table used to store thread state data */
   threadStateTableName?: string;
   /** The table used to store user state data */
@@ -20,7 +20,7 @@ export type PostgresStateConfigs = {
   connectOptions: PoolConfig;
 };
 
-export type SociablyStateType = 'channel' | 'global' | 'thread' | 'user';
+export type SociablyStateType = 'agent' | 'global' | 'thread' | 'user';
 
 export type BasicStateEntity = {
   [FIELD_STATE_ID]: string;

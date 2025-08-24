@@ -49,8 +49,8 @@ export type WebSocketEvent<
 > = Value & {
   platform: 'websokcet';
   thread: WebSocketConnection;
-  // TODO: channel field is left for potential namespace feature
-  channel: null;
+  // TODO: agent field is left for potential namespace feature
+  agent: null;
   user: User;
 };
 

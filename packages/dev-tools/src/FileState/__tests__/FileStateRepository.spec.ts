@@ -7,7 +7,7 @@ const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
 
 const initialContent = `
 {
-  "channelStates": {
+  "agentStates": {
     "test.boo": {
       "key1": "boo",
       "key2": true
@@ -33,8 +33,8 @@ const initialContent = `
   }
 }`;
 
-const booChannel = {
-  $$typeofChannel: true as const,
+const booAgent = {
+  $$typeofAgent: true as const,
   platform: 'test',
   uid: 'test.boo',
 };
@@ -61,10 +61,10 @@ describe('.get(key)', () => {
 
     const repository = new FileStateRepository({ path: tmpPath });
 
-    const channelState = repository.channelState(booChannel);
-    await expect(channelState.get('key1')).resolves.toBe('boo');
-    await expect(channelState.get('key2')).resolves.toBe(true);
-    await expect(channelState.get('key3')).resolves.toBe(undefined);
+    const agentState = repository.agentState(booAgent);
+    await expect(agentState.get('key1')).resolves.toBe('boo');
+    await expect(agentState.get('key2')).resolves.toBe(true);
+    await expect(agentState.get('key3')).resolves.toBe(undefined);
 
     const fooThreadState = repository.threadState(fooThread);
     await expect(fooThreadState.get('key1')).resolves.toBe('foo');
@@ -106,7 +106,7 @@ describe('.getAll()', () => {
 
     const repository = new FileStateRepository({ path: tmpPath });
 
-    await expect(repository.channelState(booChannel).getAll()).resolves
+    await expect(repository.agentState(booAgent).getAll()).resolves
       .toMatchInlineSnapshot(`
                       Map {
                         "key1" => "boo",
@@ -173,7 +173,7 @@ describe('.getAllStartWithKey(prefix)', () => {
     const repository = new FileStateRepository({ path: tmpPath });
 
     await expect(
-      repository.channelState(booChannel).getAllStartWithKey('key'),
+      repository.agentState(booAgent).getAllStartWithKey('key'),
     ).resolves.toEqual(
       new Map<string, unknown>([
         ['key1', 'boo'],
@@ -213,7 +213,7 @@ describe('.keys()', () => {
     fs.writeFileSync(tmpPath, initialContent);
     const repository = new FileStateRepository({ path: tmpPath });
 
-    await expect(repository.channelState(booChannel).keys()).resolves.toEqual([
+    await expect(repository.agentState(booAgent).keys()).resolves.toEqual([
       'key1',
       'key2',
     ]);
@@ -257,9 +257,9 @@ describe('.set()', () => {
 
     const repository = new FileStateRepository({ path: tmpPath });
 
-    const booChannelState = repository.channelState(booChannel);
-    await expect(booChannelState.set('key1', ['bar'])).resolves.toBe(true);
-    await expect(booChannelState.get('key1')).resolves.toEqual(['bar']);
+    const booAgentState = repository.agentState(booAgent);
+    await expect(booAgentState.set('key1', ['bar'])).resolves.toBe(true);
+    await expect(booAgentState.get('key1')).resolves.toEqual(['bar']);
 
     const fooThreadState = repository.threadState(fooThread);
     await expect(fooThreadState.set('key1', 'bar')).resolves.toBe(true);
@@ -279,7 +279,7 @@ describe('.set()', () => {
     await delay(50);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
       {
-        "channelStates": {
+        "agentStates": {
           "test.boo": {
             "key1": [
               "bar",
@@ -365,14 +365,14 @@ describe('.delete()', () => {
     await expect(repository.userState(barUser).delete('key1')).resolves.toBe(
       true,
     );
-    await expect(
-      repository.channelState(booChannel).delete('key3'),
-    ).resolves.toBe(false);
+    await expect(repository.agentState(booAgent).delete('key3')).resolves.toBe(
+      false,
+    );
 
     await delay(50);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
       {
-        "channelStates": {
+        "agentStates": {
           "test.boo": {
             "key1": "boo",
             "key2": true,
@@ -425,10 +425,10 @@ describe('.clear()', () => {
 
     const repository = new FileStateRepository({ path: tmpPath });
 
-    const booChannelState = repository.channelState(booChannel);
-    await expect(booChannelState.clear()).resolves.toBe(2);
-    await expect(booChannelState.get('key1')).resolves.toBe(undefined);
-    await expect(booChannelState.get('key2')).resolves.toBe(undefined);
+    const booAgentState = repository.agentState(booAgent);
+    await expect(booAgentState.clear()).resolves.toBe(2);
+    await expect(booAgentState.get('key1')).resolves.toBe(undefined);
+    await expect(booAgentState.get('key2')).resolves.toBe(undefined);
 
     const fooThreadState = repository.threadState(fooThread);
     await expect(fooThreadState.clear()).resolves.toBe(2);
@@ -443,7 +443,7 @@ describe('.clear()', () => {
     await delay(50);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
       {
-        "channelStates": {},
+        "agentStates": {},
         "globalStates": {
           "baz": {
             "key1": {

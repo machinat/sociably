@@ -45,8 +45,8 @@ test('fetch profile from api', async () => {
   expect(bot.requestApi).toHaveReturnedTimes(1);
   expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
     {
-      "channel": FacebookPage {
-        "$$typeofChannel": true,
+      "agent": FacebookPage {
+        "$$typeofAgent": true,
         "id": "1234567890",
         "platform": "facebook",
       },
@@ -100,8 +100,8 @@ it('query additional optionalProfileFields if given', async () => {
   expect(bot.requestApi).toHaveReturnedTimes(1);
   expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
     {
-      "channel": FacebookPage {
-        "$$typeofChannel": true,
+      "agent": FacebookPage {
+        "$$typeofAgent": true,
         "id": "1234567890",
         "platform": "facebook",
       },

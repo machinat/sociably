@@ -1,7 +1,7 @@
 import deepEqual from 'fast-deep-equal';
 import { SociablyNode } from '@sociably/core';
 import { formatNode } from '@sociably/core/utils';
-import { MetaAssetsManager, MetaApiChannel } from '@sociably/meta-api';
+import { MetaAssetsManager, MetaApiAgent } from '@sociably/meta-api';
 import snakecaseKeys from 'snakecase-keys';
 import { MESSENGER_PAGE_SUBSCRIPTION_FIELDS } from '../constant.js';
 import {
@@ -34,22 +34,22 @@ const MESSENGER_PROFILE_FIELDS_COMPARATERS: Record<string, (a, b) => boolean> =
  * @category Provider
  */
 export class MessengerAssetsManager<
-  Channel extends MetaApiChannel,
-> extends MetaAssetsManager<Channel, MessengerBot<Channel>> {
+  Agent extends MetaApiAgent,
+> extends MetaAssetsManager<Agent, MessengerBot<Agent>> {
   /**
    * Set app subscription of a page. Check
    * https://developers.facebook.com/docs/graph-api/reference/page/subscribed_apps
    * for references.
    */
   async setSubscribedApp(
-    channel: string | Channel,
+    agent: string | Agent,
     {
       fields = MESSENGER_PAGE_SUBSCRIPTION_FIELDS,
       accessToken,
     }: SetSubscribedAppOptions,
   ): Promise<void> {
     await this.bot.requestApi({
-      channel,
+      agent,
       accessToken,
       method: 'POST',
       url: 'me/subscribed_apps',
@@ -65,11 +65,11 @@ export class MessengerAssetsManager<
    * for references.
    */
   async deleteSubscribedApp(
-    channel: string | Channel,
+    agent: string | Agent,
     { accessToken }: { accessToken?: string } = {},
   ): Promise<void> {
     await this.bot.requestApi({
-      channel,
+      agent,
       accessToken,
       method: 'DELETE',
       url: 'me/subscribed_apps',
@@ -82,7 +82,7 @@ export class MessengerAssetsManager<
    * for references.
    */
   async setMessengerProfile(
-    channel: string | Channel,
+    agent: string | Agent,
     { platform, accessToken, ...profileData }: SetMessengerProfileOptions,
   ): Promise<void> {
     const newSettings = snakecaseKeys(profileData);
@@ -90,7 +90,7 @@ export class MessengerAssetsManager<
     const {
       data: [currentSettings = {}],
     } = await this.bot.requestApi({
-      channel,
+      agent,
       accessToken,
       method: 'GET',
       url: 'me/messenger_profile',
@@ -118,7 +118,7 @@ export class MessengerAssetsManager<
 
     if (deletedKeys.length > 0) {
       await this.bot.requestApi({
-        channel,
+        agent,
         accessToken,
         method: 'DELETE',
         url: 'me/messenger_profile',
@@ -131,7 +131,7 @@ export class MessengerAssetsManager<
 
     if (Object.keys(changedSettings).length > 0) {
       await this.bot.requestApi({
-        channel,
+        agent,
         accessToken,
         method: 'POST',
         url: 'me/messenger_profile',
@@ -144,46 +144,43 @@ export class MessengerAssetsManager<
   }
 
   getAttachment(
-    channel: string | Channel,
+    agent: string | Agent,
     assetTag: string,
   ): Promise<undefined | string> {
-    return this.getAssetId(channel, ATTACHMENT, assetTag);
+    return this.getAssetId(agent, ATTACHMENT, assetTag);
   }
 
   saveAttachment(
-    channel: string | Channel,
+    agent: string | Agent,
     assetTag: string,
     id: string,
   ): Promise<boolean> {
-    return this.saveAssetId(channel, ATTACHMENT, assetTag, id);
+    return this.saveAssetId(agent, ATTACHMENT, assetTag, id);
   }
 
   getAllAttachments(
-    channel: string | Channel,
+    agent: string | Agent,
   ): Promise<null | Map<string, string>> {
-    return this.getAllAssets(channel, ATTACHMENT);
+    return this.getAllAssets(agent, ATTACHMENT);
   }
 
-  unsaveAttachment(
-    channel: string | Channel,
-    assetTag: string,
-  ): Promise<boolean> {
-    return this.unsaveAssetId(channel, ATTACHMENT, assetTag);
+  unsaveAttachment(agent: string | Agent, assetTag: string): Promise<boolean> {
+    return this.unsaveAssetId(agent, ATTACHMENT, assetTag);
   }
 
   /** Upload and save a Messenger chat attachment */
   async uploadChatAttachment(
-    channel: string | Channel,
+    agent: string | Agent,
     assetTag: string,
     node: SociablyNode,
   ): Promise<string> {
-    const result = await this.bot.uploadChatAttachment(channel, node);
+    const result = await this.bot.uploadChatAttachment(agent, node);
     if (result === null) {
       throw new Error(`message ${formatNode(node)} render to empty`);
     }
 
     const { attachmentId } = result;
-    await this.saveAssetId(channel, ATTACHMENT, assetTag, attachmentId);
+    await this.saveAssetId(agent, ATTACHMENT, assetTag, attachmentId);
     return attachmentId;
   }
 }

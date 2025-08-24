@@ -311,7 +311,7 @@ test('.checkAuthData(data)', () => {
     ok: true,
     contextDetails: {
       pageId: '12345',
-      channel: new FacebookPage('12345'),
+      agent: new FacebookPage('12345'),
       thread: new FacebookChat('12345', { id: '67890' }),
       user: new FacebookUser('12345', '67890'),
       userProfile: new UserProfile(profileData),
@@ -323,7 +323,7 @@ test('.checkAuthData(data)', () => {
       ok: true,
       contextDetails: {
         pageId: '98765',
-        channel: new FacebookPage('98765'),
+        agent: new FacebookPage('98765'),
         thread: new FacebookChat('98765', { id: '43210' }),
         user: new FacebookUser('98765', '43210'),
         userProfile: null,

@@ -388,7 +388,7 @@ describe('.requestApi(options)', () => {
 
     await expect(
       bot.requestApi({
-        channel: agent,
+        agent,
         method: 'POST',
         url: 'foo',
         params: { bar: 'baz' },
@@ -412,7 +412,7 @@ describe('.requestApi(options)', () => {
     graphApi.reply(200, [{ code: 200, body: '{"foo":"bar"}' }]);
     await expect(
       bot.requestApi({
-        channel: agent,
+        agent,
         method: 'POST',
         url: 'foo',
         params: { bar: 'baz' },
@@ -435,7 +435,7 @@ describe('.requestApi(options)', () => {
     graphApi.reply(200, [{ code: 200, body: '{"foo":"bar"}' }]);
     await expect(
       bot.requestApi({
-        channel: agent,
+        agent,
         method: 'POST',
         url: 'foo',
         params: { bar: 'baz' },
@@ -472,7 +472,7 @@ describe('.requestApi(options)', () => {
 
     try {
       await bot.requestApi({
-        channel: agent,
+        agent,
         method: 'POST',
         url: 'foo',
         params: { bar: 'baz' },

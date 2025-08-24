@@ -153,7 +153,7 @@ describe('handling POST', () => {
       expect(context.platform).toBe('whatsapp');
       expect(context.bot).toBe(bot);
 
-      expect(context.event.channel).toEqual(new WhatsAppAgent('1234567890'));
+      expect(context.event.agent).toEqual(new WhatsAppAgent('1234567890'));
       expect(context.event.user).toEqual(
         new WhatsAppUser('9876543210', { name: 'John' }),
       );

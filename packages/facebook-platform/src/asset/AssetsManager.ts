@@ -149,7 +149,7 @@ export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> 
     },
   ): Promise<string> {
     const { id: personaId } = await this.bot.requestApi<{ id: string }>({
-      channel: page,
+      agent: page,
       accessToken,
       method: 'POST',
       url: PATH_PERSONAS,
@@ -172,7 +172,7 @@ export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> 
     }
 
     await this.bot.requestApi({
-      channel: page,
+      agent: page,
       accessToken: options?.accessToken,
       method: 'DELETE',
       url: personaId,

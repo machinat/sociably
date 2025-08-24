@@ -1,5 +1,5 @@
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler.js';
-import { MetaApiChannel } from '@sociably/meta-api';
+import { MetaApiAgent } from '@sociably/meta-api';
 import { FACEBOOK } from './constant.js';
 
 type FacebookPageValue = {
@@ -7,7 +7,7 @@ type FacebookPageValue = {
 };
 
 class FacebookPage
-  implements MetaApiChannel, MarshallableInstance<FacebookPageValue>
+  implements MetaApiAgent, MarshallableInstance<FacebookPageValue>
 {
   static typeName = 'FacebookPage';
   static fromJSONValue(value: FacebookPageValue): FacebookPage {
@@ -17,7 +17,7 @@ class FacebookPage
 
   id: string;
   readonly platform = FACEBOOK;
-  readonly $$typeofChannel = true;
+  readonly $$typeofAgent = true;
 
   constructor(pageId: string) {
     this.id = pageId;

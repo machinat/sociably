@@ -11,7 +11,7 @@ export const getAuthContextDetails = (
 ): ContextDetails<FacebookAuthContext> => {
   const { page: pageId, user: userId, profile: profileData } = data;
   return {
-    channel: new FacebookPage(pageId),
+    agent: new FacebookPage(pageId),
     thread: new FacebookChat(pageId, { id: userId }),
     user: new FacebookUser(pageId, userId),
     userProfile: profileData ? new UserProfile(profileData) : null,

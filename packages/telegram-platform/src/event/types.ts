@@ -46,7 +46,7 @@ import type TelegramUser from '../User.js';
 import type { TelegramRawEvent } from '../types.js';
 
 interface EventObject<Category extends string, Type extends string> {
-  channel: TelegramUser;
+  agent: TelegramUser;
   category: Category;
   type: Type;
   botId: number;

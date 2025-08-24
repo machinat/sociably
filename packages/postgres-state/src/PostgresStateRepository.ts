@@ -1,8 +1,8 @@
 import { Pool } from 'pg';
 import type {
-  SociablyChannel,
-  SociablyUser,
+  SociablyAgent,
   SociablyThread,
+  SociablyUser,
 } from '@sociably/core';
 import { serviceProviderClass } from '@sociably/core/service';
 import BaseMarshaler from '@sociably/core/base/Marshaler.js';
@@ -12,7 +12,7 @@ import type {
 } from '@sociably/core/base/StateRepository.js';
 import {
   DEFAULT_GLOBAL_STATE_TABLE_NAME,
-  DEFAULT_CHANNEL_STATE_TABLE_NAME,
+  DEFAULT_AGENT_STATE_TABLE_NAME,
   DEFAULT_THREAD_STATE_TABLE_NAME,
   DEFAULT_USER_STATE_TABLE_NAME,
   FIELD_STATE_DATA,
@@ -30,7 +30,7 @@ const identity = (x) => x;
 export type TableNamingOptions = {
   schemaName?: string;
   globalStateTableName?: string;
-  channelStateTableName?: string;
+  agentStateTableName?: string;
   threadStateTableName?: string;
   userStateTableName?: string;
 };
@@ -41,7 +41,7 @@ export class PostgresStateRepository implements BaseStateRepository {
   private _marshaler: BaseMarshaler;
   schemaName?: string;
   globalStateTableName: string;
-  channelStateTableName: string;
+  agentStateTableName: string;
   threadStateTableName: string;
   userStateTableName: string;
 
@@ -51,7 +51,7 @@ export class PostgresStateRepository implements BaseStateRepository {
     {
       schemaName,
       globalStateTableName = DEFAULT_GLOBAL_STATE_TABLE_NAME,
-      channelStateTableName = DEFAULT_CHANNEL_STATE_TABLE_NAME,
+      agentStateTableName = DEFAULT_AGENT_STATE_TABLE_NAME,
       threadStateTableName = DEFAULT_THREAD_STATE_TABLE_NAME,
       userStateTableName = DEFAULT_USER_STATE_TABLE_NAME,
     }: TableNamingOptions = {},
@@ -64,18 +64,18 @@ export class PostgresStateRepository implements BaseStateRepository {
 
     this.schemaName = schemaName;
     this.globalStateTableName = globalStateTableName;
-    this.channelStateTableName = channelStateTableName;
+    this.agentStateTableName = agentStateTableName;
     this.threadStateTableName = threadStateTableName;
     this.userStateTableName = userStateTableName;
   }
 
-  channelState(channel: SociablyChannel): StateAccessor {
+  agentState(agent: SociablyAgent): StateAccessor {
     return new PostgresStateAccessor(
       this._pool,
       this._marshaler,
       this.schemaName,
-      this.channelStateTableName,
-      channel.uid,
+      this.agentStateTableName,
+      agent.uid,
     );
   }
 
@@ -117,7 +117,7 @@ export class PostgresStateRepository implements BaseStateRepository {
           : ''
       }
       ${[
-        this.channelStateTableName,
+        this.agentStateTableName,
         this.threadStateTableName,
         this.userStateTableName,
         this.globalStateTableName,
@@ -143,7 +143,7 @@ export class PostgresStateRepository implements BaseStateRepository {
   async dropTables(): Promise<void> {
     await this._pool.query(`
       DROP TABLE IF EXISTS ${this._tableId(this.globalStateTableName)} CASCADE;
-      DROP TABLE IF EXISTS ${this._tableId(this.channelStateTableName)} CASCADE;
+      DROP TABLE IF EXISTS ${this._tableId(this.agentStateTableName)} CASCADE;
       DROP TABLE IF EXISTS ${this._tableId(this.threadStateTableName)} CASCADE;
       DROP TABLE IF EXISTS ${this._tableId(this.userStateTableName)} CASCADE;
   `);

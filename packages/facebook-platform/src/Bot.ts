@@ -264,7 +264,7 @@ export class FacebookBot
   }
 
   async requestApi<ResBody extends MetaApiResponseBody>({
-    channel: pageInput,
+    agent: pageInput,
     method = 'GET',
     url,
     params,
@@ -276,7 +276,7 @@ export class FacebookBot
     try {
       const { results } = await this.engine.dispatchJobs(page || null, [
         {
-          channel: page,
+          agent: page,
           request: { method, url, params },
           accessToken,
           asApp,

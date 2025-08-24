@@ -34,32 +34,33 @@ beforeEach(() => {
 const repository = new RedisStateRepository(client, marshaler);
 
 const fooInstance = {
-  $$typeofChannel: true as const,
-  $$typeofUser: true as const,
+  $$typeofAgent: true as const,
   $$typeofThread: true as const,
+  $$typeofUser: true as const,
   platform: 'test',
   uid: 'test.foo',
 };
+
 const barInstance = {
-  $$typeofChannel: true as const,
-  $$typeofUser: true as const,
+  $$typeofAgent: true as const,
   $$typeofThread: true as const,
+  $$typeofUser: true as const,
   platform: 'test',
   uid: 'test.bar',
 };
 
 describe.each([
   [
-    'channel state',
-    '$channel',
-    repository.channelState(fooInstance),
-    repository.channelState(barInstance),
+    'agent state',
+    '$agent',
+    repository.agentState(fooInstance),
+    repository.agentState(barInstance),
   ],
   [
-    'channel state using uid',
-    '$channel',
-    repository.channelState('test.foo'),
-    repository.channelState('test.bar'),
+    'agent state using uid',
+    '$agent',
+    repository.agentState('test.foo'),
+    repository.agentState('test.bar'),
   ],
   [
     'thread state',

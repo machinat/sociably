@@ -184,7 +184,7 @@ export interface ErrorEvent extends EventBaseMixin {
   readonly title: string;
   readonly thread: null;
   readonly user: null;
-  readonly channel: null;
+  readonly agent: null;
 }
 
 /** @category Event */
@@ -193,7 +193,7 @@ export interface UnknownEvent extends EventBaseMixin {
   readonly type: 'unknown';
   readonly thread: null;
   readonly user: null;
-  readonly channel: null;
+  readonly agent: null;
 }
 
 export type MessageEvent =

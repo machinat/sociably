@@ -46,7 +46,7 @@ type ApiCallOptions = {
   /** API request parameters */
   params?: Record<string, unknown>;
   /** The LINE messaging API channel to make the request */
-  channel?: string | LineChannel;
+  agent?: string | LineChannel;
   /** Force to use the access token */
   accessToken?: string;
 };
@@ -121,7 +121,7 @@ export class LineBot implements SociablyBot<LineChat, LineJob, LineResult> {
     method,
     url,
     params,
-    channel,
+    agent,
     accessToken,
   }: ApiCallOptions): Promise<ResBody> {
     try {
@@ -130,7 +130,7 @@ export class LineBot implements SociablyBot<LineChat, LineJob, LineResult> {
           method: method ?? 'GET',
           url,
           params,
-          chatChannelId: typeof channel === 'string' ? channel : channel?.id,
+          chatChannelId: typeof agent === 'string' ? agent : agent?.id,
           accessToken,
           key: undefined,
         },

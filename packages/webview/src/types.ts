@@ -48,8 +48,8 @@ export type WebviewEvent<
   User extends null | SociablyUser,
 > = Value & {
   platform: 'webview';
-  // TODO: channel field is left for potential namespace feature
-  channel: null;
+  // TODO: webview agent
+  agent: null;
   thread: WebviewConnection;
   user: User;
 };

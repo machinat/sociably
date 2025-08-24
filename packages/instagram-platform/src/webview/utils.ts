@@ -15,7 +15,7 @@ export const getAuthContextDetails = (
     profile: profileData,
   } = data;
   return {
-    channel: new InstagramAgent(agentId, agentUsername),
+    agent: new InstagramAgent(agentId, agentUsername),
     thread: new InstagramChat(agentId, { id: userId }),
     user: new InstagramUser(agentId, userId),
     userProfile: profileData ? new UserProfile(profileData) : null,

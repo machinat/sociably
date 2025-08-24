@@ -1,8 +1,4 @@
-import type {
-  SociablyChannel,
-  SociablyThread,
-  SociablyUser,
-} from '../types.js';
+import type { SociablyAgent, SociablyThread, SociablyUser } from '../types.js';
 import { serviceInterface } from '../service/index.js';
 
 export type StateAccessor = {
@@ -39,10 +35,10 @@ export type StateAccessor = {
 
 /** @category Base */
 export type BaseStateRepository = {
-  /** Return the {@link StateAccessor} for a SociablyChannel */
-  channelState(
-    /** The channel object */
-    channel: SociablyChannel,
+  /** Return the {@link StateAccessor} for a SociablyAgent */
+  agentState(
+    /** The agent object */
+    agent: SociablyAgent,
   ): StateAccessor;
 
   /** Return the {@link StateAccessor} for a SociablyThread */

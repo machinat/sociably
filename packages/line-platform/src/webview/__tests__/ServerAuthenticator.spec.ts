@@ -236,7 +236,7 @@ describe('.verifyCredential(credential)', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(3);
     expect(bot.requestApi).toHaveBeenCalledWith({
-      channel: botChannel,
+      agent: botChannel,
       method: 'GET',
       url: `v2/bot/profile/${userId}`,
     });
@@ -306,7 +306,7 @@ describe('.verifyCredential(credential)', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(3);
     expect(bot.requestApi).toHaveBeenCalledWith({
-      channel: botChannel,
+      agent: botChannel,
       method: 'GET',
       url: `v2/bot/group/${groupId}/member/${userId}`,
     });
@@ -338,7 +338,7 @@ describe('.verifyCredential(credential)', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(3);
     expect(bot.requestApi).toHaveBeenCalledWith({
-      channel: botChannel,
+      agent: botChannel,
       method: 'GET',
       url: `v2/bot/room/${roomId}/member/${userId}`,
     });
@@ -602,8 +602,8 @@ describe('.verifyRefreshment()', () => {
     expect(bot.requestApi).toHaveBeenCalledTimes(1);
     expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       {
-        "channel": LineChannel {
-          "$$typeofChannel": true,
+        "agent": LineChannel {
+          "$$typeofAgent": true,
           "id": "_BOT_CHAN_ID_",
           "platform": "line",
         },
@@ -632,8 +632,8 @@ describe('.verifyRefreshment()', () => {
     expect(bot.requestApi).toHaveBeenCalledTimes(1);
     expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       {
-        "channel": LineChannel {
-          "$$typeofChannel": true,
+        "agent": LineChannel {
+          "$$typeofAgent": true,
           "id": "_BOT_CHAN_ID_",
           "platform": "line",
         },
@@ -662,8 +662,8 @@ describe('.verifyRefreshment()', () => {
     expect(bot.requestApi).toHaveBeenCalledTimes(1);
     expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       {
-        "channel": LineChannel {
-          "$$typeofChannel": true,
+        "agent": LineChannel {
+          "$$typeofAgent": true,
           "id": "_BOT_CHAN_ID_",
           "platform": "line",
         },
@@ -857,8 +857,8 @@ describe('.verifyRefreshment()', () => {
     expect(bot.requestApi).toHaveBeenCalledTimes(1);
     expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       {
-        "channel": LineChannel {
-          "$$typeofChannel": true,
+        "agent": LineChannel {
+          "$$typeofAgent": true,
           "id": "_BOT_CHAN_ID_",
           "platform": "line",
         },
@@ -888,7 +888,7 @@ describe('.checkAuthData(data)', () => {
       contextDetails: {
         providerId: '_PROVIDER_ID_',
         clientId: '1234567890',
-        channel: null,
+        agent: null,
         user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
         thread: null,
         refChatType: 'external',
@@ -914,7 +914,7 @@ describe('.checkAuthData(data)', () => {
       contextDetails: {
         providerId: '_PROVIDER_ID_',
         clientId: '1234567890',
-        channel: new LineChannel('_CHANNEL_ID_'),
+        agent: new LineChannel('_CHANNEL_ID_'),
         user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
         thread: new LineChat('_CHANNEL_ID_', 'user', '_USER_ID_'),
         refChatType: 'utou',
@@ -941,7 +941,7 @@ describe('.checkAuthData(data)', () => {
       contextDetails: {
         providerId: '_PROVIDER_ID_',
         clientId: '1234567890',
-        channel: new LineChannel('_CHANNEL_ID_'),
+        agent: new LineChannel('_CHANNEL_ID_'),
         user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
         thread: new LineChat('_CHANNEL_ID_', 'group', '_GROUP_ID_'),
         refChatType: 'group',
@@ -968,7 +968,7 @@ describe('.checkAuthData(data)', () => {
       contextDetails: {
         providerId: '_PROVIDER_ID_',
         clientId: '1234567890',
-        channel: new LineChannel('_CHANNEL_ID_'),
+        agent: new LineChannel('_CHANNEL_ID_'),
         user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
         thread: new LineChat('_CHANNEL_ID_', 'room', '_ROOM_ID_'),
         refChatType: 'room',

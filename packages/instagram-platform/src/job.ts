@@ -54,7 +54,7 @@ export const createPostJobs =
     }
 
     const jobBase = {
-      channel: agent,
+      agent,
       key: agent.uid,
       accessToken: userAccessToken,
     };

@@ -142,11 +142,11 @@ export class LineAssetsManager {
 
     // create rich menu
     const { richMenuId } = await this._bot.requestApi<{ richMenuId: string }>({
+      agent: channel,
       method: 'POST',
       accessToken,
       url: PATH_RICHMENU,
       params,
-      channel,
     });
 
     // upload rich menu image
@@ -173,7 +173,7 @@ export class LineAssetsManager {
     // set to default rich menu if asDefault
     if (options?.asDefault) {
       await this._bot.requestApi({
-        channel,
+        agent: channel,
         accessToken,
         method: 'POST',
         url: `/v2/bot/user/all/richmenu/${richMenuId}`,
@@ -195,10 +195,10 @@ export class LineAssetsManager {
     }
 
     await this._bot.requestApi({
+      agent: channel,
       method: 'DELETE',
       accessToken: options?.accessToken,
       url: `${PATH_RICHMENU}/${id}`,
-      channel,
     });
 
     await this.unsaveAssetId(channel, RICH_MENU, assetTag);
@@ -218,7 +218,7 @@ export class LineAssetsManager {
     }
 
     await this._bot.requestApi({
-      channel,
+      agent: channel,
       accessToken,
       method: 'PUT',
       url: 'v2/bot/channel/webhook/endpoint',

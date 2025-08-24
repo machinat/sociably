@@ -216,7 +216,7 @@ describe('subscription management', () => {
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
       expect(bot.requestApi).toHaveBeenCalledWith({
-        channel: page,
+        agent: page,
         accessToken: '_ACCESS_TOKEN_',
         method: 'POST',
         url: 'me/subscribed_apps',
@@ -239,7 +239,7 @@ describe('subscription management', () => {
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
       expect(bot.requestApi).toHaveBeenCalledWith({
-        channel: page,
+        agent: page,
         method: 'POST',
         url: 'me/subscribed_apps',
         params: {
@@ -281,7 +281,7 @@ describe('subscription management', () => {
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
       expect(bot.requestApi).toHaveBeenCalledWith({
-        channel: page,
+        agent: page,
         method: 'DELETE',
         url: 'me/subscribed_apps',
       });
@@ -306,7 +306,7 @@ describe('subscription management', () => {
 
       expect(bot.requestApi).toHaveBeenCalledTimes(2);
       expect(bot.requestApi).toHaveBeenNthCalledWith(1, {
-        channel: page,
+        agent: page,
         method: 'GET',
         url: 'me/messenger_profile',
         params: {
@@ -322,7 +322,7 @@ describe('subscription management', () => {
         accessToken: '_ACCESS_TOKEN_',
       });
       expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
-        channel: page,
+        agent: page,
         method: 'POST',
         url: 'me/messenger_profile',
         params: {
@@ -367,7 +367,7 @@ describe('subscription management', () => {
 
       expect(bot.requestApi).toHaveBeenCalledTimes(3);
       expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
-        channel: page,
+        agent: page,
         method: 'DELETE',
         url: 'me/messenger_profile',
         params: {
@@ -375,7 +375,7 @@ describe('subscription management', () => {
         },
       });
       expect(bot.requestApi).toHaveBeenNthCalledWith(3, {
-        channel: page,
+        agent: page,
         method: 'POST',
         url: 'me/messenger_profile',
         params: {
@@ -432,7 +432,7 @@ describe('subscription management', () => {
 
       expect(bot.requestApi).toHaveBeenCalledTimes(2);
       expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
-        channel: page,
+        agent: page,
         method: 'POST',
         url: 'me/messenger_profile',
         params: {
@@ -649,7 +649,7 @@ describe('assets management', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(1);
     expect(bot.requestApi).toHaveBeenCalledWith({
-      channel: page,
+      agent: page,
       method: 'POST',
       url: 'me/personas',
       params: { name: 'Baby Yoda', profile_picture_url: '_URL_' },
@@ -669,7 +669,7 @@ describe('assets management', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(2);
     expect(bot.requestApi).toHaveBeenCalledWith({
-      channel: page,
+      agent: page,
       accessToken: '_MY_ACCESS_TOKEN_',
       method: 'POST',
       url: 'me/personas',
@@ -700,7 +700,7 @@ describe('assets management', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(1);
     expect(bot.requestApi).toHaveBeenCalledWith({
-      channel: page,
+      agent: page,
       accessToken: '_ACCESS_TOKEN_',
       method: 'DELETE',
       url: '_PERSONA_ID_',

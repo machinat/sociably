@@ -1,5 +1,5 @@
 import type {
-  SociablyChannel,
+  SociablyAgent,
   SociablyUser,
   SociablyThread,
 } from '@sociably/core';
@@ -75,28 +75,28 @@ export class InMemoryStateAccessor implements StateAccessor {
 
 /** @category Provider */
 export class InMemoryStateRepository implements BaseStateRepository {
-  private _channelStates: Map<string, Map<string, unknown>>;
+  private _agentStates: Map<string, Map<string, unknown>>;
   private _threadStates: Map<string, Map<string, unknown>>;
   private _userStates: Map<string, Map<string, unknown>>;
   private _globalStates: Map<string, Map<string, unknown>>;
 
   constructor() {
-    this._channelStates = new Map();
+    this._agentStates = new Map();
     this._threadStates = new Map();
     this._userStates = new Map();
     this._globalStates = new Map();
   }
 
-  channelState(channel: string | SociablyChannel): InMemoryStateAccessor {
-    const channelUid = typeof channel === 'string' ? channel : channel.uid;
+  agentState(agent: string | SociablyAgent): InMemoryStateAccessor {
+    const agentUid = typeof agent === 'string' ? agent : agent.uid;
 
-    const data = this._channelStates.get(channelUid);
+    const data = this._agentStates.get(agentUid);
     if (data) {
       return new InMemoryStateAccessor(data);
     }
 
     const newStateData = new Map();
-    this._channelStates.set(channelUid, newStateData);
+    this._agentStates.set(agentUid, newStateData);
 
     return new InMemoryStateAccessor(newStateData);
   }

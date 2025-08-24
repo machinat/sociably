@@ -4,8 +4,8 @@ exports[`#render(thread, message, options) post to NUMBER/messages api 1`] = `
 {
   "jobs": [
     {
-      "channel": WhatsAppAgent {
-        "$$typeofChannel": true,
+      "agent": WhatsAppAgent {
+        "$$typeofAgent": true,
         "id": "1234567890",
         "platform": "whatsapp",
       },
@@ -73,8 +73,8 @@ exports[`#render(thread, message, options) post to NUMBER/messages api 1`] = `
     {
       "payload": [
         {
-          "channel": WhatsAppAgent {
-            "$$typeofChannel": true,
+          "agent": WhatsAppAgent {
+            "$$typeofAgent": true,
             "id": "1234567890",
             "platform": "whatsapp",
           },

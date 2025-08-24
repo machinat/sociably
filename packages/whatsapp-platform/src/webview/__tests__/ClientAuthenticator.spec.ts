@@ -55,7 +55,7 @@ describe('.closeWebview()', () => {
   const authContext = {
     platform: 'whatsapp' as const,
     agentNumber: '+1234567890',
-    channel: new WhatsAppAgent('1111111111'),
+    agent: new WhatsAppAgent('1111111111'),
     thread: new WhatsAppChat('1111111111', '9876543210'),
     user: new WhatsAppUser('9876543210'),
     userProfile: null,
@@ -103,7 +103,7 @@ test('.checkAuthData(data)', () => {
     ok: true,
     contextDetails: {
       agentNumber: '+1234567890',
-      channel: new WhatsAppAgent('1111111111'),
+      agent: new WhatsAppAgent('1111111111'),
       thread: new WhatsAppChat('1111111111', '9876543210'),
       user: new WhatsAppUser('9876543210'),
     },

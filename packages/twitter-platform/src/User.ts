@@ -1,4 +1,4 @@
-import type { SociablyUser, SociablyChannel } from '@sociably/core';
+import type { SociablyUser, SociablyAgent } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler.js';
 import UserProfile from './UserProfile.js';
 import { TWITTER } from './constant.js';
@@ -9,10 +9,7 @@ type SerializedUser = {
 };
 
 export default class TwitterUser
-  implements
-    SociablyUser,
-    SociablyChannel,
-    MarshallableInstance<SerializedUser>
+  implements SociablyUser, SociablyAgent, MarshallableInstance<SerializedUser>
 {
   static typeName = 'TwitterUser';
   static fromJSONValue({ id }: SerializedUser): TwitterUser {
@@ -23,7 +20,7 @@ export default class TwitterUser
   data: null | RawUser;
 
   readonly platform = TWITTER;
-  readonly $$typeofChannel = true;
+  readonly $$typeofAgent = true;
   readonly $$typeofUser = true;
 
   constructor(id: string, rawData?: RawUser) {

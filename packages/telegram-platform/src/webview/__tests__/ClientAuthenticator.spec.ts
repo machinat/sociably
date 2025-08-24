@@ -288,7 +288,7 @@ test('.checkAuthData()', () => {
     contextDetails: {
       botId: 12345,
       botName: 'MyBot',
-      channel: new TelegramUser(12345, true),
+      agent: new TelegramUser(12345, true),
       user: expectedUser,
       thread: new TelegramChat(12345, 67890, {
         type: 'private',
@@ -310,7 +310,7 @@ test('.checkAuthData()', () => {
     contextDetails: {
       botId: 12345,
       botName: 'MyBot',
-      channel: new TelegramUser(12345, true),
+      agent: new TelegramUser(12345, true),
       user: expectedUser,
       thread: new TelegramChat(12345, 67890, { type: 'group', id: 67890 }),
       photoUrl: 'http://crazy.dm/stand.png',
@@ -333,7 +333,7 @@ it('.closeWebview() redirect to telegram.me while in mobile devices', () => {
       platform: 'telegram',
       botId: 12345,
       botName: 'MyBot',
-      channel: new TelegramUser(12345, true),
+      agent: new TelegramUser(12345, true),
       user: new TelegramUser(67890, false),
       thread: new TelegramChat(12345, 67890),
       photoUrl: 'http://crazy.dm/stand.png',

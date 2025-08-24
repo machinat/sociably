@@ -22,7 +22,7 @@ const authThread = {
 };
 const authContext = {
   platform: 'test' as const,
-  channel: null,
+  agent: null,
   user: authUser,
   thread: authThread,
   loginAt: new Date(Date.now() - 1000),
@@ -36,7 +36,7 @@ const server = moxy<
       never,
       {
         platform: 'test';
-        channel: null;
+        agent: null;
         user: null | typeof authUser;
         thread: null | typeof authThread;
         loginAt: Date;
@@ -105,7 +105,7 @@ it('pop events', () => {
       category: 'connection',
       type: 'connect',
       payload: null,
-      channel: null,
+      agent: null,
       user: authUser,
       thread: connection,
     },
@@ -127,7 +127,7 @@ it('pop events', () => {
       category: 'greet',
       type: 'hello',
       payload: 'world',
-      channel: null,
+      agent: null,
       user: authUser,
       thread: connection,
     },
@@ -141,7 +141,7 @@ it('pop events', () => {
       category: 'default',
       type: 'hug',
       payload: undefined,
-      channel: null,
+      agent: null,
       user: authUser,
       thread: connection,
     },
@@ -158,7 +158,7 @@ it('pop events', () => {
       category: 'connection',
       type: 'disconnect',
       payload: { reason: 'bye' },
-      channel: null,
+      agent: null,
       user: authUser,
       thread: connection,
     },
@@ -178,7 +178,7 @@ it('register auth user topic if authContext.user is present', () => {
     request,
     authContext: {
       platform: 'test',
-      channel: null,
+      agent: null,
       user: authUser,
       thread: null,
       loginAt: new Date(Date.now() - 1000),
@@ -211,7 +211,7 @@ it('register auth thread topic if authContext.thread is present', () => {
     request,
     authContext: {
       platform: 'test',
-      channel: null,
+      agent: null,
       user: null,
       thread: authThread,
       loginAt: new Date(Date.now() - 1000),

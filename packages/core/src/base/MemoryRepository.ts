@@ -1,4 +1,4 @@
-import { SociablyChannel, SociablyThread, SociablyUser } from '../types.js';
+import { SociablyAgent, SociablyThread, SociablyUser } from '../types.js';
 import { serviceInterface } from '../service/index.js';
 
 export interface MemoryAccessor {
@@ -31,10 +31,10 @@ export interface BaseMemoryRepository {
     /** The thread object */
     thread: SociablyThread,
   ): MemoryAccessor;
-  /** Return the {@link MemoryAccessor} for a SociablyChannel */
-  channelMemory(
-    /** The channel object */
-    channel: SociablyChannel,
+  /** Return the {@link MemoryAccessor} for a SociablyAgent */
+  agentMemory(
+    /** The agent object */
+    agent: SociablyAgent,
   ): MemoryAccessor;
   /** Return the {@link MemoryAccessor} for a SociablyUser */
   userMemory(

@@ -1,4 +1,4 @@
-import type { SociablyUser, SociablyChannel } from '@sociably/core';
+import type { SociablyUser, SociablyAgent } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler.js';
 import { TELEGRAM } from './constant.js';
 import UserProfile from './UserProfile.js';
@@ -12,7 +12,7 @@ type TelegramUserValue = {
 class TelegramUser
   implements
     SociablyUser,
-    SociablyChannel,
+    SociablyAgent,
     MarshallableInstance<TelegramUserValue>
 {
   static typeName = 'TelegramUser';
@@ -29,7 +29,7 @@ class TelegramUser
 
   readonly platform = TELEGRAM;
   readonly $$typeofUser = true;
-  readonly $$typeofChannel = true;
+  readonly $$typeofAgent = true;
   readonly type = 'user';
 
   constructor(

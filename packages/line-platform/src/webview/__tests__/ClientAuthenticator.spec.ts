@@ -390,7 +390,7 @@ describe('.checkAuthData(data)', () => {
       contextDetails: {
         providerId: '_PROVIDER_ID_',
         clientId: '1234567890',
-        channel: null,
+        agent: null,
         user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
         thread: null,
         refChatType: 'external',
@@ -419,7 +419,7 @@ describe('.checkAuthData(data)', () => {
       contextDetails: {
         providerId: '_PROVIDER_ID_',
         clientId: '1234567890',
-        channel: new LineChannel('_CHANNEL_ID_'),
+        agent: new LineChannel('_CHANNEL_ID_'),
         user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
         thread: new LineChat('_CHANNEL_ID_', 'user', '_USER_ID_'),
         refChatType: 'utou',
@@ -449,7 +449,7 @@ describe('.checkAuthData(data)', () => {
       contextDetails: {
         providerId: '_PROVIDER_ID_',
         clientId: '1234567890',
-        channel: new LineChannel('_CHANNEL_ID_'),
+        agent: new LineChannel('_CHANNEL_ID_'),
         user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
         thread: new LineChat('_CHANNEL_ID_', 'group', '_GROUP_ID_'),
         refChatType: 'group',
@@ -479,7 +479,7 @@ describe('.checkAuthData(data)', () => {
       contextDetails: {
         providerId: '_PROVIDER_ID_',
         clientId: '1234567890',
-        channel: new LineChannel('_CHANNEL_ID_'),
+        agent: new LineChannel('_CHANNEL_ID_'),
         user: new LineUser('_PROVIDER_ID_', '_USER_ID_'),
         thread: new LineChat('_CHANNEL_ID_', 'room', '_ROOM_ID_'),
         refChatType: 'room',

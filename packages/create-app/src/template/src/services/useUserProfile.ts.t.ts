@@ -3,7 +3,7 @@ import {
   serviceProviderFactory,
   BaseProfiler,
   StateRepository,
-  SociablyChannel,
+  SociablyAgent,
   SociablyUser,
   SociablyProfile
  } from '@sociably/core';
@@ -14,7 +14,7 @@ type ProfileCache = {
 
 const useUserProfile =
   (profiler: BaseProfiler, stateRepository: StateRepository) =>
-  async (channel: SociablyChannel, user: SociablyUser | null) => {
+  async (agent: SociablyAgent, user: SociablyUser | null) => {
     if (!user) {
       return null;
     }
@@ -27,7 +27,7 @@ const useUserProfile =
       return cached.profile;
     }
 
-    const profile = await profiler.getUserProfile(channel, user);
+    const profile = await profiler.getUserProfile(agent, user);
     if (profile) {
       await userState.set<ProfileCache>('profile_cache', { profile });
     }

@@ -168,7 +168,7 @@ export class TelegramAssetsManager {
     const agentId = typeof agent === 'number' ? agent : agent.id;
 
     await this.bot.requestApi({
-      channel: agent,
+      agent,
       method: 'setWebhook',
       params: {
         url: `${webhookUrl}/${agentId}`,
@@ -190,7 +190,7 @@ export class TelegramAssetsManager {
     },
   ): Promise<void> {
     await this.bot.requestApi({
-      channel: agent,
+      agent,
       method: 'deleteWebhook',
       params: {
         drop_pending_updates: !!params?.dropPendingUpdates,

@@ -39,34 +39,34 @@ It automatically generates unique IDs for stored items and provides methods to a
 ```js
 const memory = app.useService(StateMemory.Repository);
 
-// Get memory accessor for a channel
-const channelMemory = memory.channelMemory(channel);
+// Get memory accessor for an agent
+const agentMemory = memory.agentMemory(agent);
 
 // Add an item and get generated ID
-const itemId = await channelMemory.add('messages', {
+const itemId = await agentMemory.add('messages', {
   text: 'Hello',
   timestamp: Date.now(),
 });
 
 // Get an item by ID
-const item = await channelMemory.get('messages', itemId);
+const item = await agentMemory.get('messages', itemId);
 
 // Update an item with partial changes
-await channelMemory.update('messages', itemId, {
+await agentMemory.update('messages', itemId, {
   text: 'Hello World',
 });
 
 // Get all items in a resource
-const allMessages = await channelMemory.getAll('messages');
+const allMessages = await agentMemory.getAll('messages');
 
 // Delete an item
-await channelMemory.delete('messages', itemId);
+await agentMemory.delete('messages', itemId);
 ```
 
 ## Features
 
 - **Auto-generated IDs**: Automatically generates unique IDs using nanoid
 - **Partial Updates**: Update items using partial changes, undefined values are filtered out
-- **Multiple Scopes**: Supports channel, thread, user, and global memory scopes
+- **Multiple Scopes**: Supports agent, thread, user, and global memory scopes
 - **State Repository Integration**: Uses your existing state repository as storage backend
 - **Type Safety**: Full TypeScript support with generic types

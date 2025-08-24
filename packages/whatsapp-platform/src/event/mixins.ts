@@ -30,7 +30,7 @@ export interface MessageMixin extends EventBaseMixin {
   /** The user who send the message */
   readonly user: WhatsAppUser;
   /** The agent that user communicates with */
-  readonly channel: WhatsAppAgent;
+  readonly agent: WhatsAppAgent;
   /** The time when the customer sent the message to the business. */
   readonly time: Date;
   /**
@@ -115,5 +115,5 @@ export interface StatusMixin extends EventBaseMixin {
   /** The customer user */
   readonly user: WhatsAppUser;
   /** The agent that user communicates with */
-  readonly channel: WhatsAppAgent;
+  readonly agent: WhatsAppAgent;
 }

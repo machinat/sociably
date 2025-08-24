@@ -188,7 +188,7 @@ export class TwitterAssetsManager {
     }
 
     await this._bot.requestApi({
-      channel: agent,
+      agent,
       method: 'DELETE',
       url: `1.1/direct_messages/welcome_messages/destroy.json`,
       params: { id: welcomeId },
@@ -235,7 +235,7 @@ export class TwitterAssetsManager {
     const {
       custom_profile: { id: customProfileId },
     } = await this._bot.requestApi<CreateCustomProfileResult>({
-      channel: agent,
+      agent,
       method: 'POST',
       url: `1.1/custom_profiles/new.json`,
       params: {
@@ -260,7 +260,7 @@ export class TwitterAssetsManager {
     }
 
     await this._bot.requestApi({
-      channel: agent,
+      agent,
       method: 'DELETE',
       url: `1.1/custom_profiles/destroy.json`,
       params: { id: customProfileId },

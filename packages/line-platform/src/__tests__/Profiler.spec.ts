@@ -48,8 +48,8 @@ describe('#getUserProfile(user)', () => {
     expect(bot.requestApi).toHaveReturnedTimes(1);
     expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       {
-        "channel": LineChannel {
-          "$$typeofChannel": true,
+        "agent": LineChannel {
+          "$$typeofAgent": true,
           "id": "_CHANNEL_ID_",
           "platform": "line",
         },
@@ -108,8 +108,8 @@ describe('#getUserProfile(user)', () => {
     expect(bot.requestApi).toHaveReturnedTimes(1);
     expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       {
-        "channel": LineChannel {
-          "$$typeofChannel": true,
+        "agent": LineChannel {
+          "$$typeofAgent": true,
           "id": "_CHANNEL_ID_",
           "platform": "line",
         },
@@ -147,8 +147,8 @@ describe('#getUserProfile(user)', () => {
     expect(bot.requestApi).toHaveReturnedTimes(1);
     expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       {
-        "channel": LineChannel {
-          "$$typeofChannel": true,
+        "agent": LineChannel {
+          "$$typeofAgent": true,
           "id": "_CHANNEL_ID_",
           "platform": "line",
         },
@@ -190,8 +190,8 @@ describe('#getGroupProfile(user)', () => {
     expect(bot.requestApi).toHaveReturnedTimes(1);
     expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       {
-        "channel": LineChannel {
-          "$$typeofChannel": true,
+        "agent": LineChannel {
+          "$$typeofAgent": true,
           "id": "_CHANNEL_ID_",
           "platform": "line",
         },

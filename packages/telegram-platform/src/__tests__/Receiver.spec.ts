@@ -304,7 +304,7 @@ describe('constext.reply(message)', () => {
     expect(bot.render).toHaveBeenCalledWith(event.thread, 'hello world');
   });
 
-  it('render using event.channel if no event.thread', async () => {
+  it('render using event.agent if no event.thread', async () => {
     await receiver.handleRequest(
       createReq({
         method: 'POST',
@@ -328,7 +328,7 @@ describe('constext.reply(message)', () => {
 
     expect(bot.render).toHaveBeenCalledTimes(1);
     expect(bot.render).toHaveBeenCalledWith(
-      event.channel,
+      event.agent,
       'hello callback_query',
     );
   });

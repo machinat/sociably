@@ -13,7 +13,7 @@ export type TelegramAuthData = {
 
 export type TelegramAuthContext = {
   platform: 'telegram';
-  channel: TelegramUser;
+  agent: TelegramUser;
   thread: TelegramChat;
   user: TelegramUser;
   botId: number;

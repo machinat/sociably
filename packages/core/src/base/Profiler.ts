@@ -1,4 +1,4 @@
-import type { SociablyUser, SociablyChannel } from '../types.js';
+import type { SociablyUser, SociablyAgent } from '../types.js';
 import { serviceInterface, serviceProviderClass } from '../service/index.js';
 
 export type SociablyProfile = {
@@ -13,13 +13,13 @@ export type SociablyProfile = {
 };
 
 export type UserProfiler<
-  Channel extends SociablyChannel,
+  Agent extends SociablyAgent,
   User extends SociablyUser,
 > = {
-  getUserProfile(channel: Channel, user: User): Promise<null | SociablyProfile>;
+  getUserProfile(agent: Agent, user: User): Promise<null | SociablyProfile>;
 };
 
-type AnyUserProfiler = UserProfiler<SociablyChannel, SociablyUser>;
+type AnyUserProfiler = UserProfiler<SociablyAgent, SociablyUser>;
 
 /** @category Base */
 export class BaseProfiler implements AnyUserProfiler {
@@ -35,12 +35,12 @@ export class BaseProfiler implements AnyUserProfiler {
   }
 
   async getUserProfile(
-    channel: SociablyChannel,
+    agent: SociablyAgent,
     user: SociablyUser,
   ): Promise<null | SociablyProfile> {
-    if (channel.platform !== user.platform) {
+    if (agent.platform !== user.platform) {
       throw new TypeError(
-        `channel (${channel.platform}) and user (${user.platform}) platforms mismatch`,
+        `agent (${agent.platform}) and user (${user.platform}) platforms mismatch`,
       );
     }
     const profiler = this._platformMapping.get(user.platform);
@@ -50,7 +50,7 @@ export class BaseProfiler implements AnyUserProfiler {
       );
     }
 
-    return profiler.getUserProfile(channel, user);
+    return profiler.getUserProfile(agent, user);
   }
 }
 

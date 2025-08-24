@@ -6,7 +6,7 @@ import type {
 import type {
   SociablyUser,
   SociablyThread,
-  SociablyChannel,
+  SociablyAgent,
 } from '@sociably/core';
 import type { RoutingInfo } from '@sociably/http';
 import type { CodeMessageComponent } from './basicAuth/index.js';
@@ -54,18 +54,18 @@ export type AuthContextBase = {
 export type AuthContext<
   User extends null | SociablyUser,
   Thread extends null | SociablyThread,
-  Channel extends null | SociablyChannel,
+  Agent extends null | SociablyAgent,
 > = {
   platform: string;
   user: User;
   thread: Thread;
-  channel: Channel;
+  agent: Agent;
 } & AuthContextBase;
 
 export type AnyAuthContext = AuthContext<
   null | SociablyUser,
   null | SociablyThread,
-  null | SociablyChannel
+  null | SociablyAgent
 >;
 
 export type ContextDetails<Context extends AnyAuthContext> = Omit<

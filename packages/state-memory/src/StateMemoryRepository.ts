@@ -1,7 +1,7 @@
 import type {
-  SociablyChannel,
-  SociablyUser,
+  SociablyAgent,
   SociablyThread,
+  SociablyUser,
 } from '@sociably/core';
 import {
   MemoryAccessor,
@@ -78,8 +78,8 @@ export class StateMemoryRepository implements BaseMemoryRepository {
     this._stateRepository = stateRepository;
   }
 
-  channelMemory(channel: SociablyChannel): StateMemoryAccessor {
-    return new StateMemoryAccessor(this._stateRepository.channelState(channel));
+  agentMemory(agent: SociablyAgent): StateMemoryAccessor {
+    return new StateMemoryAccessor(this._stateRepository.agentState(agent));
   }
 
   threadMemory(thread: SociablyThread): StateMemoryAccessor {

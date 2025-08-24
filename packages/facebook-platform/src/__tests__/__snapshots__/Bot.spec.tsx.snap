@@ -4,12 +4,12 @@ exports[`.message(thread, message, options) message options 1`] = `
 {
   "jobs": [
     {
-      "assetTag": undefined,
-      "channel": FacebookPage {
-        "$$typeofChannel": true,
+      "agent": FacebookPage {
+        "$$typeofAgent": true,
         "id": "1234567890",
         "platform": "facebook",
       },
+      "assetTag": undefined,
       "file": undefined,
       "key": "facebook.1234567890.9876543210",
       "request": {
@@ -30,12 +30,12 @@ exports[`.message(thread, message, options) message options 1`] = `
       },
     },
     {
-      "assetTag": undefined,
-      "channel": FacebookPage {
-        "$$typeofChannel": true,
+      "agent": FacebookPage {
+        "$$typeofAgent": true,
         "id": "1234567890",
         "platform": "facebook",
       },
+      "assetTag": undefined,
       "file": undefined,
       "key": "facebook.1234567890.9876543210",
       "request": {
@@ -92,12 +92,12 @@ exports[`.message(thread, message, options) message options 1`] = `
     {
       "payload": [
         {
-          "assetTag": undefined,
-          "channel": FacebookPage {
-            "$$typeofChannel": true,
+          "agent": FacebookPage {
+            "$$typeofAgent": true,
             "id": "1234567890",
             "platform": "facebook",
           },
+          "assetTag": undefined,
           "file": undefined,
           "key": "facebook.1234567890.9876543210",
           "request": {
@@ -118,12 +118,12 @@ exports[`.message(thread, message, options) message options 1`] = `
           },
         },
         {
-          "assetTag": undefined,
-          "channel": FacebookPage {
-            "$$typeofChannel": true,
+          "agent": FacebookPage {
+            "$$typeofAgent": true,
             "id": "1234567890",
             "platform": "facebook",
           },
+          "assetTag": undefined,
           "file": undefined,
           "key": "facebook.1234567890.9876543210",
           "request": {
@@ -177,12 +177,12 @@ exports[`.message(thread, message, options) send messages to me/messages api 1`]
 {
   "jobs": [
     {
-      "assetTag": undefined,
-      "channel": FacebookPage {
-        "$$typeofChannel": true,
+      "agent": FacebookPage {
+        "$$typeofAgent": true,
         "id": "1234567890",
         "platform": "facebook",
       },
+      "assetTag": undefined,
       "file": undefined,
       "key": "facebook.1234567890.9876543210",
       "request": {
@@ -203,12 +203,12 @@ exports[`.message(thread, message, options) send messages to me/messages api 1`]
       },
     },
     {
-      "assetTag": undefined,
-      "channel": FacebookPage {
-        "$$typeofChannel": true,
+      "agent": FacebookPage {
+        "$$typeofAgent": true,
         "id": "1234567890",
         "platform": "facebook",
       },
+      "assetTag": undefined,
       "file": undefined,
       "key": "facebook.1234567890.9876543210",
       "request": {
@@ -265,12 +265,12 @@ exports[`.message(thread, message, options) send messages to me/messages api 1`]
     {
       "payload": [
         {
-          "assetTag": undefined,
-          "channel": FacebookPage {
-            "$$typeofChannel": true,
+          "agent": FacebookPage {
+            "$$typeofAgent": true,
             "id": "1234567890",
             "platform": "facebook",
           },
+          "assetTag": undefined,
           "file": undefined,
           "key": "facebook.1234567890.9876543210",
           "request": {
@@ -291,12 +291,12 @@ exports[`.message(thread, message, options) send messages to me/messages api 1`]
           },
         },
         {
-          "assetTag": undefined,
-          "channel": FacebookPage {
-            "$$typeofChannel": true,
+          "agent": FacebookPage {
+            "$$typeofAgent": true,
             "id": "1234567890",
             "platform": "facebook",
           },
+          "assetTag": undefined,
           "file": undefined,
           "key": "facebook.1234567890.9876543210",
           "request": {

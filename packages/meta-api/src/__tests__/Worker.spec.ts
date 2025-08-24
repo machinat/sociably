@@ -11,12 +11,12 @@ const appId = '_APP_ID_';
 const appSecret = '_APP_SECRET_';
 
 const agentSettingsAccessor = moxy({
-  getAgentSettings: async (channel) => ({
-    accessToken: `access_token_${channel.uid}`,
+  getAgentSettings: async (agent) => ({
+    accessToken: `access_token_${agent.uid}`,
   }),
-  getAgentSettingsBatch: async (channels) =>
-    channels.map((channel) => ({
-      accessToken: `access_token_${channel.uid}`,
+  getAgentSettingsBatch: async (agents) =>
+    agents.map((agent) => ({
+      accessToken: `access_token_${agent.uid}`,
     })),
 });
 
@@ -28,7 +28,7 @@ const jobs = [
       url: 'me/messages',
       params: { recipient: { id: 'john' }, id: 1 },
     },
-    channel: { platform: 'test', uid: 'foo' },
+    agent: { platform: 'test', uid: 'foo' },
   },
   {
     key: 'facebook.id.foo.john',
@@ -37,7 +37,7 @@ const jobs = [
       url: 'some/api',
       params: { recipient: { id: 'john' }, id: 2 },
     },
-    channel: { platform: 'test', uid: 'foo' },
+    agent: { platform: 'test', uid: 'foo' },
   },
   {
     key: 'facebook.id.bar.jane',
@@ -46,7 +46,7 @@ const jobs = [
       url: 'me/messages',
       params: { recipient: { id: 'jane' }, id: 3 },
     },
-    channel: { platform: 'test', uid: 'bar' },
+    agent: { platform: 'test', uid: 'bar' },
   },
   {
     key: 'facebook.id.baz.jojo',
@@ -55,7 +55,7 @@ const jobs = [
       url: 'another/api',
       params: { recipient: { id: 'jojo' }, id: 4 },
     },
-    channel: { platform: 'test', uid: 'baz' },
+    agent: { platform: 'test', uid: 'baz' },
   },
 ];
 
@@ -544,7 +544,7 @@ it('use querystring params for GET request', async () => {
       url: '1234567890',
       params: { fields: ['id', 'name', 'email'] },
     },
-    channel: { uid: 'foo' },
+    agent: { uid: 'foo' },
   };
 
   await expect(queue.executeJobs([job])).resolves.toEqual({
@@ -604,7 +604,7 @@ it('use querystring params for DELETE request', async () => {
       url: 'me/messenger_profile',
       params: { fields: ['whitelisted_domains'] },
     },
-    channel: { uid: 'foo' },
+    agent: { uid: 'foo' },
   };
 
   await expect(queue.executeJobs([job])).resolves.toEqual({
@@ -707,7 +707,7 @@ test('job with accessToken', async () => {
   await expect(
     queue.executeJobs([
       {
-        channel: { platform: 'test', uid: 'foo' },
+        agent: { platform: 'test', uid: 'foo' },
         accessToken: '__MY_SPECIAL_ACCESS_TOKEN__',
         request: {
           method: 'POST',
@@ -747,9 +747,9 @@ it('skip job when no access token available', async () => {
     graphApiVersion: 'v17.0',
     consumeInterval: 0,
   });
-  agentSettingsAccessor.getAgentSettingsBatch.mock.fake(async (channels) =>
-    channels.map((channel) =>
-      channel.uid === 'foo' ? { accessToken: `access_token_foo` } : null,
+  agentSettingsAccessor.getAgentSettingsBatch.mock.fake(async (agents) =>
+    agents.map((agent) =>
+      agent.uid === 'foo' ? { accessToken: `access_token_foo` } : null,
     ),
   );
   const scope = graphApi.post('/v17.0/', bodySpy).reply(200, (_, { batch }) =>
@@ -834,8 +834,8 @@ it('skip request when fail to get access token for all the jobs', async () => {
     graphApiVersion: 'v17.0',
     consumeInterval: 0,
   });
-  agentSettingsAccessor.getAgentSettingsBatch.mock.fake(async (channels) =>
-    channels.map(() => null),
+  agentSettingsAccessor.getAgentSettingsBatch.mock.fake(async (agents) =>
+    agents.map(() => null),
   );
 
   worker.start(queue);
@@ -855,9 +855,9 @@ it('skip request when fail to get access token for all the jobs', async () => {
     {
       "batch": [
         {
-          "error": [Error: No access token available for channel foo],
+          "error": [Error: No access token available for agent foo],
           "job": {
-            "channel": {
+            "agent": {
               "platform": "test",
               "uid": "foo",
             },
@@ -900,7 +900,7 @@ it('skip request when fail to get access token for all the jobs', async () => {
         },
       ],
       "errors": [
-        [Error: No access token available for channel foo],
+        [Error: No access token available for agent foo],
         [Error: No access token available for job],
       ],
       "success": false,
@@ -919,9 +919,9 @@ test('with defaultAccessTokenOption', async () => {
     graphApiVersion: 'v17.0',
     consumeInterval: 0,
   });
-  agentSettingsAccessor.getAgentSettingsBatch.mock.fake(async (channels) =>
-    channels.map((channel) =>
-      channel.uid === 'bar' ? { accessToken: `access_token_bar` } : null,
+  agentSettingsAccessor.getAgentSettingsBatch.mock.fake(async (agents) =>
+    agents.map((agent) =>
+      agent.uid === 'bar' ? { accessToken: `access_token_bar` } : null,
     ),
   );
   const scope = graphApi.post('/v17.0/', bodySpy).reply(200, (_, { batch }) =>
@@ -1019,7 +1019,7 @@ describe('using API result in following request', () => {
         },
       },
       registerResultKey: 'image_1',
-      channel: { uid: 'foo' },
+      agent: { uid: 'foo' },
     },
     {
       key: 'foo_thread',
@@ -1032,7 +1032,7 @@ describe('using API result in following request', () => {
         },
       },
       registerResultKey: 'image_2',
-      channel: { uid: 'foo' },
+      agent: { uid: 'foo' },
     },
     {
       key: 'foo_thread',
@@ -1049,7 +1049,7 @@ describe('using API result in following request', () => {
         keys: ['image_1', 'image_2'],
         accomplishRequest,
       },
-      channel: { uid: 'foo' },
+      agent: { uid: 'foo' },
     },
   ];
 
@@ -1214,7 +1214,7 @@ describe('using API result in following request', () => {
       queue.executeJobs([
         ...new Array(49).fill({
           request: { method: 'GET', url: '1234567890' },
-          channel: { uid: 'foo' },
+          agent: { uid: 'foo' },
         }),
         ...continuousJobs,
       ]),

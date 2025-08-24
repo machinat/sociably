@@ -294,7 +294,7 @@ test('.checkAuthData(data)', () => {
     ok: true,
     contextDetails: {
       agentId: '1234567890',
-      channel: new TwitterUser('1234567890'),
+      agent: new TwitterUser('1234567890'),
       thread: new TwitterChat('1234567890', '9876543210'),
       user: new TwitterUser('9876543210', rawUserData),
       userProfile: new UserProfile(rawUserData),

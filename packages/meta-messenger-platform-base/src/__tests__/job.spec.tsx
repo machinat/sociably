@@ -1,7 +1,7 @@
 import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { UnitSegment, TextSegment } from '@sociably/core/renderer';
-import { MetaApiChannel } from '@sociably/meta-api';
+import { MetaApiAgent } from '@sociably/meta-api';
 import { createChatJobs, createUploadChatAttachmentJobs } from '../job.js';
 import { PATH_MESSAGES } from '../constant.js';
 import { MessengerSegmentValue, MessengerChat } from '../types.js';
@@ -29,11 +29,11 @@ beforeEach(() => {
   getRegisteredResult.mock.reset();
 });
 
-const channel = {
+const agent = {
   platform: 'test',
   id: 12345,
   uid: 'test.12345',
-} as unknown as MetaApiChannel;
+} as unknown as MetaApiAgent;
 
 const chat = {
   platform: 'test',
@@ -86,12 +86,12 @@ describe('createChatJobs(options)(chat, segments)', () => {
   ];
 
   it('create jobs to be sent', () => {
-    const jobs = createChatJobs(channel)(chat, segments);
+    const jobs = createChatJobs(agent)(chat, segments);
 
     jobs.forEach((job, i) => {
       expect(job).toEqual({
         key: 'test.12345.67890',
-        channel,
+        agent,
         request: {
           method: 'POST',
           url: i === 2 ? 'bar/baz' : 'me/messages',
@@ -105,7 +105,7 @@ describe('createChatJobs(options)(chat, segments)', () => {
   });
 
   test('with message metadata', () => {
-    const jobs = createChatJobs(channel, {
+    const jobs = createChatJobs(agent, {
       messagingType: 'MESSAGE_TAG',
       tag: 'PAYMENT_UPDATE',
       notificationType: 'SILENT_PUSH',
@@ -139,7 +139,7 @@ describe('createChatJobs(options)(chat, segments)', () => {
   });
 
   it('set persona_id message and typing_on/typeing_off action', () => {
-    const jobs = createChatJobs(channel, { personaId: 'droid' })(chat, [
+    const jobs = createChatJobs(agent, { personaId: 'droid' })(chat, [
       {
         type: 'unit',
         path: '?',
@@ -190,7 +190,7 @@ describe('createChatJobs(options)(chat, segments)', () => {
   });
 
   it('respect options set in job value', () => {
-    const jobs = createChatJobs(channel, {
+    const jobs = createChatJobs(agent, {
       messagingType: 'UPDATE',
       tag: undefined,
       notificationType: 'SILENT_PUSH',
@@ -247,7 +247,7 @@ describe('createChatJobs(options)(chat, segments)', () => {
   });
 
   it('respect the empty tag if messaging_type has already been set', () => {
-    const jobs = createChatJobs(channel, {
+    const jobs = createChatJobs(agent, {
       messagingType: 'MESSAGE_TAG',
       tag: 'FEATURE_FUNCTIONALITY_UPDATE',
       notificationType: 'SILENT_PUSH',
@@ -291,7 +291,7 @@ describe('createChatJobs(options)(chat, segments)', () => {
       },
     };
 
-    const jobs = createChatJobs(channel, {
+    const jobs = createChatJobs(agent, {
       oneTimeNotifToken: '__ONE_TIME_NOTIF_TOKEN__',
     })(chat, [helloSegment]);
 
@@ -300,7 +300,7 @@ describe('createChatJobs(options)(chat, segments)', () => {
     });
 
     expect(() =>
-      createChatJobs(channel, {
+      createChatJobs(agent, {
         oneTimeNotifToken: '__ONE_TIME_NOTIF_TOKEN__',
       })(chat, [
         helloSegment,
@@ -321,7 +321,7 @@ describe('createChatJobs(options)(chat, segments)', () => {
   });
 
   it('add attached file data and info', () => {
-    const jobs = createChatJobs(channel)(chat, [
+    const jobs = createChatJobs(agent)(chat, [
       {
         type: 'unit',
         path: '?',
@@ -373,7 +373,7 @@ describe('createChatJobs(options)(chat, segments)', () => {
 describe('createUploadChatAttachmentJobs()', () => {
   it('create upload job with url', () => {
     expect(
-      createUploadChatAttachmentJobs()(channel, [
+      createUploadChatAttachmentJobs()(agent, [
         {
           type: 'unit' as const,
           path: '?',
@@ -395,7 +395,7 @@ describe('createUploadChatAttachmentJobs()', () => {
       ]),
     ).toEqual([
       {
-        channel,
+        agent,
         request: {
           method: 'POST',
           url: 'me/message_attachments',
@@ -422,7 +422,7 @@ describe('createUploadChatAttachmentJobs()', () => {
     const assetTag = 'MY_ASSET';
 
     expect(
-      createUploadChatAttachmentJobs()(channel, [
+      createUploadChatAttachmentJobs()(agent, [
         {
           type: 'unit',
           path: '?',
@@ -442,7 +442,7 @@ describe('createUploadChatAttachmentJobs()', () => {
       ]),
     ).toEqual([
       {
-        channel,
+        agent,
         request: {
           method: 'POST',
           url: 'me/message_attachments',
@@ -479,13 +479,13 @@ describe('createUploadChatAttachmentJobs()', () => {
     };
 
     expect(() =>
-      createUploadChatAttachmentJobs()(channel, [segment, segment]),
+      createUploadChatAttachmentJobs()(agent, [segment, segment]),
     ).toThrowErrorMatchingInlineSnapshot(`"more than 1 message received"`);
   });
 
   it('throw if non media message received', () => {
     expect(() =>
-      createUploadChatAttachmentJobs()(channel, [
+      createUploadChatAttachmentJobs()(agent, [
         {
           type: 'unit',
           path: '?',
@@ -502,7 +502,7 @@ describe('createUploadChatAttachmentJobs()', () => {
     );
 
     expect(() =>
-      createUploadChatAttachmentJobs()(channel, [
+      createUploadChatAttachmentJobs()(agent, [
         {
           type: 'unit',
           path: '?',

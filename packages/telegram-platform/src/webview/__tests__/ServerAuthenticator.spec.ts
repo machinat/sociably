@@ -153,7 +153,7 @@ describe('.delegateAuthRequest() on root route', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(2);
     expect(bot.requestApi).toHaveBeenNthCalledWith(1, {
-      channel: botUser,
+      agent: botUser,
       method: 'getChatMember',
       params: {
         user_id: 67890,
@@ -161,7 +161,7 @@ describe('.delegateAuthRequest() on root route', () => {
       },
     });
     expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
-      channel: botUser,
+      agent: botUser,
       method: 'getChat',
       params: { chat_id: 55555 },
     });
@@ -584,7 +584,7 @@ describe('.verifyRefreshment()', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(2);
     expect(bot.requestApi).toHaveBeenNthCalledWith(1, {
-      channel: botUser,
+      agent: botUser,
       method: 'getChatMember',
       params: {
         user_id: 67890,
@@ -592,7 +592,7 @@ describe('.verifyRefreshment()', () => {
       },
     });
     expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
-      channel: botUser,
+      agent: botUser,
       method: 'getChat',
       params: { chat_id: 55555 },
     });
@@ -687,7 +687,7 @@ test('.checkAuthData()', () => {
     contextDetails: {
       botId: 12345,
       botName: 'MyBot',
-      channel: new TelegramUser(12345, true),
+      agent: new TelegramUser(12345, true),
       user: expectedUser,
       thread: new TelegramChat(12345, 67890, {
         type: 'private',
@@ -709,7 +709,7 @@ test('.checkAuthData()', () => {
     contextDetails: {
       botId: 12345,
       botName: 'MyBot',
-      channel: new TelegramUser(12345, true),
+      agent: new TelegramUser(12345, true),
       user: expectedUser,
       thread: new TelegramChat(12345, 67890, { type: 'group', id: 67890 }),
       photoUrl: 'http://crazy.dm/stand.png',

@@ -18,13 +18,13 @@ const barProfiler = moxy({
     }) as SociablyProfile,
 });
 
-const fooChannel = {
-  $$typeofChannel: true as const,
+const fooAgent = {
+  $$typeofAgent: true as const,
   platform: 'foo',
   uid: 'foo.0',
 };
-const barChannel = {
-  $$typeofChannel: true as const,
+const barAgent = {
+  $$typeofAgent: true as const,
   platform: 'bar',
   uid: 'bar.0',
 };
@@ -53,17 +53,17 @@ const profiler = new BaseProfiler(
 );
 
 it('proxy #getUserProfile() call to the profiler corresponded to the user platform', async () => {
-  await expect(profiler.getUserProfile(fooChannel, fooUser1)).resolves.toEqual({
+  await expect(profiler.getUserProfile(fooAgent, fooUser1)).resolves.toEqual({
     platform: 'test',
     name: 'FOO',
     avatarUrl: 'http://foo...',
   });
-  await expect(profiler.getUserProfile(fooChannel, fooUser2)).resolves.toEqual({
+  await expect(profiler.getUserProfile(fooAgent, fooUser2)).resolves.toEqual({
     platform: 'test',
     name: 'FOO',
     avatarUrl: 'http://foo...',
   });
-  await expect(profiler.getUserProfile(barChannel, barUser1)).resolves.toEqual({
+  await expect(profiler.getUserProfile(barAgent, barUser1)).resolves.toEqual({
     platform: 'test',
     name: 'BAR',
     avatarUrl: 'http://bar...',
@@ -72,30 +72,30 @@ it('proxy #getUserProfile() call to the profiler corresponded to the user platfo
   expect(fooProfiler.getUserProfile).toHaveBeenCalledTimes(2);
   expect(fooProfiler.getUserProfile).toHaveBeenNthCalledWith(
     1,
-    fooChannel,
+    fooAgent,
     fooUser1,
   );
   expect(fooProfiler.getUserProfile).toHaveBeenNthCalledWith(
     2,
-    fooChannel,
+    fooAgent,
     fooUser2,
   );
 
   expect(barProfiler.getUserProfile).toHaveBeenCalledTimes(1);
-  expect(barProfiler.getUserProfile).toHaveBeenCalledWith(barChannel, barUser1);
+  expect(barProfiler.getUserProfile).toHaveBeenCalledWith(barAgent, barUser1);
 });
 
-it('throw if paltform of channel and user are not equal', async () => {
+it('throw if platform of agent and user are not equal', async () => {
   await expect(
-    profiler.getUserProfile(fooChannel, barUser1),
+    profiler.getUserProfile(fooAgent, barUser1),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"channel (foo) and user (bar) platforms mismatch"`,
+    `"agent (foo) and user (bar) platforms mismatch"`,
   );
 });
 
 it('throw if user from unsupported platform received', async () => {
-  const bazChannel = {
-    $$typeofChannel: true as const,
+  const bazAgent = {
+    $$typeofAgent: true as const,
     platform: 'baz',
     uid: 'baz.0',
   };
@@ -106,7 +106,7 @@ it('throw if user from unsupported platform received', async () => {
   };
 
   await expect(
-    profiler.getUserProfile(bazChannel, bazUser),
+    profiler.getUserProfile(bazAgent, bazUser),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `"getting profile on "baz" platform is not supported"`,
   );

@@ -11,7 +11,7 @@ import type {
 } from '@sociably/core';
 import {
   MetaApiWorker,
-  MetaApiChannel,
+  MetaApiAgent,
   MetaApiJob,
   MetaApiResult,
   MetaApiDispatchResponse,
@@ -67,7 +67,7 @@ type UploadAttachmentResult = {
  */
 export class InstagramBot
   implements
-    MessengerBot<MetaApiChannel>,
+    MessengerBot<MetaApiAgent>,
     SociablyBot<InstagramChat, MetaApiJob, MetaApiResult>
 {
   graphApiVersion: string;
@@ -207,7 +207,7 @@ export class InstagramBot
   }
 
   async requestApi<ResBody extends MetaApiResponseBody>({
-    channel: agentInput,
+    agent: agentInput,
     method = 'GET',
     url,
     params,
@@ -221,7 +221,7 @@ export class InstagramBot
     try {
       const { results } = await this.engine.dispatchJobs(account || null, [
         {
-          channel: account,
+          agent: account,
           request: { method, url, params },
           accessToken,
           asApp,

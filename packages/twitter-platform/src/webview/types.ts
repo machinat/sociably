@@ -17,7 +17,7 @@ export type TwitterAuthData = {
 export type TwitterAuthContext = {
   platform: 'twitter';
   thread: TwitterChat;
-  channel: TwitterUser;
+  agent: TwitterUser;
   user: TwitterUser;
   userProfile: UserProfile;
   agentId: string;

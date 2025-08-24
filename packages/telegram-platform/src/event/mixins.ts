@@ -40,7 +40,7 @@ import type {
 
 export interface EventBase {
   platform: typeof TELEGRAM;
-  channel: TelegramUser;
+  agent: TelegramUser;
   /**
    * The update's unique identifier. Update identifiers start from a certain
    * positive number and increase sequentially. This ID becomes especially handy
@@ -54,7 +54,7 @@ export interface EventBase {
 
 export const EventBase: EventBase = {
   platform: TELEGRAM,
-  get channel() {
+  get agent() {
     return new TelegramUser(this.botId, true);
   },
   get updateId() {

@@ -227,7 +227,7 @@ describe('.createRichMenu()', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(1);
     expect(bot.requestApi).toHaveBeenCalledWith({
-      channel,
+      agent: channel,
       accessToken: '__ACCESS_TOKEN__',
       method: 'POST',
       url: 'v2/bot/richmenu',
@@ -264,14 +264,14 @@ describe('.createRichMenu()', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(2);
     expect(bot.requestApi).toHaveBeenNthCalledWith(1, {
-      channel,
+      agent: channel,
       accessToken: '_MY_ACCESS_TOKEN_',
       method: 'POST',
       url: 'v2/bot/richmenu',
       params: richMenuBody,
     });
     expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
-      channel,
+      agent: channel,
       accessToken: '_MY_ACCESS_TOKEN_',
       method: 'POST',
       url: `/v2/bot/user/all/richmenu/${richMenuId}`,
@@ -344,7 +344,7 @@ test('.deleteRichMenu()', async () => {
 
   expect(bot.requestApi).toHaveBeenCalledTimes(1);
   expect(bot.requestApi).toHaveBeenCalledWith({
-    channel,
+    agent: channel,
     method: 'DELETE',
     url: 'v2/bot/richmenu/_RICH_MENU_ID_',
   });
@@ -365,7 +365,7 @@ describe('.setChannelWebhook', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(1);
     expect(bot.requestApi).toHaveBeenCalledWith({
-      channel,
+      agent: channel,
       method: 'PUT',
       url: 'v2/bot/channel/webhook/endpoint',
       params: { endpoint: 'https://example.com/foo' },
@@ -380,7 +380,7 @@ describe('.setChannelWebhook', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(2);
     expect(bot.requestApi).toHaveBeenCalledWith({
-      channel,
+      agent: channel,
       accessToken: '_ACCESS_TOKEN_',
       method: 'PUT',
       url: 'v2/bot/channel/webhook/endpoint',
@@ -409,13 +409,13 @@ describe('.setChannelWebhook', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(2);
     expect(bot.requestApi).toHaveBeenNthCalledWith(1, {
-      channel,
+      agent: channel,
       method: 'PUT',
       url: 'v2/bot/channel/webhook/endpoint',
       params: { endpoint: 'https://example.com/baz' },
     });
     expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
-      channel,
+      agent: channel,
       method: 'PUT',
       url: 'v2/bot/channel/webhook/endpoint',
       params: { endpoint: 'https://example.com/baz' },

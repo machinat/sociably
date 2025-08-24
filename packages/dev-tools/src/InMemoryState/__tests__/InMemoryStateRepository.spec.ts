@@ -4,7 +4,7 @@ import { InMemoryStateRepository } from '../InMemoryStateRepository.js';
 const repository = new InMemoryStateRepository();
 
 const fooInstance = {
-  $$typeofChannel: true as const,
+  $$typeofAgent: true as const,
   $$typeofThread: true as const,
   $$typeofUser: true as const,
   platform: 'test',
@@ -13,9 +13,9 @@ const fooInstance = {
 
 test.each([
   [
-    'channel',
-    repository.channelState(fooInstance),
-    repository.channelState('teat.bar'),
+    'agent',
+    repository.agentState(fooInstance),
+    repository.agentState('teat.bar'),
   ],
   [
     'thread',

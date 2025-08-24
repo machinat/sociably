@@ -272,7 +272,7 @@ describe('.requestApi()', () => {
 
     await expect(
       bot.requestApi({
-        channel: botUser,
+        agent: botUser,
         method: 'foo',
         params: { bar: 'baz' },
       }),
@@ -306,7 +306,7 @@ describe('.requestApi()', () => {
 
     try {
       await bot.requestApi({
-        channel: botUser,
+        agent: botUser,
         method: 'foo',
         params: { bar: 'baz' },
       });

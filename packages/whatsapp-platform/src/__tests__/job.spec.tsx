@@ -18,7 +18,7 @@ describe('createChatJobs', () => {
       ]),
     ).toEqual(
       ['FOO', 'BAR', 'BAZ'].map((textBody) => ({
-        channel: agent,
+        agent,
         key: chat.uid,
         request: {
           method: 'POST',
@@ -60,7 +60,7 @@ describe('createChatJobs', () => {
       ]),
     ).toEqual([
       {
-        channel: agent,
+        agent,
         key: chat.uid,
         request: {
           method: 'POST',
@@ -74,7 +74,7 @@ describe('createChatJobs', () => {
         },
       },
       {
-        channel: agent,
+        agent,
         key: chat.uid,
         request: {
           method: 'POST',
@@ -88,7 +88,7 @@ describe('createChatJobs', () => {
         },
       },
       {
-        channel: agent,
+        agent,
         key: chat.uid,
         request: {
           method: 'POST',
@@ -135,7 +135,7 @@ describe('createChatJobs', () => {
 
     expect(jobs).toEqual([
       {
-        channel: agent,
+        agent,
         key: chat.uid,
         request: {
           method: 'POST',
@@ -152,7 +152,7 @@ describe('createChatJobs', () => {
         registerResultKey: expect.any(String),
       },
       {
-        channel: agent,
+        agent,
         key: chat.uid,
         request: {
           method: 'POST',
@@ -170,7 +170,7 @@ describe('createChatJobs', () => {
         },
       },
       {
-        channel: agent,
+        agent,
         key: chat.uid,
         request: {
           method: 'POST',
@@ -186,7 +186,7 @@ describe('createChatJobs', () => {
         registerResultKey: expect.any(String),
       },
       {
-        channel: agent,
+        agent,
         key: chat.uid,
         request: {
           method: 'POST',
@@ -276,7 +276,7 @@ describe('createUploadingMediaJobs', () => {
       ]),
     ).toEqual([
       {
-        channel: agent,
+        agent,
         request: {
           method: 'POST',
           url: '1234567890/media',
@@ -310,7 +310,7 @@ describe('createUploadingMediaJobs', () => {
       ]),
     ).toEqual([
       {
-        channel: agent,
+        agent,
         request: {
           method: 'POST',
           url: '1234567890/media',

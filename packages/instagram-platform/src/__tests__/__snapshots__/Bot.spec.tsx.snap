@@ -4,13 +4,13 @@ exports[`.message(thread, content) message options 1`] = `
 {
   "jobs": [
     {
-      "assetTag": undefined,
-      "channel": InstagramAgent {
-        "$$typeofChannel": true,
+      "agent": InstagramAgent {
+        "$$typeofAgent": true,
         "id": "1234567890",
         "platform": "instagram",
         "username": undefined,
       },
+      "assetTag": undefined,
       "file": undefined,
       "key": "instagram.1234567890.9876543210",
       "request": {
@@ -31,13 +31,13 @@ exports[`.message(thread, content) message options 1`] = `
       },
     },
     {
-      "assetTag": undefined,
-      "channel": InstagramAgent {
-        "$$typeofChannel": true,
+      "agent": InstagramAgent {
+        "$$typeofAgent": true,
         "id": "1234567890",
         "platform": "instagram",
         "username": undefined,
       },
+      "assetTag": undefined,
       "file": undefined,
       "key": "instagram.1234567890.9876543210",
       "request": {
@@ -94,13 +94,13 @@ exports[`.message(thread, content) message options 1`] = `
     {
       "payload": [
         {
-          "assetTag": undefined,
-          "channel": InstagramAgent {
-            "$$typeofChannel": true,
+          "agent": InstagramAgent {
+            "$$typeofAgent": true,
             "id": "1234567890",
             "platform": "instagram",
             "username": undefined,
           },
+          "assetTag": undefined,
           "file": undefined,
           "key": "instagram.1234567890.9876543210",
           "request": {
@@ -121,13 +121,13 @@ exports[`.message(thread, content) message options 1`] = `
           },
         },
         {
-          "assetTag": undefined,
-          "channel": InstagramAgent {
-            "$$typeofChannel": true,
+          "agent": InstagramAgent {
+            "$$typeofAgent": true,
             "id": "1234567890",
             "platform": "instagram",
             "username": undefined,
           },
+          "assetTag": undefined,
           "file": undefined,
           "key": "instagram.1234567890.9876543210",
           "request": {
@@ -181,13 +181,13 @@ exports[`.message(thread, content) send messages to me/messages api 1`] = `
 {
   "jobs": [
     {
-      "assetTag": undefined,
-      "channel": InstagramAgent {
-        "$$typeofChannel": true,
+      "agent": InstagramAgent {
+        "$$typeofAgent": true,
         "id": "1234567890",
         "platform": "instagram",
         "username": undefined,
       },
+      "assetTag": undefined,
       "file": undefined,
       "key": "instagram.1234567890.9876543210",
       "request": {
@@ -208,13 +208,13 @@ exports[`.message(thread, content) send messages to me/messages api 1`] = `
       },
     },
     {
-      "assetTag": undefined,
-      "channel": InstagramAgent {
-        "$$typeofChannel": true,
+      "agent": InstagramAgent {
+        "$$typeofAgent": true,
         "id": "1234567890",
         "platform": "instagram",
         "username": undefined,
       },
+      "assetTag": undefined,
       "file": undefined,
       "key": "instagram.1234567890.9876543210",
       "request": {
@@ -271,13 +271,13 @@ exports[`.message(thread, content) send messages to me/messages api 1`] = `
     {
       "payload": [
         {
-          "assetTag": undefined,
-          "channel": InstagramAgent {
-            "$$typeofChannel": true,
+          "agent": InstagramAgent {
+            "$$typeofAgent": true,
             "id": "1234567890",
             "platform": "instagram",
             "username": undefined,
           },
+          "assetTag": undefined,
           "file": undefined,
           "key": "instagram.1234567890.9876543210",
           "request": {
@@ -298,13 +298,13 @@ exports[`.message(thread, content) send messages to me/messages api 1`] = `
           },
         },
         {
-          "assetTag": undefined,
-          "channel": InstagramAgent {
-            "$$typeofChannel": true,
+          "agent": InstagramAgent {
+            "$$typeofAgent": true,
             "id": "1234567890",
             "platform": "instagram",
             "username": undefined,
           },
+          "assetTag": undefined,
           "file": undefined,
           "key": "instagram.1234567890.9876543210",
           "request": {

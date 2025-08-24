@@ -350,7 +350,7 @@ test('.checkAuthData(data)', () => {
     ok: true,
     contextDetails: {
       agentUsername: 'jojodoe123',
-      channel: new InstagramAgent('1234567890', 'jojodoe123'),
+      agent: new InstagramAgent('1234567890', 'jojodoe123'),
       thread: new InstagramChat('1234567890', { id: '9876543210' }),
       user: new InstagramUser('1234567890', '9876543210'),
       userProfile: new UserProfile(profileData),
@@ -366,7 +366,7 @@ test('.checkAuthData(data)', () => {
     ok: true,
     contextDetails: {
       agentUsername: 'jojodoe123',
-      channel: new InstagramAgent('5555555555', 'jojodoe123'),
+      agent: new InstagramAgent('5555555555', 'jojodoe123'),
       thread: new InstagramChat('5555555555', { id: '6666666666' }),
       user: new InstagramUser('5555555555', '6666666666'),
       userProfile: null,

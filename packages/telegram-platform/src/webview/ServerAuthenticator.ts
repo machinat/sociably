@@ -318,12 +318,12 @@ export class TelegramServerAuthenticator
     try {
       const [chatMember, chatData] = await Promise.all([
         this.bot.requestApi({
-          channel: agent,
+          agent,
           method: 'getChatMember',
           params: { chat_id: chatId, user_id: userId },
         }),
         this.bot.requestApi({
-          channel: agent,
+          agent,
           method: 'getChat',
           params: { chat_id: chatId },
         }),

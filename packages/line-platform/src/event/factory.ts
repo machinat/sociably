@@ -36,14 +36,14 @@ export const makeEvent = <
   proto: Proto,
 ): {
   payload: LineRawEvent;
-  channel: LineChannel;
+  agent: LineChannel;
   user: LineUser;
   thread: LineChat;
 } & Proto => {
   const event = Object.create(proto);
 
   event.payload = payload;
-  event.channel = channel;
+  event.agent = channel;
   event.thread = thread;
   event.user = user;
 

@@ -261,7 +261,7 @@ describe('subscription management', () => {
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
       expect(bot.requestApi).toHaveBeenCalledWith({
-        channel: agent,
+        agent,
         accessToken: '_ACCESS_TOKEN_',
         method: 'POST',
         url: 'me/subscribed_apps',
@@ -289,7 +289,7 @@ describe('subscription management', () => {
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
       expect(bot.requestApi).toHaveBeenCalledWith({
-        channel: agent,
+        agent,
         method: 'POST',
         url: 'me/subscribed_apps',
         params: {
@@ -339,7 +339,7 @@ describe('subscription management', () => {
 
       expect(bot.requestApi).toHaveBeenCalledTimes(1);
       expect(bot.requestApi).toHaveBeenCalledWith({
-        channel: agent,
+        agent,
         method: 'DELETE',
         url: 'me/subscribed_apps',
       });
@@ -417,7 +417,7 @@ describe('subscription management', () => {
 
       expect(bot.requestApi).toHaveBeenCalledTimes(2);
       expect(bot.requestApi).toHaveBeenNthCalledWith(1, {
-        channel: agent,
+        agent,
         method: 'GET',
         url: 'me/messenger_profile',
         params: {
@@ -434,7 +434,7 @@ describe('subscription management', () => {
         accessToken: '_ACCESS_TOKEN_',
       });
       expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
-        channel: agent,
+        agent,
         method: 'POST',
         url: 'me/messenger_profile',
         params: {
@@ -471,7 +471,7 @@ describe('subscription management', () => {
 
       expect(bot.requestApi).toHaveBeenCalledTimes(3);
       expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
-        channel: agent,
+        agent,
         method: 'DELETE',
         url: 'me/messenger_profile',
         params: {
@@ -480,7 +480,7 @@ describe('subscription management', () => {
         },
       });
       expect(bot.requestApi).toHaveBeenNthCalledWith(3, {
-        channel: agent,
+        agent,
         method: 'POST',
         url: 'me/messenger_profile',
         params: {
@@ -518,7 +518,7 @@ describe('subscription management', () => {
 
       expect(bot.requestApi).toHaveBeenCalledTimes(2);
       expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
-        channel: agent,
+        agent,
         method: 'POST',
         url: 'me/messenger_profile',
         params: {

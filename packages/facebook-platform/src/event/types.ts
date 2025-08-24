@@ -48,7 +48,7 @@ interface EventObject<
   type: Type;
   thread: Thread;
   user: User;
-  channel: FacebookPage;
+  agent: FacebookPage;
   payload: FacebookRawEvent;
 }
 

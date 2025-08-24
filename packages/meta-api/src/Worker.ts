@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import fetch from 'node-fetch';
 import FormStream from 'formstream';
-import type { AgentSettingsAccessor, SociablyChannel } from '@sociably/core';
+import type { AgentSettingsAccessor, SociablyAgent } from '@sociably/core';
 import type { SociablyWorker } from '@sociably/core/engine';
 import SociablyQueue, { JobResponse } from '@sociably/core/queue';
 import { LRUCache } from 'lru-cache';
@@ -19,7 +19,7 @@ type MetaSendingSettings = {
   accessToken: string;
 };
 type MetaAgentSettingsAccessor = AgentSettingsAccessor<
-  SociablyChannel,
+  SociablyAgent,
   MetaSendingSettings
 >;
 
@@ -165,16 +165,16 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
     }
   }
 
-  private async _getAccessTokensOfChannels(
-    channels: SociablyChannel[],
+  private async _getAccessTokensOfAgents(
+    Agents: SociablyAgent[],
   ): Promise<Map<string, string>> {
-    const uniqChannelsMap = new Map(channels.map((chan) => [chan.uid, chan]));
-    const uniqChannels = [...uniqChannelsMap.values()];
+    const uniqAgentsMap = new Map(Agents.map((chan) => [chan.uid, chan]));
+    const uniqAgents = [...uniqAgentsMap.values()];
 
     const settings =
-      await this._agentSettingsAccessor.getAgentSettingsBatch(uniqChannels);
+      await this._agentSettingsAccessor.getAgentSettingsBatch(uniqAgents);
     return new Map(
-      uniqChannels
+      uniqAgents
         .map((chan, i) => [chan.uid, settings[i]?.accessToken])
         .filter((tokenPair): tokenPair is [string, string] => !!tokenPair[1]),
     );
@@ -192,10 +192,10 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
     );
     const batchRequests: MetaBatchRequest[] = [];
 
-    const channelTokenMap = await this._getAccessTokensOfChannels(
+    const agentTokenMap = await this._getAccessTokensOfAgents(
       jobs
-        .map((job) => job.channel)
-        .filter((channel): channel is SociablyChannel => !!channel),
+        .map((job) => job.agent)
+        .filter((agent): agent is SociablyAgent => !!agent),
     );
     let rootAccessToken: string | undefined;
 
@@ -207,7 +207,7 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
         file,
         registerResultKey,
         consumeResult,
-        channel,
+        agent,
         accessToken: accessTokenInput,
       } = job;
 
@@ -215,8 +215,8 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
         accessTokenInput ||
         (job.asApp
           ? `${this._appId}|${this._appSecret}`
-          : channel
-          ? channelTokenMap.get(channel.uid) || this.defaultAccessToken
+          : agent
+          ? agentTokenMap.get(agent.uid) || this.defaultAccessToken
           : this.defaultAccessToken);
       if (!rootAccessToken) {
         rootAccessToken = accessToken;
@@ -229,7 +229,7 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
           result: { code: 0, headers: {}, body: {} },
           error: new Error(
             `No access token available for ${
-              channel ? `channel ${channel.uid}` : 'job'
+              agent ? `agent ${agent.uid}` : 'job'
             }`,
           ),
         };
@@ -301,7 +301,9 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
           if (typeof file.data === 'string' || Buffer.isBuffer(file.data)) {
             filesForm.buffer(
               filename,
-              Buffer.from(file.data),
+              typeof file.data === 'string'
+                ? Buffer.from(file.data)
+                : file.data,
               file.fileName as string,
               file.contentType,
             );

@@ -57,7 +57,7 @@ type TwitterBotOptions = {
 
 type ApiCallOptions = {
   /** The agent user to make the API call with */
-  channel?: string | TwitterUser;
+  agent?: string | TwitterUser;
   /** HTTP method */
   method: string;
   /** API request URL relative to https://api.twitter.com/ */
@@ -146,13 +146,13 @@ export class TwitterBot
   }
 
   async requestApi<Result>({
-    channel,
+    agent,
     method,
     url,
     params = {},
     asApplication = false,
   }: ApiCallOptions): Promise<Result> {
-    const agentId = typeof channel === 'string' ? channel : channel?.id;
+    const agentId = typeof agent === 'string' ? agent : agent?.id;
     const target = agentId ? new TweetTarget(agentId) : null;
     try {
       const response = await this.engine.dispatchJobs(target, [

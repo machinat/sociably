@@ -16,7 +16,7 @@ const createEvent = <User extends null | SociablyUser>(
   event.category = category || 'default';
   event.type = type;
   event.payload = payload;
-  event.channel = null;
+  event.agent = null;
   event.thread = thread;
   event.user = user;
 

@@ -7,7 +7,7 @@ export type MemoAuthData = {
 
 export type MemoAuthContext = {
   platform: 'memo';
-  channel: null;
+  agent: null;
   user: MemoCacheTarget;
   thread: MemoCacheTarget;
   loginAt: Date;

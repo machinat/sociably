@@ -12,7 +12,7 @@ const fooEvent = {
   platform: 'test',
   category: 'foo',
   type: 'message',
-  channel: { platform: 'test', uid: 'foo:123' },
+  agent: { platform: 'test', uid: 'foo:123' },
   thread: { platform: 'test', uid: 'foo:123' },
   user: { platform: 'test', uid: 'foo:123' },
   payload: { id: '1234567890' },

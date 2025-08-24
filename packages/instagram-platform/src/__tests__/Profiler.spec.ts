@@ -51,8 +51,8 @@ test('fetch profile from api', async () => {
   expect(bot.requestApi).toHaveReturnedTimes(1);
   expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
     {
-      "channel": InstagramAgent {
-        "$$typeofChannel": true,
+      "agent": InstagramAgent {
+        "$$typeofAgent": true,
         "id": "1234567890",
         "platform": "instagram",
         "username": undefined,

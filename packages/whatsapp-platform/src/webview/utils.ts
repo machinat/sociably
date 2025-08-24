@@ -15,7 +15,7 @@ export const getAuthContextDetails = (
   return {
     user: new WhatsAppUser(userNumberId),
     thread: new WhatsAppChat(agentNumberId, userNumberId),
-    channel: new WhatsAppAgent(agentNumberId),
+    agent: new WhatsAppAgent(agentNumberId),
     agentNumber,
   };
 };

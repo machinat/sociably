@@ -44,7 +44,7 @@ export class NoneServerAuthenticator
     return {
       ok: true,
       contextDetails: {
-        channel: null,
+        agent: null,
         user: null,
         thread: null,
       },

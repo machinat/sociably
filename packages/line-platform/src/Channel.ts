@@ -1,4 +1,4 @@
-import type { SociablyChannel } from '@sociably/core';
+import type { SociablyAgent } from '@sociably/core';
 import type { MarshallableInstance } from '@sociably/core/base/Marshaler.js';
 import { LINE } from './constant.js';
 
@@ -7,7 +7,7 @@ type LineChannelValue = {
 };
 
 class LineChannel
-  implements SociablyChannel, MarshallableInstance<LineChannelValue>
+  implements SociablyAgent, MarshallableInstance<LineChannelValue>
 {
   static typeName = 'LineChannel';
   static fromJSONValue(value: LineChannelValue): LineChannel {
@@ -17,7 +17,7 @@ class LineChannel
 
   id: string;
   readonly platform = LINE;
-  readonly $$typeofChannel = true;
+  readonly $$typeofAgent = true;
 
   constructor(id: string) {
     this.id = id;

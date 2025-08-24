@@ -63,7 +63,7 @@ describe('.getUserProfile(user)', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(1);
     expect(bot.requestApi).toHaveBeenCalledWith({
-      channel: agent,
+      agent,
       method: 'GET',
       url: '1.1/users/show.json',
       params: {
@@ -89,7 +89,7 @@ describe('.getUserProfile(user)', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(1);
     expect(bot.requestApi).toHaveBeenCalledWith({
-      channel: agent,
+      agent,
       method: 'GET',
       url: '1.1/users/show.json',
       params: {
@@ -114,7 +114,7 @@ describe('.getUserProfile(user)', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(1);
     expect(bot.requestApi).toHaveBeenCalledWith({
-      channel: agent,
+      agent,
       method: 'GET',
       url: '1.1/account/settings.json',
     });
@@ -134,7 +134,7 @@ describe('.getUserProfile(user)', () => {
 
     expect(bot.requestApi).toHaveBeenCalledTimes(1);
     expect(bot.requestApi).toHaveBeenCalledWith({
-      channel: agent,
+      agent,
       method: 'GET',
       url: '1.1/users/show.json',
       params: {

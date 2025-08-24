@@ -389,8 +389,8 @@ it('open requests up to maxConnections', async () => {
 
 it('throw if agent settings not found', async () => {
   agentSettingsAccessor.getAgentSettings.mock.wrap(
-    (impl) => (channel) =>
-      channel.id === chatThread2.agentId ? null : impl(channel),
+    (impl) => (agent) =>
+      agent.id === chatThread2.agentId ? null : impl(agent),
   );
   const apiCall = twitterApi.post('/2/foo').reply(200, { data: { n: 1 } });
 

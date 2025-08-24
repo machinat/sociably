@@ -3,12 +3,12 @@
 exports[`createChatJobs(options)(chat, segments) add attached file data and info 1`] = `
 [
   {
-    "assetTag": undefined,
-    "channel": {
+    "agent": {
       "id": 12345,
       "platform": "test",
       "uid": "test.12345",
     },
+    "assetTag": undefined,
     "file": {
       "data": "_FOO_",
     },
@@ -29,12 +29,12 @@ exports[`createChatJobs(options)(chat, segments) add attached file data and info
     },
   },
   {
-    "assetTag": "BAR!",
-    "channel": {
+    "agent": {
       "id": 12345,
       "platform": "test",
       "uid": "test.12345",
     },
+    "assetTag": "BAR!",
     "file": {
       "contentType": "image/jpeg",
       "data": "_BAR_",
@@ -62,12 +62,12 @@ exports[`createChatJobs(options)(chat, segments) add attached file data and info
 exports[`createChatJobs(options)(chat, segments) respect options set in job value 1`] = `
 [
   {
-    "assetTag": undefined,
-    "channel": {
+    "agent": {
       "id": 12345,
       "platform": "test",
       "uid": "test.12345",
     },
+    "assetTag": undefined,
     "file": undefined,
     "key": "test.12345.67890",
     "request": {
@@ -88,12 +88,12 @@ exports[`createChatJobs(options)(chat, segments) respect options set in job valu
     },
   },
   {
-    "assetTag": undefined,
-    "channel": {
+    "agent": {
       "id": 12345,
       "platform": "test",
       "uid": "test.12345",
     },
+    "assetTag": undefined,
     "file": undefined,
     "key": "test.12345.67890",
     "request": {
@@ -119,12 +119,12 @@ exports[`createChatJobs(options)(chat, segments) respect options set in job valu
 exports[`createChatJobs(options)(chat, segments) respect the empty tag if messaging_type has already been set 1`] = `
 [
   {
-    "assetTag": undefined,
-    "channel": {
+    "agent": {
       "id": 12345,
       "platform": "test",
       "uid": "test.12345",
     },
+    "assetTag": undefined,
     "file": undefined,
     "key": "test.12345.67890",
     "request": {
@@ -149,12 +149,12 @@ exports[`createChatJobs(options)(chat, segments) respect the empty tag if messag
 exports[`createChatJobs(options)(chat, segments) with message metadata 1`] = `
 [
   {
-    "assetTag": undefined,
-    "channel": {
+    "agent": {
       "id": 12345,
       "platform": "test",
       "uid": "test.12345",
     },
+    "assetTag": undefined,
     "file": undefined,
     "key": "test.12345.67890",
     "request": {
@@ -170,12 +170,12 @@ exports[`createChatJobs(options)(chat, segments) with message metadata 1`] = `
     },
   },
   {
-    "assetTag": undefined,
-    "channel": {
+    "agent": {
       "id": 12345,
       "platform": "test",
       "uid": "test.12345",
     },
+    "assetTag": undefined,
     "file": undefined,
     "key": "test.12345.67890",
     "request": {
@@ -196,12 +196,12 @@ exports[`createChatJobs(options)(chat, segments) with message metadata 1`] = `
     },
   },
   {
-    "assetTag": undefined,
-    "channel": {
+    "agent": {
       "id": 12345,
       "platform": "test",
       "uid": "test.12345",
     },
+    "assetTag": undefined,
     "file": undefined,
     "key": "test.12345.67890",
     "request": {
@@ -216,12 +216,12 @@ exports[`createChatJobs(options)(chat, segments) with message metadata 1`] = `
     },
   },
   {
-    "assetTag": undefined,
-    "channel": {
+    "agent": {
       "id": 12345,
       "platform": "test",
       "uid": "test.12345",
     },
+    "assetTag": undefined,
     "file": undefined,
     "key": "test.12345.67890",
     "request": {
@@ -242,12 +242,12 @@ exports[`createChatJobs(options)(chat, segments) with message metadata 1`] = `
     },
   },
   {
-    "assetTag": undefined,
-    "channel": {
+    "agent": {
       "id": 12345,
       "platform": "test",
       "uid": "test.12345",
     },
+    "assetTag": undefined,
     "file": undefined,
     "key": "test.12345.67890",
     "request": {

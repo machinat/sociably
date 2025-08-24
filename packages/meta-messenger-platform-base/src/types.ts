@@ -8,7 +8,7 @@ import type {
 import type { IntermediateSegment } from '@sociably/core/renderer';
 import type {
   MetaApiUploadingFile,
-  MetaApiChannel,
+  MetaApiAgent,
   MetaApiBot,
 } from '@sociably/meta-api';
 import type {
@@ -141,13 +141,12 @@ export type MessengerUser = SociablyUser & {
   id: string;
 };
 
-export type MessengerBot<Channel extends MetaApiChannel> =
-  MetaApiBot<Channel> & {
-    uploadChatAttachment(
-      channel: string | Channel,
-      node: SociablyNode,
-    ): Promise<null | { attachmentId: string }>;
-  };
+export type MessengerBot<Agent extends MetaApiAgent> = MetaApiBot<Agent> & {
+  uploadChatAttachment(
+    agent: string | Agent,
+    node: SociablyNode,
+  ): Promise<null | { attachmentId: string }>;
+};
 
 export type SetSubscribedAppOptions = {
   /** The page object fields to be subscribed */

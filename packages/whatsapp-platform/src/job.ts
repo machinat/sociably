@@ -15,7 +15,7 @@ export const createChatJobs = (
     if (segment.type === 'text') {
       jobs.push({
         key: chat.uid,
-        channel: chat.agent,
+        agent: chat.agent,
         request: {
           method: 'POST',
           url: `${chat.agentNumberId}/messages`,
@@ -34,7 +34,7 @@ export const createChatJobs = (
       if (file) {
         jobs.push({
           key: chat.uid,
-          channel: chat.agent,
+          agent: chat.agent,
           request: {
             method: 'POST',
             url: `${chat.agentNumberId}/media`,
@@ -51,7 +51,7 @@ export const createChatJobs = (
 
       jobs.push({
         key: chat.uid,
-        channel: chat.agent,
+        agent: chat.agent,
         request: {
           method: 'POST',
           url: `${chat.agentNumberId}/messages`,
@@ -103,7 +103,7 @@ export const createUploadingMediaJobs = (
   return [
     {
       key: undefined,
-      channel: agent,
+      agent,
       request: {
         method: 'POST',
         url: `${agent.id}/media`,

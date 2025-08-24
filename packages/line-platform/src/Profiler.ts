@@ -23,7 +23,7 @@ export class LineProfiler implements UserProfiler<LineChnnel, LineUser> {
   }
 
   async getUserProfile(
-    channel: string | LineChnnel,
+    agent: string | LineChnnel,
     user: string | LineUser,
     { inChat }: GetUserProfileOptions = {},
   ): Promise<LineUserProfile> {
@@ -37,7 +37,7 @@ export class LineProfiler implements UserProfiler<LineChnnel, LineUser> {
       : `v2/bot/profile/${userId}`;
 
     const profileData: LineRawUserProfile = await this.bot.requestApi({
-      channel,
+      agent,
       method: 'GET',
       url: requestApi,
     });
@@ -47,7 +47,7 @@ export class LineProfiler implements UserProfiler<LineChnnel, LineUser> {
 
   /** Get profile object of a group chat. Throws if a user/room chat is received. */
   async getGroupProfile(
-    channel: string | LineChnnel,
+    agent: string | LineChnnel,
     chat: string | LineChat,
   ): Promise<LineGroupProfile> {
     if (typeof chat !== 'string' && chat.type !== 'group') {
@@ -56,7 +56,7 @@ export class LineProfiler implements UserProfiler<LineChnnel, LineUser> {
 
     const chatId = typeof chat === 'string' ? chat : chat.id;
     const groupSummary: LineGroupData = await this.bot.requestApi({
-      channel,
+      agent,
       method: 'GET',
       url: `v2/bot/group/${chatId}/summary`,
     });

@@ -1,6 +1,6 @@
 // tables
 export const DEFAULT_GLOBAL_STATE_TABLE_NAME = 'SociablyGlobalStates';
-export const DEFAULT_CHANNEL_STATE_TABLE_NAME = 'SociablyChannelStates';
+export const DEFAULT_AGENT_STATE_TABLE_NAME = 'SociablyAgentStates';
 export const DEFAULT_THREAD_STATE_TABLE_NAME = 'SociablyThreadStates';
 export const DEFAULT_USER_STATE_TABLE_NAME = 'SociablyUserStates';
 

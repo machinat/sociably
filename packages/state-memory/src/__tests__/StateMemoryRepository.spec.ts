@@ -18,7 +18,7 @@ const stateAccessor = moxy<StateAccessor>({
 });
 
 const baseStateRepository = moxy<BaseStateRepository>({
-  channelState: () => stateAccessor,
+  agentState: () => stateAccessor,
   threadState: () => stateAccessor,
   userState: () => stateAccessor,
   globalState: () => stateAccessor,
@@ -31,38 +31,56 @@ beforeEach(() => {
 
 const repository = new StateMemoryRepository(baseStateRepository);
 
-const fooInstance = {
-  $$typeofChannel: true as const,
-  $$typeofUser: true as const,
-  $$typeofThread: true as const,
+const agent = {
+  $$typeofAgent: true as const,
   platform: 'test',
-  uid: 'test.foo',
+  uid: 'agent.test',
 };
-const barInstance = {
-  $$typeofChannel: true as const,
-  $$typeofUser: true as const,
+const anotherAgent = {
+  $$typeofAgent: true as const,
+  platform: 'test',
+  uid: 'another_agent.test',
+};
+
+const thread = {
   $$typeofThread: true as const,
   platform: 'test',
-  uid: 'test.bar',
+  uid: 'thread.test',
+};
+const anotherThread = {
+  $$typeofThread: true as const,
+  platform: 'test',
+  uid: 'another_thread.test',
+};
+
+const user = {
+  $$typeofUser: true as const,
+  platform: 'test',
+  uid: 'user.test',
+};
+const anotherUser = {
+  $$typeofUser: true as const,
+  platform: 'test',
+  uid: 'another_user.test',
 };
 
 describe.each([
   [
-    'channel memory',
-    repository.channelMemory(fooInstance),
-    repository.channelMemory(barInstance),
+    'agent memory',
+    repository.agentMemory(agent),
+    repository.agentMemory(anotherAgent),
     'channel',
   ],
   [
     'thread memory',
-    repository.threadMemory(fooInstance),
-    repository.threadMemory(barInstance),
+    repository.threadMemory(thread),
+    repository.threadMemory(anotherThread),
     'thread',
   ],
   [
     'user memory',
-    repository.userMemory(fooInstance),
-    repository.userMemory(barInstance),
+    repository.userMemory(user),
+    repository.userMemory(anotherUser),
     'user',
   ],
   [

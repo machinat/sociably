@@ -35,7 +35,7 @@ export const getAuthContextDetails = ({
   ref,
 }: LineAuthData): ContextDetails<LineAuthContext> => ({
   user: new LineUser(providerId, userId),
-  channel: channelId ? new LineChannel(channelId) : null,
+  agent: channelId ? new LineChannel(channelId) : null,
   thread: !channelId
     ? null
     : groupId

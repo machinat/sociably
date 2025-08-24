@@ -48,7 +48,7 @@ export class MemoServerAuthenticator
     return {
       ok: true,
       contextDetails: {
-        channel: null,
+        agent: null,
         user: new MemoCacheTarget('localStorage', userId),
         thread: new MemoCacheTarget('sessionStorage', threadId),
       },

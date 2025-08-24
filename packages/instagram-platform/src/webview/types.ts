@@ -26,7 +26,7 @@ export type InstagramAuthData = {
 export type InstagramAuthContext = {
   platform: typeof INSTAGRAM;
   thread: InstagramChat;
-  channel: InstagramAgent;
+  agent: InstagramAgent;
   user: null | InstagramUser;
   userProfile: null | UserProfile;
   agentUsername: string;

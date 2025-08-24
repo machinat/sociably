@@ -2,7 +2,7 @@ import { formatNode } from '@sociably/core/utils';
 import type { DispatchableSegment } from '@sociably/core/engine';
 import type {
   MetaApiJob,
-  MetaApiChannel,
+  MetaApiAgent,
   MetaApiUploadingFile,
 } from '@sociably/meta-api';
 import {
@@ -21,10 +21,10 @@ import type {
 const POST = 'POST';
 
 export const createChatJobs = <
-  Channel extends MetaApiChannel,
+  Agent extends MetaApiAgent,
   Chat extends MessengerChat,
 >(
-  channel: Channel,
+  agent: Agent,
   options?: MessagingOptions,
 ) => {
   let isOneTimeTokenUsed = false;
@@ -101,7 +101,7 @@ export const createChatJobs = <
           params,
         },
         key: chat.uid,
-        channel,
+        agent,
         file,
         assetTag,
       };
@@ -112,9 +112,9 @@ export const createChatJobs = <
 };
 
 export const createUploadChatAttachmentJobs =
-  <Channel extends MetaApiChannel>({ platform }: { platform?: string } = {}) =>
+  <Agent extends MetaApiAgent>({ platform }: { platform?: string } = {}) =>
   (
-    channel: Channel,
+    agent: Agent,
     segments: DispatchableSegment<MessengerSegmentValue>[],
   ): MetaApiJob[] => {
     if (segments.length !== 1) {
@@ -149,7 +149,7 @@ export const createUploadChatAttachmentJobs =
 
     return [
       {
-        channel,
+        agent,
         file,
         request: {
           method: POST,

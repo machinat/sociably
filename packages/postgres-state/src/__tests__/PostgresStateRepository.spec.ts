@@ -1,10 +1,10 @@
 import { Pool } from 'pg';
 import moxy, { isMoxy } from '@moxyjs/moxy';
-import { SociablyThread, SociablyChannel, SociablyUser } from '@sociably/core';
+import { SociablyThread, SociablyAgent, SociablyUser } from '@sociably/core';
 import { StateAccessor } from '@sociably/core/base/StateRepository.js';
 import {
   DEFAULT_GLOBAL_STATE_TABLE_NAME,
-  DEFAULT_CHANNEL_STATE_TABLE_NAME,
+  DEFAULT_AGENT_STATE_TABLE_NAME,
   DEFAULT_THREAD_STATE_TABLE_NAME,
   DEFAULT_USER_STATE_TABLE_NAME,
   FIELD_STATE_KEY,
@@ -67,7 +67,7 @@ describe.each<[string, Record<string, string>]>([
     'specified table',
     {
       globalStateTableName: 'my_global_state',
-      channelStateTableName: 'my_channel_state',
+      agentStateTableName: 'my_agent_state',
       threadStateTableName: 'my_thread_state',
       userStateTableName: 'my_user_state',
     },
@@ -77,7 +77,7 @@ describe.each<[string, Record<string, string>]>([
     {
       schemaName: 'my_schema',
       globalStateTableName: 'my_global_state',
-      channelStateTableName: 'my_channel_state',
+      agentStateTableName: 'my_agent_state',
       threadStateTableName: 'my_thread_state',
       userStateTableName: 'my_user_state',
     },
@@ -94,8 +94,8 @@ describe.each<[string, Record<string, string>]>([
   });
 
   const schemaPrefix = options.schemaName ? `"${options.schemaName}".` : '';
-  const channelStateTableName =
-    options.channelStateTableName || DEFAULT_CHANNEL_STATE_TABLE_NAME;
+  const agentStateTableName =
+    options.agentStateTableName || DEFAULT_AGENT_STATE_TABLE_NAME;
   const threadStateTableName =
     options.threadStateTableName || DEFAULT_THREAD_STATE_TABLE_NAME;
   const userStateTableName =
@@ -112,21 +112,21 @@ describe.each<[string, Record<string, string>]>([
     ]
   >([
     [
-      'channel state',
-      repository.channelState({
+      'agent state',
+      repository.agentState({
         platform: 'test',
         uid: 'test.foo',
-      } as SociablyChannel),
-      `${schemaPrefix}"${channelStateTableName}"`,
+      } as SociablyAgent),
+      `${schemaPrefix}"${agentStateTableName}"`,
       'test.foo',
     ],
     [
-      'channel state with scope id',
-      repository.channelState({
+      'agent state with scope id',
+      repository.agentState({
         platform: 'test',
         uid: 'test.foo.1',
-      } as SociablyChannel),
-      `${schemaPrefix}"${channelStateTableName}"`,
+      } as SociablyAgent),
+      `${schemaPrefix}"${agentStateTableName}"`,
       'test.foo.1',
     ],
     [

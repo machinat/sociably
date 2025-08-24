@@ -12,7 +12,7 @@ export type WhatsAppAuthData = {
 
 export type WhatsAppAuthContext = {
   platform: typeof WHATSAPP;
-  channel: WhatsAppAgent;
+  agent: WhatsAppAgent;
   thread: WhatsAppChat;
   user: WhatsAppUser;
   agentNumber: string;

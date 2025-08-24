@@ -1,6 +1,6 @@
 import { readFile } from 'fs/promises';
 import moxy from '@moxyjs/moxy';
-import { MetaApiChannel } from '@sociably/meta-api';
+import { MetaApiAgent } from '@sociably/meta-api';
 import createEventFactory from '../factory.js';
 import {
   TextEventProto,
@@ -14,8 +14,8 @@ const pageId = '__PAGE_ID__';
 const page = {
   platform: 'test',
   id: pageId,
-} as MetaApiChannel;
-const createChannel = moxy(() => page);
+} as MetaApiAgent;
+const createAgent = moxy(() => page);
 
 const chat = {
   platform: 'test',
@@ -33,13 +33,13 @@ const user = {
 const createUser = moxy(() => user);
 
 afterEach(() => {
-  createChannel.mock.clear();
+  createAgent.mock.clear();
   createChat.mock.clear();
   createUser.mock.clear();
 });
 
 const createEvent = createEventFactory({
-  createChannel,
+  createAgent,
   createChat,
   createUser,
 });

@@ -47,7 +47,7 @@ interface EventObject<
   type: Type;
   thread: Thread;
   user: User;
-  channel: InstagramAgent;
+  agent: InstagramAgent;
   payload: InstagramRawEvent;
 }
 

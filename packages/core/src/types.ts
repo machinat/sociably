@@ -166,15 +166,15 @@ export type RawProps = {
 export type RawElement = SociablyElement<RawProps, typeof SOCIABLY_RAW_TYPE>;
 
 /**
- * A channel represents an instance that user can communicate with. It could be
- * a phone number, an email address, an account on social media, etc. depending
- * on which commnication platform.
+ * An agent represents an instance that user can communicate with. It could be a
+ * phone number, an email address, an account on social media, etc. depending on
+ * which commnication platform.
  */
-export type SociablyChannel = {
-  readonly $$typeofChannel: true;
+export type SociablyAgent = {
+  readonly $$typeofAgent: true;
   readonly platform: string;
   /**
-   * The unique string id of the channel. It's promised to be unique while using
+   * The unique string id of the agent. It's promised to be unique while using
    * Sociably
    */
   readonly uid: string;
@@ -212,7 +212,7 @@ export type SociablyEvent<Payload> = {
   readonly payload: Payload;
   readonly thread: null | SociablyThread;
   readonly user: null | SociablyUser;
-  readonly channel: null | SociablyChannel;
+  readonly agent: null | SociablyAgent;
 };
 
 export type TextMessageMixin = {
@@ -351,7 +351,7 @@ export type PopEventWrapper<Context extends AnyEventContext, Response> = (
 
 export type PopErrorFn = (err: Error, scope?: ServiceScope) => void;
 
-export type DispatchTarget = SociablyChannel | SociablyThread;
+export type DispatchTarget = SociablyAgent | SociablyThread;
 
 export type DispatchFn<Job, Frame extends AnyDispatchFrame, Result> = (
   frame: Frame,
@@ -378,7 +378,7 @@ export type PlatformUtilities<
   dispatchWrapper: DispatchWrapper<Job, Frame, Result>;
 };
 
-export type AgentSettingsAccessor<Agent extends SociablyChannel, Settings> = {
+export type AgentSettingsAccessor<Agent extends SociablyAgent, Settings> = {
   getAgentSettings(agent: Agent): Promise<null | Settings>;
   getAgentSettingsBatch(agents: Agent[]): Promise<(null | Settings)[]>;
 };

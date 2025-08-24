@@ -49,7 +49,7 @@ exports[`fail if one single job fail 1`] = `
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "platform": "test",
           "uid": "foo",
         },
@@ -77,7 +77,7 @@ exports[`fail if one single job fail 1`] = `
     {
       "error": [GraphAPIError (OAuthException): you should not passed!],
       "job": {
-        "channel": {
+        "agent": {
           "platform": "test",
           "uid": "foo",
         },
@@ -109,7 +109,7 @@ exports[`fail if one single job fail 1`] = `
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "platform": "test",
           "uid": "bar",
         },
@@ -137,7 +137,7 @@ exports[`fail if one single job fail 1`] = `
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "platform": "test",
           "uid": "baz",
         },
@@ -177,7 +177,7 @@ exports[`job with accessToken 1`] = `
       "error": undefined,
       "job": {
         "accessToken": "__MY_SPECIAL_ACCESS_TOKEN__",
-        "channel": {
+        "agent": {
           "platform": "test",
           "uid": "foo",
         },
@@ -236,7 +236,7 @@ exports[`skip job when no access token available 1`] = `
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "platform": "test",
           "uid": "foo",
         },
@@ -263,7 +263,7 @@ exports[`skip job when no access token available 1`] = `
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "platform": "test",
           "uid": "foo",
         },
@@ -288,9 +288,9 @@ exports[`skip job when no access token available 1`] = `
       "success": true,
     },
     {
-      "error": [Error: No access token available for channel bar],
+      "error": [Error: No access token available for agent bar],
       "job": {
-        "channel": {
+        "agent": {
           "platform": "test",
           "uid": "bar",
         },
@@ -314,9 +314,9 @@ exports[`skip job when no access token available 1`] = `
       "success": false,
     },
     {
-      "error": [Error: No access token available for channel baz],
+      "error": [Error: No access token available for agent baz],
       "job": {
-        "channel": {
+        "agent": {
           "platform": "test",
           "uid": "baz",
         },
@@ -361,8 +361,8 @@ exports[`skip job when no access token available 1`] = `
     },
   ],
   "errors": [
-    [Error: No access token available for channel bar],
-    [Error: No access token available for channel baz],
+    [Error: No access token available for agent bar],
+    [Error: No access token available for agent baz],
   ],
   "success": false,
 }
@@ -422,7 +422,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -441,7 +441,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -460,7 +460,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -479,7 +479,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -498,7 +498,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -517,7 +517,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -536,7 +536,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -555,7 +555,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -574,7 +574,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -593,7 +593,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -612,7 +612,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -631,7 +631,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -650,7 +650,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -669,7 +669,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -688,7 +688,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -707,7 +707,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -726,7 +726,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -745,7 +745,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -764,7 +764,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -783,7 +783,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -802,7 +802,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -821,7 +821,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -840,7 +840,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -859,7 +859,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -878,7 +878,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -897,7 +897,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -916,7 +916,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -935,7 +935,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -954,7 +954,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -973,7 +973,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -992,7 +992,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -1011,7 +1011,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -1030,7 +1030,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -1049,7 +1049,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -1068,7 +1068,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -1087,7 +1087,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -1106,7 +1106,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -1125,7 +1125,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -1144,7 +1144,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -1163,7 +1163,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -1182,7 +1182,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -1201,7 +1201,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -1220,7 +1220,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -1239,7 +1239,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -1258,7 +1258,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -1277,7 +1277,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -1296,7 +1296,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -1315,7 +1315,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -1334,7 +1334,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "request": {
@@ -1353,7 +1353,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "key": "foo_thread",
@@ -1378,7 +1378,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "key": "foo_thread",
@@ -1403,7 +1403,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "consumeResult": {
@@ -1502,7 +1502,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "key": "foo_thread",
@@ -1527,7 +1527,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "key": "foo_thread",
@@ -1552,7 +1552,7 @@ exports[`using API result in following request registerResultKey & consumeResult
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "consumeResult": {
@@ -1644,7 +1644,7 @@ exports[`using API result in following request when job key is undeinfed 1`] = `
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "key": undefined,
@@ -1669,7 +1669,7 @@ exports[`using API result in following request when job key is undeinfed 1`] = `
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "key": undefined,
@@ -1694,7 +1694,7 @@ exports[`using API result in following request when job key is undeinfed 1`] = `
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "uid": "foo",
         },
         "consumeResult": {
@@ -1779,7 +1779,7 @@ exports[`with defaultAccessTokenOption 1`] = `
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "platform": "test",
           "uid": "foo",
         },
@@ -1806,7 +1806,7 @@ exports[`with defaultAccessTokenOption 1`] = `
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "platform": "test",
           "uid": "foo",
         },
@@ -1833,7 +1833,7 @@ exports[`with defaultAccessTokenOption 1`] = `
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "platform": "test",
           "uid": "bar",
         },
@@ -1860,7 +1860,7 @@ exports[`with defaultAccessTokenOption 1`] = `
     {
       "error": undefined,
       "job": {
-        "channel": {
+        "agent": {
           "platform": "test",
           "uid": "baz",
         },

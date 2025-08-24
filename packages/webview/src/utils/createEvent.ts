@@ -20,7 +20,7 @@ const createEvent = <
   event.category = category || 'default';
   event.type = type;
   event.payload = payload;
-  event.channel = null;
+  event.agent = null;
   event.thread = connection;
   event.user = user;
 

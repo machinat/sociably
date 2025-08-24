@@ -1,13 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`default table channel state .clear() 1`] = `
+exports[`default table agent state .clear() 1`] = `
 "
-        DELETE FROM "SociablyChannelStates"
+        DELETE FROM "SociablyAgentStates"
         WHERE "id" = $1;
       "
 `;
 
-exports[`default table channel state .clear() 2`] = `
+exports[`default table agent state .clear() 2`] = `
 [
   [
     "test.foo",
@@ -15,14 +15,14 @@ exports[`default table channel state .clear() 2`] = `
 ]
 `;
 
-exports[`default table channel state .delete(key) 1`] = `
+exports[`default table agent state .delete(key) 1`] = `
 "
-        DELETE FROM "SociablyChannelStates"
+        DELETE FROM "SociablyAgentStates"
         WHERE "id" = $1 AND "key" = $2;
       "
 `;
 
-exports[`default table channel state .delete(key) 2`] = `
+exports[`default table agent state .delete(key) 2`] = `
 [
   [
     "test.foo",
@@ -51,14 +51,14 @@ exports[`default table channel state .delete(key) 2`] = `
 ]
 `;
 
-exports[`default table channel state .get(key) 1`] = `
+exports[`default table agent state .get(key) 1`] = `
 "
-        SELECT * FROM "SociablyChannelStates"
+        SELECT * FROM "SociablyAgentStates"
         WHERE "id" = $1 AND "key" = $2;
       "
 `;
 
-exports[`default table channel state .get(key) 2`] = `
+exports[`default table agent state .get(key) 2`] = `
 [
   [
     "test.foo",
@@ -87,14 +87,14 @@ exports[`default table channel state .get(key) 2`] = `
 ]
 `;
 
-exports[`default table channel state .getAll() 1`] = `
+exports[`default table agent state .getAll() 1`] = `
 "
-        SELECT * FROM "SociablyChannelStates"
+        SELECT * FROM "SociablyAgentStates"
         WHERE "id" = $1;
       "
 `;
 
-exports[`default table channel state .getAll() 2`] = `
+exports[`default table agent state .getAll() 2`] = `
 [
   [
     "test.foo",
@@ -102,14 +102,14 @@ exports[`default table channel state .getAll() 2`] = `
 ]
 `;
 
-exports[`default table channel state .getAllStartWithKey(prefix) 1`] = `
+exports[`default table agent state .getAllStartWithKey(prefix) 1`] = `
 "
-        SELECT * FROM "SociablyChannelStates"
+        SELECT * FROM "SociablyAgentStates"
         WHERE "id" = $1 AND "key" LIKE $2;
       "
 `;
 
-exports[`default table channel state .getAllStartWithKey(prefix) 2`] = `
+exports[`default table agent state .getAllStartWithKey(prefix) 2`] = `
 [
   [
     "test.foo",
@@ -122,14 +122,14 @@ exports[`default table channel state .getAllStartWithKey(prefix) 2`] = `
 ]
 `;
 
-exports[`default table channel state .keys() 1`] = `
+exports[`default table agent state .keys() 1`] = `
 "
-        SELECT * FROM "SociablyChannelStates"
+        SELECT * FROM "SociablyAgentStates"
         WHERE "id" = $1;
       "
 `;
 
-exports[`default table channel state .keys() 2`] = `
+exports[`default table agent state .keys() 2`] = `
 [
   [
     "test.foo",
@@ -137,9 +137,9 @@ exports[`default table channel state .keys() 2`] = `
 ]
 `;
 
-exports[`default table channel state .set(key, value) 1`] = `
+exports[`default table agent state .set(key, value) 1`] = `
 "
-        INSERT INTO "SociablyChannelStates" (
+        INSERT INTO "SociablyAgentStates" (
           "id",
           "key",
           "data"
@@ -153,7 +153,7 @@ exports[`default table channel state .set(key, value) 1`] = `
       "
 `;
 
-exports[`default table channel state .set(key, value) 2`] = `
+exports[`default table agent state .set(key, value) 2`] = `
 [
   [
     "test.foo",
@@ -206,22 +206,22 @@ exports[`default table channel state .set(key, value) 2`] = `
 ]
 `;
 
-exports[`default table channel state .update(key, updater) delete entity if updater returns \`undefined\` 1`] = `
+exports[`default table agent state .update(key, updater) delete entity if updater returns \`undefined\` 1`] = `
 [
   "BEGIN",
   "
-        SELECT * FROM "SociablyChannelStates"
+        SELECT * FROM "SociablyAgentStates"
         WHERE "id" = $1 AND "key" = $2 FOR UPDATE;
       ",
   "
-        DELETE FROM "SociablyChannelStates"
+        DELETE FROM "SociablyAgentStates"
         WHERE "id" = $1 AND "key" = $2;
       ",
   "COMMIT",
 ]
 `;
 
-exports[`default table channel state .update(key, updater) delete entity if updater returns \`undefined\` 2`] = `
+exports[`default table agent state .update(key, updater) delete entity if updater returns \`undefined\` 2`] = `
 [
   [
     "test.foo",
@@ -234,18 +234,18 @@ exports[`default table channel state .update(key, updater) delete entity if upda
 ]
 `;
 
-exports[`default table channel state .update(key, updater) make no change if the new value is identical with old value 1`] = `
+exports[`default table agent state .update(key, updater) make no change if the new value is identical with old value 1`] = `
 [
   "BEGIN",
   "
-        SELECT * FROM "SociablyChannelStates"
+        SELECT * FROM "SociablyAgentStates"
         WHERE "id" = $1 AND "key" = $2 FOR UPDATE;
       ",
   "COMMIT",
 ]
 `;
 
-exports[`default table channel state .update(key, updater) make no change if the new value is identical with old value 2`] = `
+exports[`default table agent state .update(key, updater) make no change if the new value is identical with old value 2`] = `
 [
   [
     [
@@ -280,15 +280,15 @@ exports[`default table channel state .update(key, updater) make no change if the
 ]
 `;
 
-exports[`default table channel state .update(key, updater) update value 1`] = `
+exports[`default table agent state .update(key, updater) update value 1`] = `
 [
   "BEGIN",
   "
-        SELECT * FROM "SociablyChannelStates"
+        SELECT * FROM "SociablyAgentStates"
         WHERE "id" = $1 AND "key" = $2 FOR UPDATE;
       ",
   "
-        INSERT INTO "SociablyChannelStates" (
+        INSERT INTO "SociablyAgentStates" (
           "id",
           "key",
           "data"
@@ -304,7 +304,7 @@ exports[`default table channel state .update(key, updater) update value 1`] = `
 ]
 `;
 
-exports[`default table channel state .update(key, updater) update value 2`] = `
+exports[`default table agent state .update(key, updater) update value 2`] = `
 [
   [
     [
@@ -393,14 +393,14 @@ exports[`default table channel state .update(key, updater) update value 2`] = `
 ]
 `;
 
-exports[`default table channel state with scope id .clear() 1`] = `
+exports[`default table agent state with scope id .clear() 1`] = `
 "
-        DELETE FROM "SociablyChannelStates"
+        DELETE FROM "SociablyAgentStates"
         WHERE "id" = $1;
       "
 `;
 
-exports[`default table channel state with scope id .clear() 2`] = `
+exports[`default table agent state with scope id .clear() 2`] = `
 [
   [
     "test.foo.1",
@@ -408,14 +408,14 @@ exports[`default table channel state with scope id .clear() 2`] = `
 ]
 `;
 
-exports[`default table channel state with scope id .delete(key) 1`] = `
+exports[`default table agent state with scope id .delete(key) 1`] = `
 "
-        DELETE FROM "SociablyChannelStates"
+        DELETE FROM "SociablyAgentStates"
         WHERE "id" = $1 AND "key" = $2;
       "
 `;
 
-exports[`default table channel state with scope id .delete(key) 2`] = `
+exports[`default table agent state with scope id .delete(key) 2`] = `
 [
   [
     "test.foo.1",
@@ -444,14 +444,14 @@ exports[`default table channel state with scope id .delete(key) 2`] = `
 ]
 `;
 
-exports[`default table channel state with scope id .get(key) 1`] = `
+exports[`default table agent state with scope id .get(key) 1`] = `
 "
-        SELECT * FROM "SociablyChannelStates"
+        SELECT * FROM "SociablyAgentStates"
         WHERE "id" = $1 AND "key" = $2;
       "
 `;
 
-exports[`default table channel state with scope id .get(key) 2`] = `
+exports[`default table agent state with scope id .get(key) 2`] = `
 [
   [
     "test.foo.1",
@@ -480,14 +480,14 @@ exports[`default table channel state with scope id .get(key) 2`] = `
 ]
 `;
 
-exports[`default table channel state with scope id .getAll() 1`] = `
+exports[`default table agent state with scope id .getAll() 1`] = `
 "
-        SELECT * FROM "SociablyChannelStates"
+        SELECT * FROM "SociablyAgentStates"
         WHERE "id" = $1;
       "
 `;
 
-exports[`default table channel state with scope id .getAll() 2`] = `
+exports[`default table agent state with scope id .getAll() 2`] = `
 [
   [
     "test.foo.1",
@@ -495,14 +495,14 @@ exports[`default table channel state with scope id .getAll() 2`] = `
 ]
 `;
 
-exports[`default table channel state with scope id .getAllStartWithKey(prefix) 1`] = `
+exports[`default table agent state with scope id .getAllStartWithKey(prefix) 1`] = `
 "
-        SELECT * FROM "SociablyChannelStates"
+        SELECT * FROM "SociablyAgentStates"
         WHERE "id" = $1 AND "key" LIKE $2;
       "
 `;
 
-exports[`default table channel state with scope id .getAllStartWithKey(prefix) 2`] = `
+exports[`default table agent state with scope id .getAllStartWithKey(prefix) 2`] = `
 [
   [
     "test.foo.1",
@@ -515,14 +515,14 @@ exports[`default table channel state with scope id .getAllStartWithKey(prefix) 2
 ]
 `;
 
-exports[`default table channel state with scope id .keys() 1`] = `
+exports[`default table agent state with scope id .keys() 1`] = `
 "
-        SELECT * FROM "SociablyChannelStates"
+        SELECT * FROM "SociablyAgentStates"
         WHERE "id" = $1;
       "
 `;
 
-exports[`default table channel state with scope id .keys() 2`] = `
+exports[`default table agent state with scope id .keys() 2`] = `
 [
   [
     "test.foo.1",
@@ -530,9 +530,9 @@ exports[`default table channel state with scope id .keys() 2`] = `
 ]
 `;
 
-exports[`default table channel state with scope id .set(key, value) 1`] = `
+exports[`default table agent state with scope id .set(key, value) 1`] = `
 "
-        INSERT INTO "SociablyChannelStates" (
+        INSERT INTO "SociablyAgentStates" (
           "id",
           "key",
           "data"
@@ -546,7 +546,7 @@ exports[`default table channel state with scope id .set(key, value) 1`] = `
       "
 `;
 
-exports[`default table channel state with scope id .set(key, value) 2`] = `
+exports[`default table agent state with scope id .set(key, value) 2`] = `
 [
   [
     "test.foo.1",
@@ -599,22 +599,22 @@ exports[`default table channel state with scope id .set(key, value) 2`] = `
 ]
 `;
 
-exports[`default table channel state with scope id .update(key, updater) delete entity if updater returns \`undefined\` 1`] = `
+exports[`default table agent state with scope id .update(key, updater) delete entity if updater returns \`undefined\` 1`] = `
 [
   "BEGIN",
   "
-        SELECT * FROM "SociablyChannelStates"
+        SELECT * FROM "SociablyAgentStates"
         WHERE "id" = $1 AND "key" = $2 FOR UPDATE;
       ",
   "
-        DELETE FROM "SociablyChannelStates"
+        DELETE FROM "SociablyAgentStates"
         WHERE "id" = $1 AND "key" = $2;
       ",
   "COMMIT",
 ]
 `;
 
-exports[`default table channel state with scope id .update(key, updater) delete entity if updater returns \`undefined\` 2`] = `
+exports[`default table agent state with scope id .update(key, updater) delete entity if updater returns \`undefined\` 2`] = `
 [
   [
     "test.foo.1",
@@ -627,18 +627,18 @@ exports[`default table channel state with scope id .update(key, updater) delete 
 ]
 `;
 
-exports[`default table channel state with scope id .update(key, updater) make no change if the new value is identical with old value 1`] = `
+exports[`default table agent state with scope id .update(key, updater) make no change if the new value is identical with old value 1`] = `
 [
   "BEGIN",
   "
-        SELECT * FROM "SociablyChannelStates"
+        SELECT * FROM "SociablyAgentStates"
         WHERE "id" = $1 AND "key" = $2 FOR UPDATE;
       ",
   "COMMIT",
 ]
 `;
 
-exports[`default table channel state with scope id .update(key, updater) make no change if the new value is identical with old value 2`] = `
+exports[`default table agent state with scope id .update(key, updater) make no change if the new value is identical with old value 2`] = `
 [
   [
     [
@@ -673,15 +673,15 @@ exports[`default table channel state with scope id .update(key, updater) make no
 ]
 `;
 
-exports[`default table channel state with scope id .update(key, updater) update value 1`] = `
+exports[`default table agent state with scope id .update(key, updater) update value 1`] = `
 [
   "BEGIN",
   "
-        SELECT * FROM "SociablyChannelStates"
+        SELECT * FROM "SociablyAgentStates"
         WHERE "id" = $1 AND "key" = $2 FOR UPDATE;
       ",
   "
-        INSERT INTO "SociablyChannelStates" (
+        INSERT INTO "SociablyAgentStates" (
           "id",
           "key",
           "data"
@@ -697,7 +697,7 @@ exports[`default table channel state with scope id .update(key, updater) update 
 ]
 `;
 
-exports[`default table channel state with scope id .update(key, updater) update value 2`] = `
+exports[`default table agent state with scope id .update(key, updater) update value 2`] = `
 [
   [
     [
@@ -2751,14 +2751,14 @@ exports[`default table user state with scope id .update(key, updater) update val
 ]
 `;
 
-exports[`specified schema & table channel state .clear() 1`] = `
+exports[`specified schema & table agent state .clear() 1`] = `
 "
-        DELETE FROM "my_schema"."my_channel_state"
+        DELETE FROM "my_schema"."my_agent_state"
         WHERE "id" = $1;
       "
 `;
 
-exports[`specified schema & table channel state .clear() 2`] = `
+exports[`specified schema & table agent state .clear() 2`] = `
 [
   [
     "test.foo",
@@ -2766,14 +2766,14 @@ exports[`specified schema & table channel state .clear() 2`] = `
 ]
 `;
 
-exports[`specified schema & table channel state .delete(key) 1`] = `
+exports[`specified schema & table agent state .delete(key) 1`] = `
 "
-        DELETE FROM "my_schema"."my_channel_state"
+        DELETE FROM "my_schema"."my_agent_state"
         WHERE "id" = $1 AND "key" = $2;
       "
 `;
 
-exports[`specified schema & table channel state .delete(key) 2`] = `
+exports[`specified schema & table agent state .delete(key) 2`] = `
 [
   [
     "test.foo",
@@ -2802,14 +2802,14 @@ exports[`specified schema & table channel state .delete(key) 2`] = `
 ]
 `;
 
-exports[`specified schema & table channel state .get(key) 1`] = `
+exports[`specified schema & table agent state .get(key) 1`] = `
 "
-        SELECT * FROM "my_schema"."my_channel_state"
+        SELECT * FROM "my_schema"."my_agent_state"
         WHERE "id" = $1 AND "key" = $2;
       "
 `;
 
-exports[`specified schema & table channel state .get(key) 2`] = `
+exports[`specified schema & table agent state .get(key) 2`] = `
 [
   [
     "test.foo",
@@ -2838,14 +2838,14 @@ exports[`specified schema & table channel state .get(key) 2`] = `
 ]
 `;
 
-exports[`specified schema & table channel state .getAll() 1`] = `
+exports[`specified schema & table agent state .getAll() 1`] = `
 "
-        SELECT * FROM "my_schema"."my_channel_state"
+        SELECT * FROM "my_schema"."my_agent_state"
         WHERE "id" = $1;
       "
 `;
 
-exports[`specified schema & table channel state .getAll() 2`] = `
+exports[`specified schema & table agent state .getAll() 2`] = `
 [
   [
     "test.foo",
@@ -2853,14 +2853,14 @@ exports[`specified schema & table channel state .getAll() 2`] = `
 ]
 `;
 
-exports[`specified schema & table channel state .getAllStartWithKey(prefix) 1`] = `
+exports[`specified schema & table agent state .getAllStartWithKey(prefix) 1`] = `
 "
-        SELECT * FROM "my_schema"."my_channel_state"
+        SELECT * FROM "my_schema"."my_agent_state"
         WHERE "id" = $1 AND "key" LIKE $2;
       "
 `;
 
-exports[`specified schema & table channel state .getAllStartWithKey(prefix) 2`] = `
+exports[`specified schema & table agent state .getAllStartWithKey(prefix) 2`] = `
 [
   [
     "test.foo",
@@ -2873,14 +2873,14 @@ exports[`specified schema & table channel state .getAllStartWithKey(prefix) 2`] 
 ]
 `;
 
-exports[`specified schema & table channel state .keys() 1`] = `
+exports[`specified schema & table agent state .keys() 1`] = `
 "
-        SELECT * FROM "my_schema"."my_channel_state"
+        SELECT * FROM "my_schema"."my_agent_state"
         WHERE "id" = $1;
       "
 `;
 
-exports[`specified schema & table channel state .keys() 2`] = `
+exports[`specified schema & table agent state .keys() 2`] = `
 [
   [
     "test.foo",
@@ -2888,9 +2888,9 @@ exports[`specified schema & table channel state .keys() 2`] = `
 ]
 `;
 
-exports[`specified schema & table channel state .set(key, value) 1`] = `
+exports[`specified schema & table agent state .set(key, value) 1`] = `
 "
-        INSERT INTO "my_schema"."my_channel_state" (
+        INSERT INTO "my_schema"."my_agent_state" (
           "id",
           "key",
           "data"
@@ -2904,7 +2904,7 @@ exports[`specified schema & table channel state .set(key, value) 1`] = `
       "
 `;
 
-exports[`specified schema & table channel state .set(key, value) 2`] = `
+exports[`specified schema & table agent state .set(key, value) 2`] = `
 [
   [
     "test.foo",
@@ -2957,22 +2957,22 @@ exports[`specified schema & table channel state .set(key, value) 2`] = `
 ]
 `;
 
-exports[`specified schema & table channel state .update(key, updater) delete entity if updater returns \`undefined\` 1`] = `
+exports[`specified schema & table agent state .update(key, updater) delete entity if updater returns \`undefined\` 1`] = `
 [
   "BEGIN",
   "
-        SELECT * FROM "my_schema"."my_channel_state"
+        SELECT * FROM "my_schema"."my_agent_state"
         WHERE "id" = $1 AND "key" = $2 FOR UPDATE;
       ",
   "
-        DELETE FROM "my_schema"."my_channel_state"
+        DELETE FROM "my_schema"."my_agent_state"
         WHERE "id" = $1 AND "key" = $2;
       ",
   "COMMIT",
 ]
 `;
 
-exports[`specified schema & table channel state .update(key, updater) delete entity if updater returns \`undefined\` 2`] = `
+exports[`specified schema & table agent state .update(key, updater) delete entity if updater returns \`undefined\` 2`] = `
 [
   [
     "test.foo",
@@ -2985,18 +2985,18 @@ exports[`specified schema & table channel state .update(key, updater) delete ent
 ]
 `;
 
-exports[`specified schema & table channel state .update(key, updater) make no change if the new value is identical with old value 1`] = `
+exports[`specified schema & table agent state .update(key, updater) make no change if the new value is identical with old value 1`] = `
 [
   "BEGIN",
   "
-        SELECT * FROM "my_schema"."my_channel_state"
+        SELECT * FROM "my_schema"."my_agent_state"
         WHERE "id" = $1 AND "key" = $2 FOR UPDATE;
       ",
   "COMMIT",
 ]
 `;
 
-exports[`specified schema & table channel state .update(key, updater) make no change if the new value is identical with old value 2`] = `
+exports[`specified schema & table agent state .update(key, updater) make no change if the new value is identical with old value 2`] = `
 [
   [
     [
@@ -3031,15 +3031,15 @@ exports[`specified schema & table channel state .update(key, updater) make no ch
 ]
 `;
 
-exports[`specified schema & table channel state .update(key, updater) update value 1`] = `
+exports[`specified schema & table agent state .update(key, updater) update value 1`] = `
 [
   "BEGIN",
   "
-        SELECT * FROM "my_schema"."my_channel_state"
+        SELECT * FROM "my_schema"."my_agent_state"
         WHERE "id" = $1 AND "key" = $2 FOR UPDATE;
       ",
   "
-        INSERT INTO "my_schema"."my_channel_state" (
+        INSERT INTO "my_schema"."my_agent_state" (
           "id",
           "key",
           "data"
@@ -3055,7 +3055,7 @@ exports[`specified schema & table channel state .update(key, updater) update val
 ]
 `;
 
-exports[`specified schema & table channel state .update(key, updater) update value 2`] = `
+exports[`specified schema & table agent state .update(key, updater) update value 2`] = `
 [
   [
     [
@@ -3144,14 +3144,14 @@ exports[`specified schema & table channel state .update(key, updater) update val
 ]
 `;
 
-exports[`specified schema & table channel state with scope id .clear() 1`] = `
+exports[`specified schema & table agent state with scope id .clear() 1`] = `
 "
-        DELETE FROM "my_schema"."my_channel_state"
+        DELETE FROM "my_schema"."my_agent_state"
         WHERE "id" = $1;
       "
 `;
 
-exports[`specified schema & table channel state with scope id .clear() 2`] = `
+exports[`specified schema & table agent state with scope id .clear() 2`] = `
 [
   [
     "test.foo.1",
@@ -3159,14 +3159,14 @@ exports[`specified schema & table channel state with scope id .clear() 2`] = `
 ]
 `;
 
-exports[`specified schema & table channel state with scope id .delete(key) 1`] = `
+exports[`specified schema & table agent state with scope id .delete(key) 1`] = `
 "
-        DELETE FROM "my_schema"."my_channel_state"
+        DELETE FROM "my_schema"."my_agent_state"
         WHERE "id" = $1 AND "key" = $2;
       "
 `;
 
-exports[`specified schema & table channel state with scope id .delete(key) 2`] = `
+exports[`specified schema & table agent state with scope id .delete(key) 2`] = `
 [
   [
     "test.foo.1",
@@ -3195,14 +3195,14 @@ exports[`specified schema & table channel state with scope id .delete(key) 2`] =
 ]
 `;
 
-exports[`specified schema & table channel state with scope id .get(key) 1`] = `
+exports[`specified schema & table agent state with scope id .get(key) 1`] = `
 "
-        SELECT * FROM "my_schema"."my_channel_state"
+        SELECT * FROM "my_schema"."my_agent_state"
         WHERE "id" = $1 AND "key" = $2;
       "
 `;
 
-exports[`specified schema & table channel state with scope id .get(key) 2`] = `
+exports[`specified schema & table agent state with scope id .get(key) 2`] = `
 [
   [
     "test.foo.1",
@@ -3231,14 +3231,14 @@ exports[`specified schema & table channel state with scope id .get(key) 2`] = `
 ]
 `;
 
-exports[`specified schema & table channel state with scope id .getAll() 1`] = `
+exports[`specified schema & table agent state with scope id .getAll() 1`] = `
 "
-        SELECT * FROM "my_schema"."my_channel_state"
+        SELECT * FROM "my_schema"."my_agent_state"
         WHERE "id" = $1;
       "
 `;
 
-exports[`specified schema & table channel state with scope id .getAll() 2`] = `
+exports[`specified schema & table agent state with scope id .getAll() 2`] = `
 [
   [
     "test.foo.1",
@@ -3246,14 +3246,14 @@ exports[`specified schema & table channel state with scope id .getAll() 2`] = `
 ]
 `;
 
-exports[`specified schema & table channel state with scope id .getAllStartWithKey(prefix) 1`] = `
+exports[`specified schema & table agent state with scope id .getAllStartWithKey(prefix) 1`] = `
 "
-        SELECT * FROM "my_schema"."my_channel_state"
+        SELECT * FROM "my_schema"."my_agent_state"
         WHERE "id" = $1 AND "key" LIKE $2;
       "
 `;
 
-exports[`specified schema & table channel state with scope id .getAllStartWithKey(prefix) 2`] = `
+exports[`specified schema & table agent state with scope id .getAllStartWithKey(prefix) 2`] = `
 [
   [
     "test.foo.1",
@@ -3266,14 +3266,14 @@ exports[`specified schema & table channel state with scope id .getAllStartWithKe
 ]
 `;
 
-exports[`specified schema & table channel state with scope id .keys() 1`] = `
+exports[`specified schema & table agent state with scope id .keys() 1`] = `
 "
-        SELECT * FROM "my_schema"."my_channel_state"
+        SELECT * FROM "my_schema"."my_agent_state"
         WHERE "id" = $1;
       "
 `;
 
-exports[`specified schema & table channel state with scope id .keys() 2`] = `
+exports[`specified schema & table agent state with scope id .keys() 2`] = `
 [
   [
     "test.foo.1",
@@ -3281,9 +3281,9 @@ exports[`specified schema & table channel state with scope id .keys() 2`] = `
 ]
 `;
 
-exports[`specified schema & table channel state with scope id .set(key, value) 1`] = `
+exports[`specified schema & table agent state with scope id .set(key, value) 1`] = `
 "
-        INSERT INTO "my_schema"."my_channel_state" (
+        INSERT INTO "my_schema"."my_agent_state" (
           "id",
           "key",
           "data"
@@ -3297,7 +3297,7 @@ exports[`specified schema & table channel state with scope id .set(key, value) 1
       "
 `;
 
-exports[`specified schema & table channel state with scope id .set(key, value) 2`] = `
+exports[`specified schema & table agent state with scope id .set(key, value) 2`] = `
 [
   [
     "test.foo.1",
@@ -3350,22 +3350,22 @@ exports[`specified schema & table channel state with scope id .set(key, value) 2
 ]
 `;
 
-exports[`specified schema & table channel state with scope id .update(key, updater) delete entity if updater returns \`undefined\` 1`] = `
+exports[`specified schema & table agent state with scope id .update(key, updater) delete entity if updater returns \`undefined\` 1`] = `
 [
   "BEGIN",
   "
-        SELECT * FROM "my_schema"."my_channel_state"
+        SELECT * FROM "my_schema"."my_agent_state"
         WHERE "id" = $1 AND "key" = $2 FOR UPDATE;
       ",
   "
-        DELETE FROM "my_schema"."my_channel_state"
+        DELETE FROM "my_schema"."my_agent_state"
         WHERE "id" = $1 AND "key" = $2;
       ",
   "COMMIT",
 ]
 `;
 
-exports[`specified schema & table channel state with scope id .update(key, updater) delete entity if updater returns \`undefined\` 2`] = `
+exports[`specified schema & table agent state with scope id .update(key, updater) delete entity if updater returns \`undefined\` 2`] = `
 [
   [
     "test.foo.1",
@@ -3378,18 +3378,18 @@ exports[`specified schema & table channel state with scope id .update(key, updat
 ]
 `;
 
-exports[`specified schema & table channel state with scope id .update(key, updater) make no change if the new value is identical with old value 1`] = `
+exports[`specified schema & table agent state with scope id .update(key, updater) make no change if the new value is identical with old value 1`] = `
 [
   "BEGIN",
   "
-        SELECT * FROM "my_schema"."my_channel_state"
+        SELECT * FROM "my_schema"."my_agent_state"
         WHERE "id" = $1 AND "key" = $2 FOR UPDATE;
       ",
   "COMMIT",
 ]
 `;
 
-exports[`specified schema & table channel state with scope id .update(key, updater) make no change if the new value is identical with old value 2`] = `
+exports[`specified schema & table agent state with scope id .update(key, updater) make no change if the new value is identical with old value 2`] = `
 [
   [
     [
@@ -3424,15 +3424,15 @@ exports[`specified schema & table channel state with scope id .update(key, updat
 ]
 `;
 
-exports[`specified schema & table channel state with scope id .update(key, updater) update value 1`] = `
+exports[`specified schema & table agent state with scope id .update(key, updater) update value 1`] = `
 [
   "BEGIN",
   "
-        SELECT * FROM "my_schema"."my_channel_state"
+        SELECT * FROM "my_schema"."my_agent_state"
         WHERE "id" = $1 AND "key" = $2 FOR UPDATE;
       ",
   "
-        INSERT INTO "my_schema"."my_channel_state" (
+        INSERT INTO "my_schema"."my_agent_state" (
           "id",
           "key",
           "data"
@@ -3448,7 +3448,7 @@ exports[`specified schema & table channel state with scope id .update(key, updat
 ]
 `;
 
-exports[`specified schema & table channel state with scope id .update(key, updater) update value 2`] = `
+exports[`specified schema & table agent state with scope id .update(key, updater) update value 2`] = `
 [
   [
     [
@@ -5502,14 +5502,14 @@ exports[`specified schema & table user state with scope id .update(key, updater)
 ]
 `;
 
-exports[`specified table channel state .clear() 1`] = `
+exports[`specified table agent state .clear() 1`] = `
 "
-        DELETE FROM "my_channel_state"
+        DELETE FROM "my_agent_state"
         WHERE "id" = $1;
       "
 `;
 
-exports[`specified table channel state .clear() 2`] = `
+exports[`specified table agent state .clear() 2`] = `
 [
   [
     "test.foo",
@@ -5517,14 +5517,14 @@ exports[`specified table channel state .clear() 2`] = `
 ]
 `;
 
-exports[`specified table channel state .delete(key) 1`] = `
+exports[`specified table agent state .delete(key) 1`] = `
 "
-        DELETE FROM "my_channel_state"
+        DELETE FROM "my_agent_state"
         WHERE "id" = $1 AND "key" = $2;
       "
 `;
 
-exports[`specified table channel state .delete(key) 2`] = `
+exports[`specified table agent state .delete(key) 2`] = `
 [
   [
     "test.foo",
@@ -5553,14 +5553,14 @@ exports[`specified table channel state .delete(key) 2`] = `
 ]
 `;
 
-exports[`specified table channel state .get(key) 1`] = `
+exports[`specified table agent state .get(key) 1`] = `
 "
-        SELECT * FROM "my_channel_state"
+        SELECT * FROM "my_agent_state"
         WHERE "id" = $1 AND "key" = $2;
       "
 `;
 
-exports[`specified table channel state .get(key) 2`] = `
+exports[`specified table agent state .get(key) 2`] = `
 [
   [
     "test.foo",
@@ -5589,14 +5589,14 @@ exports[`specified table channel state .get(key) 2`] = `
 ]
 `;
 
-exports[`specified table channel state .getAll() 1`] = `
+exports[`specified table agent state .getAll() 1`] = `
 "
-        SELECT * FROM "my_channel_state"
+        SELECT * FROM "my_agent_state"
         WHERE "id" = $1;
       "
 `;
 
-exports[`specified table channel state .getAll() 2`] = `
+exports[`specified table agent state .getAll() 2`] = `
 [
   [
     "test.foo",
@@ -5604,14 +5604,14 @@ exports[`specified table channel state .getAll() 2`] = `
 ]
 `;
 
-exports[`specified table channel state .getAllStartWithKey(prefix) 1`] = `
+exports[`specified table agent state .getAllStartWithKey(prefix) 1`] = `
 "
-        SELECT * FROM "my_channel_state"
+        SELECT * FROM "my_agent_state"
         WHERE "id" = $1 AND "key" LIKE $2;
       "
 `;
 
-exports[`specified table channel state .getAllStartWithKey(prefix) 2`] = `
+exports[`specified table agent state .getAllStartWithKey(prefix) 2`] = `
 [
   [
     "test.foo",
@@ -5624,14 +5624,14 @@ exports[`specified table channel state .getAllStartWithKey(prefix) 2`] = `
 ]
 `;
 
-exports[`specified table channel state .keys() 1`] = `
+exports[`specified table agent state .keys() 1`] = `
 "
-        SELECT * FROM "my_channel_state"
+        SELECT * FROM "my_agent_state"
         WHERE "id" = $1;
       "
 `;
 
-exports[`specified table channel state .keys() 2`] = `
+exports[`specified table agent state .keys() 2`] = `
 [
   [
     "test.foo",
@@ -5639,9 +5639,9 @@ exports[`specified table channel state .keys() 2`] = `
 ]
 `;
 
-exports[`specified table channel state .set(key, value) 1`] = `
+exports[`specified table agent state .set(key, value) 1`] = `
 "
-        INSERT INTO "my_channel_state" (
+        INSERT INTO "my_agent_state" (
           "id",
           "key",
           "data"
@@ -5655,7 +5655,7 @@ exports[`specified table channel state .set(key, value) 1`] = `
       "
 `;
 
-exports[`specified table channel state .set(key, value) 2`] = `
+exports[`specified table agent state .set(key, value) 2`] = `
 [
   [
     "test.foo",
@@ -5708,22 +5708,22 @@ exports[`specified table channel state .set(key, value) 2`] = `
 ]
 `;
 
-exports[`specified table channel state .update(key, updater) delete entity if updater returns \`undefined\` 1`] = `
+exports[`specified table agent state .update(key, updater) delete entity if updater returns \`undefined\` 1`] = `
 [
   "BEGIN",
   "
-        SELECT * FROM "my_channel_state"
+        SELECT * FROM "my_agent_state"
         WHERE "id" = $1 AND "key" = $2 FOR UPDATE;
       ",
   "
-        DELETE FROM "my_channel_state"
+        DELETE FROM "my_agent_state"
         WHERE "id" = $1 AND "key" = $2;
       ",
   "COMMIT",
 ]
 `;
 
-exports[`specified table channel state .update(key, updater) delete entity if updater returns \`undefined\` 2`] = `
+exports[`specified table agent state .update(key, updater) delete entity if updater returns \`undefined\` 2`] = `
 [
   [
     "test.foo",
@@ -5736,18 +5736,18 @@ exports[`specified table channel state .update(key, updater) delete entity if up
 ]
 `;
 
-exports[`specified table channel state .update(key, updater) make no change if the new value is identical with old value 1`] = `
+exports[`specified table agent state .update(key, updater) make no change if the new value is identical with old value 1`] = `
 [
   "BEGIN",
   "
-        SELECT * FROM "my_channel_state"
+        SELECT * FROM "my_agent_state"
         WHERE "id" = $1 AND "key" = $2 FOR UPDATE;
       ",
   "COMMIT",
 ]
 `;
 
-exports[`specified table channel state .update(key, updater) make no change if the new value is identical with old value 2`] = `
+exports[`specified table agent state .update(key, updater) make no change if the new value is identical with old value 2`] = `
 [
   [
     [
@@ -5782,15 +5782,15 @@ exports[`specified table channel state .update(key, updater) make no change if t
 ]
 `;
 
-exports[`specified table channel state .update(key, updater) update value 1`] = `
+exports[`specified table agent state .update(key, updater) update value 1`] = `
 [
   "BEGIN",
   "
-        SELECT * FROM "my_channel_state"
+        SELECT * FROM "my_agent_state"
         WHERE "id" = $1 AND "key" = $2 FOR UPDATE;
       ",
   "
-        INSERT INTO "my_channel_state" (
+        INSERT INTO "my_agent_state" (
           "id",
           "key",
           "data"
@@ -5806,7 +5806,7 @@ exports[`specified table channel state .update(key, updater) update value 1`] = 
 ]
 `;
 
-exports[`specified table channel state .update(key, updater) update value 2`] = `
+exports[`specified table agent state .update(key, updater) update value 2`] = `
 [
   [
     [
@@ -5895,14 +5895,14 @@ exports[`specified table channel state .update(key, updater) update value 2`] = 
 ]
 `;
 
-exports[`specified table channel state with scope id .clear() 1`] = `
+exports[`specified table agent state with scope id .clear() 1`] = `
 "
-        DELETE FROM "my_channel_state"
+        DELETE FROM "my_agent_state"
         WHERE "id" = $1;
       "
 `;
 
-exports[`specified table channel state with scope id .clear() 2`] = `
+exports[`specified table agent state with scope id .clear() 2`] = `
 [
   [
     "test.foo.1",
@@ -5910,14 +5910,14 @@ exports[`specified table channel state with scope id .clear() 2`] = `
 ]
 `;
 
-exports[`specified table channel state with scope id .delete(key) 1`] = `
+exports[`specified table agent state with scope id .delete(key) 1`] = `
 "
-        DELETE FROM "my_channel_state"
+        DELETE FROM "my_agent_state"
         WHERE "id" = $1 AND "key" = $2;
       "
 `;
 
-exports[`specified table channel state with scope id .delete(key) 2`] = `
+exports[`specified table agent state with scope id .delete(key) 2`] = `
 [
   [
     "test.foo.1",
@@ -5946,14 +5946,14 @@ exports[`specified table channel state with scope id .delete(key) 2`] = `
 ]
 `;
 
-exports[`specified table channel state with scope id .get(key) 1`] = `
+exports[`specified table agent state with scope id .get(key) 1`] = `
 "
-        SELECT * FROM "my_channel_state"
+        SELECT * FROM "my_agent_state"
         WHERE "id" = $1 AND "key" = $2;
       "
 `;
 
-exports[`specified table channel state with scope id .get(key) 2`] = `
+exports[`specified table agent state with scope id .get(key) 2`] = `
 [
   [
     "test.foo.1",
@@ -5982,14 +5982,14 @@ exports[`specified table channel state with scope id .get(key) 2`] = `
 ]
 `;
 
-exports[`specified table channel state with scope id .getAll() 1`] = `
+exports[`specified table agent state with scope id .getAll() 1`] = `
 "
-        SELECT * FROM "my_channel_state"
+        SELECT * FROM "my_agent_state"
         WHERE "id" = $1;
       "
 `;
 
-exports[`specified table channel state with scope id .getAll() 2`] = `
+exports[`specified table agent state with scope id .getAll() 2`] = `
 [
   [
     "test.foo.1",
@@ -5997,14 +5997,14 @@ exports[`specified table channel state with scope id .getAll() 2`] = `
 ]
 `;
 
-exports[`specified table channel state with scope id .getAllStartWithKey(prefix) 1`] = `
+exports[`specified table agent state with scope id .getAllStartWithKey(prefix) 1`] = `
 "
-        SELECT * FROM "my_channel_state"
+        SELECT * FROM "my_agent_state"
         WHERE "id" = $1 AND "key" LIKE $2;
       "
 `;
 
-exports[`specified table channel state with scope id .getAllStartWithKey(prefix) 2`] = `
+exports[`specified table agent state with scope id .getAllStartWithKey(prefix) 2`] = `
 [
   [
     "test.foo.1",
@@ -6017,14 +6017,14 @@ exports[`specified table channel state with scope id .getAllStartWithKey(prefix)
 ]
 `;
 
-exports[`specified table channel state with scope id .keys() 1`] = `
+exports[`specified table agent state with scope id .keys() 1`] = `
 "
-        SELECT * FROM "my_channel_state"
+        SELECT * FROM "my_agent_state"
         WHERE "id" = $1;
       "
 `;
 
-exports[`specified table channel state with scope id .keys() 2`] = `
+exports[`specified table agent state with scope id .keys() 2`] = `
 [
   [
     "test.foo.1",
@@ -6032,9 +6032,9 @@ exports[`specified table channel state with scope id .keys() 2`] = `
 ]
 `;
 
-exports[`specified table channel state with scope id .set(key, value) 1`] = `
+exports[`specified table agent state with scope id .set(key, value) 1`] = `
 "
-        INSERT INTO "my_channel_state" (
+        INSERT INTO "my_agent_state" (
           "id",
           "key",
           "data"
@@ -6048,7 +6048,7 @@ exports[`specified table channel state with scope id .set(key, value) 1`] = `
       "
 `;
 
-exports[`specified table channel state with scope id .set(key, value) 2`] = `
+exports[`specified table agent state with scope id .set(key, value) 2`] = `
 [
   [
     "test.foo.1",
@@ -6101,22 +6101,22 @@ exports[`specified table channel state with scope id .set(key, value) 2`] = `
 ]
 `;
 
-exports[`specified table channel state with scope id .update(key, updater) delete entity if updater returns \`undefined\` 1`] = `
+exports[`specified table agent state with scope id .update(key, updater) delete entity if updater returns \`undefined\` 1`] = `
 [
   "BEGIN",
   "
-        SELECT * FROM "my_channel_state"
+        SELECT * FROM "my_agent_state"
         WHERE "id" = $1 AND "key" = $2 FOR UPDATE;
       ",
   "
-        DELETE FROM "my_channel_state"
+        DELETE FROM "my_agent_state"
         WHERE "id" = $1 AND "key" = $2;
       ",
   "COMMIT",
 ]
 `;
 
-exports[`specified table channel state with scope id .update(key, updater) delete entity if updater returns \`undefined\` 2`] = `
+exports[`specified table agent state with scope id .update(key, updater) delete entity if updater returns \`undefined\` 2`] = `
 [
   [
     "test.foo.1",
@@ -6129,18 +6129,18 @@ exports[`specified table channel state with scope id .update(key, updater) delet
 ]
 `;
 
-exports[`specified table channel state with scope id .update(key, updater) make no change if the new value is identical with old value 1`] = `
+exports[`specified table agent state with scope id .update(key, updater) make no change if the new value is identical with old value 1`] = `
 [
   "BEGIN",
   "
-        SELECT * FROM "my_channel_state"
+        SELECT * FROM "my_agent_state"
         WHERE "id" = $1 AND "key" = $2 FOR UPDATE;
       ",
   "COMMIT",
 ]
 `;
 
-exports[`specified table channel state with scope id .update(key, updater) make no change if the new value is identical with old value 2`] = `
+exports[`specified table agent state with scope id .update(key, updater) make no change if the new value is identical with old value 2`] = `
 [
   [
     [
@@ -6175,15 +6175,15 @@ exports[`specified table channel state with scope id .update(key, updater) make 
 ]
 `;
 
-exports[`specified table channel state with scope id .update(key, updater) update value 1`] = `
+exports[`specified table agent state with scope id .update(key, updater) update value 1`] = `
 [
   "BEGIN",
   "
-        SELECT * FROM "my_channel_state"
+        SELECT * FROM "my_agent_state"
         WHERE "id" = $1 AND "key" = $2 FOR UPDATE;
       ",
   "
-        INSERT INTO "my_channel_state" (
+        INSERT INTO "my_agent_state" (
           "id",
           "key",
           "data"
@@ -6199,7 +6199,7 @@ exports[`specified table channel state with scope id .update(key, updater) updat
 ]
 `;
 
-exports[`specified table channel state with scope id .update(key, updater) update value 2`] = `
+exports[`specified table agent state with scope id .update(key, updater) update value 2`] = `
 [
   [
     [

@@ -75,7 +75,7 @@ const handleWebhook = ({
       bot,
       event,
       metadata,
-      reply: (message) => bot.render(event.thread ?? event.channel, message),
+      reply: (message) => bot.render(event.thread ?? event.agent, message),
     });
     return { code: 200 };
   };

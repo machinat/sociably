@@ -47,7 +47,7 @@ type TelegramBotOptions = {
 
 type ApiCallOptions = {
   /** The bot user id/username/instance to make the API call with */
-  channel: number | TelegramUser;
+  agent: number | TelegramUser;
   /** Bot API method */
   method: string;
   /** Bot API parameter */
@@ -145,7 +145,7 @@ export class TelegramBot
     }
 
     const { file_path: filePath } = await this.requestApi({
-      channel: agent,
+      agent,
       method: 'getFile',
       params: { file_id: fileId },
     });
@@ -175,13 +175,13 @@ export class TelegramBot
   }
 
   async requestApi<Result extends BotApiResult>({
-    channel,
+    agent,
     method,
     params = {},
     uploadFiles,
   }: ApiCallOptions): Promise<Result> {
     try {
-      const agentId = typeof channel === 'number' ? channel : channel.id;
+      const agentId = typeof agent === 'number' ? agent : agent.id;
       const response = await this.engine.dispatchJobs(
         new TelegramUser(agentId, true),
         [

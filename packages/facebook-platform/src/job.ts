@@ -14,7 +14,7 @@ export const createPostJobs = (
     throw new TypeError('more than 1 element received');
   }
 
-  const channel =
+  const agent =
     feedOrAlbum instanceof FacebookPage ? feedOrAlbum : feedOrAlbum.page;
 
   const [segment] = segments;
@@ -23,7 +23,7 @@ export const createPostJobs = (
   if (segType === 'text') {
     return [
       {
-        channel,
+        agent,
         request: {
           method: 'POST',
           url: PATH_FEED,
@@ -43,7 +43,7 @@ export const createPostJobs = (
   if (value.apiPath === PATH_PHOTOS) {
     return [
       {
-        channel,
+        agent,
         request: {
           method: 'POST',
           url:
@@ -59,7 +59,7 @@ export const createPostJobs = (
 
   const { params, photos, file } = value;
   const postJob: MetaApiJob = {
-    channel,
+    agent,
     request: {
       method: 'POST',
       url: PATH_FEED,
@@ -87,7 +87,7 @@ export const createPostJobs = (
   };
 
   const photoJobs = photos.map((photoValue, i) => ({
-    channel,
+    agent,
     request: {
       method: 'POST',
       url:
@@ -160,7 +160,7 @@ export const createInteractJobs = (
 
     if (segType === 'text') {
       jobs.push({
-        channel: target.page,
+        agent: target.page,
         request: {
           method: 'POST',
           url: initialCommentApiPath,
@@ -174,7 +174,7 @@ export const createInteractJobs = (
 
       const photoJob = photo
         ? {
-            channel: target.page,
+            agent: target.page,
             request: {
               method: 'POST',
               url: PATH_PHOTOS,
@@ -186,7 +186,7 @@ export const createInteractJobs = (
         : null;
 
       const commentJob = {
-        channel: target.page,
+        agent: target.page,
         request: {
           method: 'POST',
           url: initialCommentApiPath,

@@ -203,7 +203,7 @@ it('respond 200 and pop events received', async () => {
     const { metadata, event } = ctx;
 
     expect(event.platform).toBe('line');
-    expect(event.channel).toEqual(new LineChannel('_CHANNEL_ID_FOO_'));
+    expect(event.agent).toEqual(new LineChannel('_CHANNEL_ID_FOO_'));
     expect(event.thread).toEqual(
       new LineChat('_CHANNEL_ID_FOO_', 'user', 'U4af4980629'),
     );
@@ -308,7 +308,7 @@ it('validate request', async () => {
   expect(popEventMock).toHaveBeenCalledTimes(1);
   const { event } = popEventMock.calls[0].args[0];
 
-  expect(event.channel).toEqual(new LineChannel('_CHANNEL_ID_'));
+  expect(event.agent).toEqual(new LineChannel('_CHANNEL_ID_'));
   expect(event.thread).toEqual(new LineChat('_CHANNEL_ID_', 'user', 'xxx'));
   expect(event.user).toEqual(new LineUser('_PROVIDER_ID_', 'xxx'));
 

@@ -22,8 +22,8 @@ const serverEntry = nock('https://sociably.io');
 const makeToken = (payload) =>
   jwt.sign(payload, '__SECRET__').split('.').slice(0, 2).join('.');
 
-const fooChannel = {
-  $$typeofChannel: true as const,
+const fooAgent = {
+  $$typeofAgent: true as const,
   platform: 'foo',
   uid: 'foo.my_agent',
 };
@@ -52,7 +52,7 @@ const fooAuthenticator = moxy<AnyClientAuthenticator>({
     return {
       ok: true,
       contextDetails: {
-        channel: fooChannel,
+        agent: fooAgent,
         user: fooUser,
         thread: fooThread,
         foo: fooData,
@@ -77,7 +77,7 @@ const barAuthenticator = moxy<AnyClientAuthenticator>({
     return {
       ok: true,
       contextDetails: {
-        channel: { platform: 'bar', uid: 'bar.my_agent' },
+        agent: { platform: 'bar', uid: 'bar.my_agent' },
         user: { platform: 'bar', uid: 'bar.jojo_doe' },
         thread: { platform: 'bar', uid: 'bar.chat.jojo_doe' },
         bar: 'bar.data',
@@ -450,7 +450,7 @@ describe('.signIn()', () => {
 
   const expectedContext = {
     platform: 'foo',
-    channel: fooChannel,
+    agent: fooAgent,
     user: fooUser,
     thread: fooThread,
     foo: fooData,
@@ -855,7 +855,7 @@ describe('refresh flow', () => {
         token: newToken,
         context: {
           platform: 'foo',
-          channel: fooChannel,
+          agent: fooAgent,
           user: fooUser,
           thread: fooThread,
           foo: fooData,
@@ -930,7 +930,7 @@ describe('refresh flow', () => {
         token: newToken,
         context: {
           platform: 'foo',
-          channel: fooChannel,
+          agent: fooAgent,
           user: fooUser,
           thread: fooThread,
           foo: fooData,

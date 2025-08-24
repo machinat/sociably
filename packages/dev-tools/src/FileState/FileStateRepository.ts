@@ -5,9 +5,9 @@ import {
   FSWatcher,
 } from 'fs';
 import type {
-  SociablyChannel,
-  SociablyUser,
+  SociablyAgent,
   SociablyThread,
+  SociablyUser,
 } from '@sociably/core';
 import { serviceProviderClass } from '@sociably/core/service';
 import {
@@ -146,12 +146,12 @@ export class FileStateRepository implements BaseStateRepository {
     this._writingJob = Promise.resolve();
   }
 
-  channelState(channel: string | SociablyChannel): FileStateAccessor {
-    const channelUid = typeof channel === 'string' ? channel : channel.uid;
+  agentState(agent: string | SociablyAgent): FileStateAccessor {
+    const agentUid = typeof agent === 'string' ? agent : agent.uid;
     return new FileStateAccessor(
       this.marshaler,
-      this._getDataCallback('channelStates', channelUid),
-      this._updateDataCallback('channelStates', channelUid),
+      this._getDataCallback('agentStates', agentUid),
+      this._updateDataCallback('agentStates', agentUid),
     );
   }
 

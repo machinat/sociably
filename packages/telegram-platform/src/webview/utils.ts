@@ -12,7 +12,7 @@ export const getAuthContextDetails = ({
   user: userData,
   photo: photoUrl,
 }: TelegramAuthData): ContextDetails<TelegramAuthContext> => ({
-  channel: new TelegramUser(botId, true),
+  agent: new TelegramUser(botId, true),
   user: new TelegramUser(
     userData.id,
     false,

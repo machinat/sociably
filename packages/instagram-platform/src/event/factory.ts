@@ -9,7 +9,7 @@ const createMessengerEvent = createEventFactory<
   InstagramChat,
   InstagramUser
 >({
-  createChannel: (agentId) => new InstagramAgent(agentId),
+  createAgent: (agentId) => new InstagramAgent(agentId),
   createChat: (agentId, target) => new InstagramChat(agentId, target),
   createUser: (agentId, userId) => new InstagramUser(agentId, userId),
 });
