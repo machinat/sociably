@@ -6,7 +6,12 @@ import {
 } from '@sociably/core/renderer';
 import { formatNode } from '@sociably/core/utils';
 import makeWhatsAppComponent from '../utils/makeWhatsAppComponent.js';
-import { WhatsAppSegmentValue, WhatsAppComponent } from '../types.js';
+import {
+  WhatsAppSegmentValue,
+  WhatsAppComponent,
+  CreateMessageData,
+  CreateTemplateMessage,
+} from '../types.js';
 
 export type PredefinedTemplateProps = {
   /** Name of the template */
@@ -48,7 +53,10 @@ const VALID_HEADER_ATTACHMENT_TYPES = [
 const TEXT_PARAMETER_TYPES = ['text', 'currency', 'date_time'];
 
 const getTextParameters = (segments: IntermediateSegment<unknown>[]) => {
-  const parameters: unknown[] = [];
+  const parameters: NonNullable<
+    CreateTemplateMessage['components']
+  >[number]['parameters'] = [];
+
   for (const seg of segments) {
     if (seg.type === 'text') {
       parameters.push({ type: 'text', text: seg.value });
@@ -80,98 +88,97 @@ const getTextParameters = (segments: IntermediateSegment<unknown>[]) => {
  * @category Component
  * @props {@link PredefinedTemplateProps}
  */
-export const PredefinedTemplate: WhatsAppComponent<
-  PredefinedTemplateProps,
-  UnitSegment<WhatsAppSegmentValue>
-> = makeWhatsAppComponent(
-  async function PredefinedTemplate(node, path, render) {
-    const { name, language, headerParams, bodyParams, buttonParams, replyTo } =
-      node.props;
+export const PredefinedTemplate = makeWhatsAppComponent<
+  WhatsAppComponent<PredefinedTemplateProps, UnitSegment<WhatsAppSegmentValue>>
+>(async function PredefinedTemplate(node, path, render) {
+  const { name, language, headerParams, bodyParams, buttonParams, replyTo } =
+    node.props;
 
-    const [headerSegments, bodySegments, buttonsSegments] = await Promise.all([
-      render<WhatsAppSegmentValue>(headerParams, '.headerParams'),
-      render(bodyParams, '.bodyParams'),
-      render(buttonParams, '.buttonParams'),
-    ]);
+  const [headerSegments, bodySegments, buttonsSegments] = await Promise.all([
+    render(headerParams, '.headerParams'),
+    render(bodyParams, '.bodyParams'),
+    render(buttonParams, '.buttonParams'),
+  ]);
 
-    const components: unknown[] = [];
+  const components: CreateTemplateMessage['components'] = [];
 
-    if (headerSegments) {
-      if (headerSegments[0].type === 'unit') {
-        // media based header
-        const messageValue = headerSegments[0].value.message;
-        const messageType = messageValue.type;
+  if (headerSegments) {
+    if (headerSegments[0].type === 'unit') {
+      // media based header
+      const mediaResult = headerSegments[0].value as WhatsAppSegmentValue;
+      const messageValue = mediaResult.message as CreateMessageData;
+      const messageType = messageValue.type as
+        | 'image'
+        | 'document'
+        | 'video'
+        | 'location';
 
-        if (
-          !messageType ||
-          !VALID_HEADER_ATTACHMENT_TYPES.includes(messageType)
-        ) {
-          throw new TypeError(
-            `${formatNode(
-              headerSegments[0].node,
-            )} is not a valid header parameter`,
-          );
-        }
-        if (headerSegments.length > 1) {
-          throw new TypeError(
-            `"headerParams" prop contain more than 1 attachment parameter node`,
-          );
-        }
-
-        components.push({
-          type: 'header',
-          parameters: [
-            {
-              type: messageType,
-              [messageType]: messageValue[messageType],
-            },
-          ],
-        });
-      } else {
-        // text based header
-        components.push({
-          type: 'header',
-          parameters: getTextParameters(headerSegments),
-        });
+      if (!VALID_HEADER_ATTACHMENT_TYPES.includes(messageType)) {
+        throw new TypeError(
+          `${formatNode(
+            headerSegments[0].node,
+          )} is not a valid header parameter`,
+        );
       }
-    }
-    if (bodySegments) {
+      if (headerSegments.length > 1) {
+        throw new TypeError(
+          `"headerParams" prop contain more than 1 attachment parameter node`,
+        );
+      }
+
       components.push({
-        type: 'body',
-        parameters: getTextParameters(bodySegments),
-      });
-    }
-    if (buttonsSegments) {
-      buttonsSegments.forEach(({ node: buttonNode, value }, idx) => {
-        if (value.type !== 'button') {
-          throw new TypeError(
-            `${formatNode(buttonNode)} is not a valid button parameter`,
-          );
-        }
-
-        components.push({
-          type: 'button',
-          sub_type: value.sub_type,
-          index: typeof value.index === 'undefined' ? idx : value.index,
-          parameters: value.parameters,
-        });
-      });
-    }
-
-    return [
-      makeUnitSegment(node, path, {
-        message: {
-          type: 'template',
-          template: {
-            name,
-            language: {
-              code: language,
-            },
-            components,
+        type: 'header',
+        parameters: [
+          {
+            type: messageType,
+            [messageType]: messageValue[messageType],
           },
-          context: replyTo ? { message_id: replyTo } : undefined,
+        ],
+      });
+    } else {
+      // text based header
+      components.push({
+        type: 'header',
+        parameters: getTextParameters(headerSegments),
+      });
+    }
+  }
+  if (bodySegments) {
+    components.push({
+      type: 'body',
+      parameters: getTextParameters(bodySegments),
+    });
+  }
+  if (buttonsSegments) {
+    buttonsSegments.forEach(({ node: buttonNode, value }, idx) => {
+      if (value.type !== 'button') {
+        throw new TypeError(
+          `${formatNode(buttonNode)} is not a valid button parameter`,
+        );
+      }
+
+      components.push({
+        type: 'button',
+        sub_type: value.sub_type,
+        index: typeof value.index === 'undefined' ? idx : value.index,
+        parameters: value.parameters,
+      });
+    });
+  }
+
+  return [
+    makeUnitSegment(node, path, {
+      message: {
+        type: 'template',
+        template: {
+          name,
+          language: {
+            code: language,
+          },
+          components,
         },
-      }),
-    ];
-  },
-);
+        context: replyTo ? { message_id: replyTo } : undefined,
+      },
+    }),
+  ];
+});

@@ -9,7 +9,6 @@
     "jsx": "react",
     "jsxFactory": "Sociably.createElement",
     "jsxFragmentFactory": "Sociably.Fragment",
-    "experimentalDecorators": true,
     "skipLibCheck": true,
     "noUnusedLocals": true,
     "types": ["node"],

@@ -16,8 +16,8 @@ const createEvent = <
 ): WebviewEvent<Value, User> => {
   const event: WebviewEvent<Value, User> = Object.create(WebviewEventProto);
 
-  const { category, type, payload } = value;
-  event.category = category || 'default';
+  const { kind, type, payload } = value;
+  event.kind = kind || 'default';
   event.type = type;
   event.payload = payload;
   event.agent = null;

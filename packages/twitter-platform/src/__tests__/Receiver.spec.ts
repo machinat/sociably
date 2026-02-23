@@ -172,7 +172,7 @@ it('respond 200 and pop events', async () => {
   });
 
   expect(context.event.platform).toBe('twitter');
-  expect(context.event.category).toBe('message');
+  expect(context.event.kind).toBe('message');
   expect(context.event.type).toBe('text');
   expect(context.event.agent).toEqual(new TwitterUser('4337869213'));
   expect(context.event.thread).toEqual(
@@ -242,7 +242,7 @@ describe('context.reply(message)', () => {
     await expect(
       reply('hello world'),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Cannot reply to subscription_revoke event with no chat thread info"`,
+      `"Cannot reply to user_revoke event with no chat thread info"`,
     );
     expect(bot.render).not.toHaveBeenCalled();
   });

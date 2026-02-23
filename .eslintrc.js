@@ -15,13 +15,11 @@ module.exports = {
   rules: {
     strict: 'off',
     'no-bitwise': 'off',
-    'no-shadow': 'off',
     'no-redeclare': 'off',
     'no-nested-ternary': 'off',
     'no-underscore-dangle': 'off',
     'no-cond-assign': 'off',
     'no-unused-expressions': 'off',
-    'no-use-before-define': 'off',
     'no-restricted-exports': 'off',
     'no-promise-executor-return': 'off',
     'no-param-reassign': [
@@ -61,13 +59,17 @@ module.exports = {
     '@typescript-eslint/no-namespace': 'off',
     '@typescript-eslint/consistent-type-definitions': 'off',
     '@typescript-eslint/no-explicit-any': 'warn',
+    'no-shadow': 'off',
     '@typescript-eslint/no-shadow': 'error',
+    'no-use-before-define': 'off',
     '@typescript-eslint/no-use-before-define': 'error',
     '@typescript-eslint/no-unused-vars': [
       'error',
       { varsIgnorePattern: '^_', argsIgnorePattern: '^_', args: 'after-used' },
     ],
     '@typescript-eslint/ban-types': ['error', { types: { '{}': false } }],
+    'no-useless-constructor': 'off',
+    '@typescript-eslint/no-useless-constructor': 'error',
   },
   overrides: [
     {

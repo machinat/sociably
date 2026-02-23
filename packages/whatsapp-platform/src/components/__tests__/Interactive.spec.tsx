@@ -62,7 +62,7 @@ describe('ListTemplate', () => {
             "message": {
               "context": undefined,
               "interactive": {
-                "actions": {
+                "action": {
                   "button": "open",
                   "sections": [
                     {
@@ -165,7 +165,7 @@ describe('ListTemplate', () => {
                 "message_id": "REPLY_TO_MESSAGE_ID",
               },
               "interactive": {
-                "actions": {
+                "action": {
                   "button": "open",
                   "sections": [
                     {
@@ -302,7 +302,7 @@ describe('ListTemplate', () => {
                 "message_id": "REPLY_TO_MESSAGE_ID",
               },
               "interactive": {
-                "actions": {
+                "action": {
                   "button": "open",
                   "sections": [
                     {

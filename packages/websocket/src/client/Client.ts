@@ -98,7 +98,7 @@ class WebScoketClient<
         this._thread = new WebSocketConnection('*', connId);
 
         const connectEvent: ConnectEventValue = {
-          category: 'connection',
+          kind: 'connection',
           type: 'connect',
           payload: null,
         };
@@ -118,7 +118,7 @@ class WebScoketClient<
         this._thread = null;
 
         const disconnectValue: DisconnectEventValue = {
-          category: 'connection',
+          kind: 'connection',
           type: 'disconnect',
           payload: { reason },
         };

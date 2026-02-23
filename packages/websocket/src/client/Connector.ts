@@ -129,8 +129,8 @@ class WebScoketConnector<User extends null | SociablyUser> extends Emitter<{
       throw new SocketError('socket is already closed');
     }
 
-    const marshaledEvents = events.map(({ category, type, payload }) => ({
-      category,
+    const marshaledEvents = events.map(({ kind, type, payload }) => ({
+      kind,
       type,
       payload: this._marshaler.marshal(payload),
     }));
@@ -191,8 +191,8 @@ class WebScoketConnector<User extends null | SociablyUser> extends Emitter<{
     if (this._connId === connId) {
       this.emit(
         'events',
-        values.map(({ category, type, payload }) => ({
-          category,
+        values.map(({ kind, type, payload }) => ({
+          kind,
           type,
           payload: this._marshaler.unmarshal(payload),
         })),

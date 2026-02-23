@@ -67,7 +67,6 @@ export class WhatsAppBot
 {
   graphApiVersion: string;
   accessToken: string;
-  worker: MetaApiWorker;
   engine: Engine<
     WhatsAppChat | WhatsAppAgent,
     WhatsAppSegmentValue,

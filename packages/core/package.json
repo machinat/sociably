@@ -20,7 +20,7 @@
     "./service": "./lib/service/index.js",
     "./base/*": "./lib/base/*",
     "./iterator": "./lib/iterator/index.js",
-    "./utils": "./lib/utils/index.js"
+    "./utils/*": "./lib/utils/*"
   },
   "files": [
     "lib/*",

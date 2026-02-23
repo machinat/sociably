@@ -207,7 +207,7 @@ export type SociablyUser = {
 
 export type SociablyEvent<Payload> = {
   readonly platform: string;
-  readonly category: string;
+  readonly kind: string;
   readonly type: string;
   readonly payload: Payload;
   readonly thread: null | SociablyThread;
@@ -216,26 +216,26 @@ export type SociablyEvent<Payload> = {
 };
 
 export type TextMessageMixin = {
-  readonly category: 'message';
+  readonly kind: 'message';
   readonly type: 'text';
   readonly text: string;
 };
 
 export type MediaMessageMixin = {
-  readonly category: 'message';
+  readonly kind: 'message';
   readonly type: 'image' | 'video' | 'audio' | 'file';
   readonly url?: string;
 };
 
 export type LocationMessageMixin = {
-  readonly category: 'message';
+  readonly kind: 'message';
   readonly type: 'location';
   readonly latitude: number;
   readonly longitude: number;
 };
 
 export type CallbackMixin = {
-  readonly category: 'callback';
+  readonly kind: 'callback';
   readonly type: string;
   readonly callbackData?: string;
 };

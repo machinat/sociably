@@ -126,6 +126,7 @@ export type RawUserProfile = {
 
 export type FacebookEventContext = {
   platform: typeof FACEBOOK;
+  description: string;
   event: FacebookEvent;
   metadata: WebhookMetadata;
   bot: FacebookBot;

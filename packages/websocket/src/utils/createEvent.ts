@@ -12,8 +12,8 @@ const createEvent = <User extends null | SociablyUser>(
 ): WebSocketEvent<any, User> => {
   const event: WebSocketEvent<any, User> = Object.create(WebSocketEventProto);
 
-  const { category, type, payload } = value;
-  event.category = category || 'default';
+  const { kind, type, payload } = value;
+  event.kind = kind || 'default';
   event.type = type;
   event.payload = payload;
   event.agent = null;

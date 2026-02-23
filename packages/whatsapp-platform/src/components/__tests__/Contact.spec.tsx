@@ -25,19 +25,26 @@ test('rendering value', async () => {
         "type": "unit",
         "value": {
           "message": {
-            "contact": {
-              "addresses": undefined,
-              "birthday": undefined,
-              "emails": undefined,
-              "name": {
-                "formatted_name": "Jane",
+            "contacts": [
+              {
+                "addresses": undefined,
+                "birthday": undefined,
+                "emails": undefined,
+                "name": {
+                  "first_name": undefined,
+                  "formatted_name": "Jane",
+                  "last_name": undefined,
+                  "middle_name": undefined,
+                  "prefix": undefined,
+                  "suffix": undefined,
+                },
+                "org": undefined,
+                "phones": undefined,
+                "urls": undefined,
               },
-              "org": undefined,
-              "phones": undefined,
-              "urls": undefined,
-            },
+            ],
             "context": undefined,
-            "type": "contact",
+            "type": "contacts",
           },
         },
       },
@@ -183,77 +190,79 @@ test('rendering value', async () => {
         "type": "unit",
         "value": {
           "message": {
-            "contact": {
-              "addresses": [
-                {
-                  "city": "CITY1",
-                  "country": "COUNTRY1",
-                  "country_code": "COUNTRY_CODE1",
-                  "state": "STATE1",
-                  "street": "STREET1",
-                  "type": "HOME",
-                  "zip": "ZIP1",
+            "contacts": [
+              {
+                "addresses": [
+                  {
+                    "city": "CITY1",
+                    "country": "COUNTRY1",
+                    "country_code": "COUNTRY_CODE1",
+                    "state": "STATE1",
+                    "street": "STREET1",
+                    "type": "HOME",
+                    "zip": "ZIP1",
+                  },
+                  {
+                    "city": "CITY2",
+                    "country": "COUNTRY2",
+                    "country_code": "COUNTRY_CODE2",
+                    "state": "STATE2",
+                    "street": "STREET2",
+                    "type": "WORK",
+                    "zip": "ZIP2",
+                  },
+                ],
+                "birthday": "10-20-30",
+                "emails": [
+                  {
+                    "email": "EMAIL1",
+                    "type": "WORK",
+                  },
+                  {
+                    "email": "EMAIL2",
+                    "type": "HOME",
+                  },
+                ],
+                "name": {
+                  "first_name": "FIRST_NAME",
+                  "formatted_name": "NAME",
+                  "last_name": "LAST_NAME",
+                  "middle_name": "MIDDLE_NAME",
+                  "prefix": "PREFIX",
+                  "suffix": "SUFFIX",
                 },
-                {
-                  "city": "CITY2",
-                  "country": "COUNTRY2",
-                  "country_code": "COUNTRY_CODE2",
-                  "state": "STATE2",
-                  "street": "STREET2",
-                  "type": "WORK",
-                  "zip": "ZIP2",
+                "org": {
+                  "company": "COMPANY",
+                  "department": "DEPARTMENT",
+                  "title": "TITLE",
                 },
-              ],
-              "birthday": "10-20-30",
-              "emails": [
-                {
-                  "email": "EMAIL1",
-                  "type": "WORK",
-                },
-                {
-                  "email": "EMAIL2",
-                  "type": "HOME",
-                },
-              ],
-              "name": {
-                "first_name": "FIRST_NAME",
-                "formatted_name": "NAME",
-                "last_name": "LAST_NAME",
-                "middle_name": "MIDDLE_NAME",
-                "prefix": "PREFIX",
-                "suffix": "SUFFIX",
+                "phones": [
+                  {
+                    "phone": "PHONE_NUMBER1",
+                    "type": "HOME",
+                  },
+                  {
+                    "phone": "PHONE_NUMBER2",
+                    "type": "WORK",
+                    "wa_id": "PHONE_OR_WA_ID",
+                  },
+                ],
+                "urls": [
+                  {
+                    "type": "WORK",
+                    "url": "URL1",
+                  },
+                  {
+                    "type": "HOME",
+                    "url": "URL2",
+                  },
+                ],
               },
-              "org": {
-                "company": "COMPANY",
-                "department": "DEPARTMENT",
-                "title": "TITLE",
-              },
-              "phones": [
-                {
-                  "phone": "PHONE_NUMBER1",
-                  "type": "HOME",
-                },
-                {
-                  "phone": "PHONE_NUMBER2",
-                  "type": "WORK",
-                  "wa_id": "PHONE_OR_WA_ID",
-                },
-              ],
-              "urls": [
-                {
-                  "type": "WORK",
-                  "url": "URL1",
-                },
-                {
-                  "type": "HOME",
-                  "url": "URL2",
-                },
-              ],
-            },
+            ],
             "context": {
               "message_id": "REPLY_TO_MESSAGE_ID",
             },
-            "type": "contact",
+            "type": "contacts",
           },
         },
       },

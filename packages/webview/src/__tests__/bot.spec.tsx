@@ -97,15 +97,15 @@ describe('#render(thread, message)', () => {
       foo
       <Event type="foo" />
       <Event type="bar" payload="beer" />
-      <Event type="baz" category="zaq" />
+      <Event type="baz" kind="zaq" />
     </>
   );
 
   const expectedEventValues = [
-    { type: 'text', category: 'message', payload: 'foo' },
+    { type: 'text', kind: 'message', payload: 'foo' },
     { type: 'foo' },
     { type: 'bar', payload: 'beer' },
-    { type: 'baz', category: 'zaq' },
+    { type: 'baz', kind: 'zaq' },
   ];
 
   it('send to connection thread', async () => {
@@ -143,7 +143,7 @@ test('#send()', async () => {
   });
 
   const eventValues = [
-    { type: 'bar', category: 'black', payload: '🍺' },
+    { type: 'bar', kind: 'black', payload: '🍺' },
     { type: 'baz', payload: '🍻' },
   ];
 
@@ -183,7 +183,7 @@ test('#sendUser()', async () => {
   });
 
   const eventValues = [
-    { type: 'bar', category: 'light', payload: '🍺' },
+    { type: 'bar', kind: 'light', payload: '🍺' },
     { type: 'baz', payload: '🍻' },
   ];
 
@@ -213,7 +213,7 @@ test('#sendUser()', async () => {
       },
       "values": [
         {
-          "category": "light",
+          "kind": "light",
           "payload": "🍺",
           "type": "bar",
         },
@@ -247,7 +247,7 @@ test('#sendThread()', async () => {
   });
 
   const eventValues = [
-    { type: 'bar', category: 'light', payload: '🍺' },
+    { type: 'bar', kind: 'light', payload: '🍺' },
     { type: 'baz', payload: '🍻' },
   ];
 
@@ -277,7 +277,7 @@ test('#sendThread()', async () => {
       },
       "values": [
         {
-          "category": "light",
+          "kind": "light",
           "payload": "🍺",
           "type": "bar",
         },
@@ -307,7 +307,7 @@ test('#sendTopic()', async () => {
   });
 
   const eventValues = [
-    { type: 'bar', category: 'light', payload: '🍺' },
+    { type: 'bar', kind: 'light', payload: '🍺' },
     { type: 'baz', payload: '🍻' },
   ];
 

@@ -152,7 +152,7 @@ it('pop events from server', async () => {
   const eventValues = [
     { type: 'start', payload: 'Welcome to Hyrule' },
     {
-      category: 'reaction',
+      kind: 'reaction',
       type: 'wasted',
       payload: 'Link is down! Legend over.',
     },
@@ -206,7 +206,7 @@ it('send events after connected', async () => {
   await expect(
     connector.send([
       { type: 'foo', payload: 1 },
-      { type: 'bar', category: 'beer', payload: 2 },
+      { type: 'bar', kind: 'beer', payload: 2 },
     ]),
   ).resolves.toBe(undefined);
 
@@ -215,7 +215,7 @@ it('send events after connected', async () => {
     connId,
     values: [
       { type: 'foo', payload: 1 },
-      { type: 'bar', category: 'beer', payload: 2 },
+      { type: 'bar', kind: 'beer', payload: 2 },
     ],
   });
 

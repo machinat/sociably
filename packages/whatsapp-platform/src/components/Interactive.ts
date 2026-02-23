@@ -5,7 +5,11 @@ import {
   InnerRenderFn,
 } from '@sociably/core/renderer';
 import makeWhatsAppComponent from '../utils/makeWhatsAppComponent.js';
-import { WhatsAppSegmentValue, WhatsAppComponent } from '../types.js';
+import {
+  WhatsAppSegmentValue,
+  WhatsAppComponent,
+  CreateMessageData,
+} from '../types.js';
 
 /** @category Props */
 export type InteractiveProps = {
@@ -68,7 +72,7 @@ const renderContents = async (
       !HEADER_SEGMENT_TYPES.includes(headerSegments[0].type) ||
       (headerSegments[0].type === 'unit' &&
         !HEADER_MEDIA_TYPES.includes(
-          headerSegments[0].value.message.type as never,
+          (headerSegments[0].value.message as CreateMessageData).type,
         )))
   ) {
     throw new TypeError(
@@ -79,15 +83,18 @@ const renderContents = async (
   let headerMediaFile;
   if (headerSegments?.[0].type === 'text') {
     headerValue = {
-      type: 'text',
+      type: 'text' as const,
       text: headerSegments[0].value,
     };
   } else if (headerSegments) {
     const segValue: WhatsAppSegmentValue = headerSegments[0].value;
-    const headerType = segValue.message.type!;
+    const headerType = (segValue.message as CreateMessageData).type as
+      | 'image'
+      | 'document'
+      | 'video';
     headerValue = {
       type: headerType,
-      [headerType]: segValue.message[headerType],
+      [headerType]: (segValue.message as CreateMessageData)[headerType],
     };
     headerMediaFile = segValue.file;
   }
@@ -136,13 +143,13 @@ export const ListTemplate: WhatsAppComponent<
   return [
     makeUnitSegment(node, path, {
       message: {
-        type: 'interactive',
+        type: 'interactive' as const,
         interactive: {
-          type: 'list',
+          type: 'list' as const,
           body: bodyValue,
           footer: footerValue,
           header: headerValue,
-          actions: {
+          action: {
             button: buttonTitle,
             sections: sectionsSegments.map(({ value }) => value),
           },

@@ -157,7 +157,7 @@ class WebviewClient<
     this._emitEvent({
       event: createEvent(
         {
-          category: 'connection',
+          kind: 'connection',
           type: 'connect',
           payload: null,
         },
@@ -188,7 +188,7 @@ class WebviewClient<
     this._emitEvent({
       event: createEvent(
         {
-          category: 'connection',
+          kind: 'connection',
           type: 'disconnect',
           payload: { reason },
         },

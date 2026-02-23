@@ -37,27 +37,30 @@ const updateAssetsFromSuccessfulJobs = async (
             if (method === 'sendPhoto') {
               fileId = getLargestFileIdOfPhotoMessage(result);
             } else if (SINGLE_MEDIA_MESSAGE_METHODS_PATTERN.test(method)) {
-              fileId = result[fieldName].file_id;
+              fileId = (result[fieldName] as { file_id: string }).file_id;
             } else if (method === 'editMessageMedia') {
-              const mediaType = params.media.type;
+              const mediaType = (params.media as { type: string }).type;
               fileId =
                 mediaType === 'photo'
                   ? getLargestFileIdOfPhotoMessage(result)
-                  : result[mediaType].file_id;
+                  : (result[mediaType] as { file_id: string }).file_id;
             } else if (method === 'sendMediaGroup') {
               const fileRef = `attach://${fieldName}`;
 
-              const inputIdx = params.media.findIndex(
+              const inputIdx = (params.media as { media: string }[]).findIndex(
                 (input) => input.media === fileRef,
               );
 
               if (inputIdx !== -1) {
-                const input = params.media[inputIdx];
+                const input = (
+                  params.media as { media: string; type: string }[]
+                )[inputIdx];
                 fileId =
                   input.type === 'photo'
                     ? getLargestFileIdOfPhotoMessage(result[inputIdx])
                     : input.type === 'video'
-                    ? result[inputIdx].video.file_id
+                    ? (result[inputIdx] as { video: { file_id: string } }).video
+                        .file_id
                     : undefined;
               }
             }

@@ -35,7 +35,10 @@ export type WithFileName = {
   fileName?: string;
 };
 
-const makeMediaComponent = (componentName: string, mediaType: string) => {
+const makeMediaComponent = (
+  componentName: string,
+  mediaType: 'audio' | 'document' | 'image' | 'sticker' | 'video',
+) => {
   const container = {
     [componentName]: async (
       node: NativeElement<MediaProps & WithCaption & WithFileName, any>,

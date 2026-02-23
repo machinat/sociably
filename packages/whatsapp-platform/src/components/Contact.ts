@@ -97,16 +97,25 @@ export const Contact: WhatsAppComponent<
   return [
     makeUnitSegment(node, path, {
       message: {
-        type: 'contact',
-        contact: {
-          addresses: addresses?.map(transformSnakeCaseKeys),
-          birthday,
-          emails,
-          name: transformSnakeCaseKeys(name),
-          org,
-          phones: phones?.map(transformSnakeCaseKeys),
-          urls,
-        },
+        type: 'contacts',
+        contacts: [
+          {
+            addresses: addresses?.map(transformSnakeCaseKeys),
+            birthday,
+            emails,
+            name: {
+              formatted_name: name.formattedName,
+              first_name: name.firstName,
+              last_name: name.lastName,
+              middle_name: name.middleName,
+              suffix: name.suffix,
+              prefix: name.prefix,
+            },
+            org,
+            phones: phones?.map(transformSnakeCaseKeys),
+            urls,
+          },
+        ],
         context: replyTo ? { message_id: replyTo } : undefined,
       },
     }),

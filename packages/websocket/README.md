@@ -19,6 +19,7 @@ Check the [package reference](https://sociably.js.org/api/modules/websocket.html
 ## Setup
 
 #### Back-end
+
 ```js
 import Sociably from '@sociably/core';
 import Http from '@sociably/http';
@@ -28,22 +29,23 @@ const DEV = process.env.NODE_ENV !== 'production';
 
 const app = Sociably.createApp({
   modules: [
-    Http.initModule({ /* ... */ }),
+    Http.initModule({
+      /* ... */
+    }),
   ],
-  platforms: [
-    WebSocket.initModule({ entryPath: 'websocket' }),
-  ],
+  platforms: [WebSocket.initModule({ entryPath: 'websocket' })],
   service: [
-    { // same origin policy
+    {
+      // same origin policy
       provide: WebSocket.UpgradeVerifier,
       withValue: ({ headers }) => headers.origin === 'https://your.domain.com',
     },
-  ]
+  ],
 }).onEvent(async ({ bot, event }) => {
   // send a event when a connection is open
   if (event.type === 'connect') {
     await bot.send({
-      category: 'greeting',
+      kind: 'greeting',
       type: 'hello',
       payload: 'world',
     });
@@ -61,7 +63,7 @@ const client = new Client({ url: '/websocket' });
 client.onEvent(async ({ event }) => {
   if (event.type === 'hello') {
     await client.send({
-      category: 'greeting',
+      kind: 'greeting',
       type: 'hello',
       payload: 'websocket',
     });

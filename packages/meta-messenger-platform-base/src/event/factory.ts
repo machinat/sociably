@@ -1,277 +1,33 @@
 import { SociablyUser, SociablyAgent } from '@sociably/core';
-import { mixin } from '@sociably/core/utils';
-import type {
-  MessengerRawEvent,
-  MessagingTarget,
-  MessengerChat,
-} from '../types.js';
+import type { MessengerRawEvent, MessengerChat } from '../types.js';
 import {
-  EventBase as Base,
-  Message,
-  Text,
-  QuickReply,
-  Nlp,
-  Media,
-  Sticker,
-  Location,
-  Fallback,
-  Echo,
-  Standby,
-  TemplateProduct,
-  Reaction,
-  Read,
-  Delivery,
-  AccountLinking,
-  GamePlay,
-  PassThreadControl,
-  TakeThreadControl,
-  RequestThreadControl,
-  AppRoles,
-  Optin,
-  OneTimeNotifOptin,
-  PolicyEnforcement,
-  Postback,
-  Referral,
-} from './mixin.js';
-
-const makeEvent = <
-  Proto extends {},
-  Agent extends SociablyAgent,
-  Thread extends null | MessengerChat,
-  User extends null | SociablyUser,
->(
-  payload: MessengerRawEvent,
-  agent: Agent,
-  chat: Thread,
-  user: User,
-  proto: Proto,
-): {
-  platform: Agent['platform'];
-  agent: Agent;
-  thread: Thread;
-  user: User;
-  payload: MessengerRawEvent;
-} & Proto => {
-  const event = Object.create(proto);
-
-  event.platform = agent.platform;
-  event.payload = payload;
-  event.thread = chat;
-  event.agent = agent;
-  event.user = user;
-
-  return event;
-};
-
-const BaseTextProto = mixin(Base, Message, Text, Fallback);
-const TextProto = mixin(BaseTextProto, Nlp, {
-  category: 'message' as const,
-  type: 'text' as const,
-});
-
-const EchoTextProto = mixin(BaseTextProto, Echo, {
-  category: 'echo' as const,
-  type: 'text' as const,
-});
-const StandbyTextProto = mixin(BaseTextProto, Standby, {
-  category: 'standby' as const,
-  type: 'text' as const,
-});
-
-const MediaProto = mixin(Base, Message, Media);
-
-const ImageProto = mixin(MediaProto, Sticker, {
-  category: 'message' as const,
-  type: 'image' as const,
-});
-
-const VideoProto = mixin(MediaProto, {
-  category: 'message' as const,
-  type: 'video' as const,
-});
-const AudioProto = mixin(MediaProto, {
-  category: 'message' as const,
-  type: 'audio' as const,
-});
-const FileProto = mixin(MediaProto, {
-  category: 'message' as const,
-  type: 'file' as const,
-});
-
-const EchoMediaProto = mixin(MediaProto, Echo);
-const EchoImageProto = mixin(EchoMediaProto, {
-  category: 'echo' as const,
-  type: 'image' as const,
-});
-const EchoVideoProto = mixin(EchoMediaProto, {
-  category: 'echo' as const,
-  type: 'video' as const,
-});
-const EchoAudioProto = mixin(EchoMediaProto, {
-  category: 'echo' as const,
-  type: 'audio' as const,
-});
-const EchoFileProto = mixin(EchoMediaProto, {
-  category: 'echo' as const,
-  type: 'file' as const,
-});
-
-const StandbyImageProto = mixin(ImageProto, Standby, {
-  category: 'standby' as const,
-  type: 'image' as const,
-});
-
-const StandbyMediaProto = mixin(MediaProto, Standby);
-const StandbyVideoProto = mixin(StandbyMediaProto, {
-  category: 'standby' as const,
-  type: 'video' as const,
-});
-const StandbyAudioProto = mixin(StandbyMediaProto, {
-  category: 'standby' as const,
-  type: 'audio' as const,
-});
-const StandbyFileProto = mixin(StandbyMediaProto, {
-  category: 'standby' as const,
-  type: 'file' as const,
-});
-
-const LocationProto = mixin(Base, Message, Location, {
-  category: 'message' as const,
-  type: 'location' as const,
-});
-const StandbyLocationProto = mixin(LocationProto, Standby, {
-  category: 'standby' as const,
-  type: 'location' as const,
-});
-
-const ProductTemplateProto = mixin(Base, Message, TemplateProduct, {
-  category: 'message' as const,
-  type: 'product_template' as const,
-});
-
-const StandbyProductTemplateProto = mixin(ProductTemplateProto, Standby, {
-  category: 'standby' as const,
-  type: 'product_template' as const,
-});
-
-const EchoTemplateProto = mixin(Base, Message, Echo, {
-  category: 'echo' as const,
-  type: 'template' as const,
-});
-
-const FallbackProto = mixin(Base, Message, Fallback, {
-  category: 'message' as const,
-  type: 'fallback' as const,
-});
-
-const EchoFallbackProto = mixin(FallbackProto, Echo, {
-  category: 'echo' as const,
-  type: 'fallback' as const,
-});
-
-const StandbyFallbackProto = mixin(FallbackProto, Standby, {
-  category: 'standby' as const,
-  type: 'fallback' as const,
-});
-
-const ReactionProto = mixin(Base, Reaction, {
-  category: 'action' as const,
-  type: 'reaction' as const,
-});
-
-const QuickReplyProto = mixin(Base, Message, Text, QuickReply, {
-  category: 'callback' as const,
-  type: 'quick_reply' as const,
-});
-
-const StandbyQuickReplyProto = mixin(QuickReplyProto, Standby, {
-  category: 'standby' as const,
-  type: 'quick_reply' as const,
-});
-
-const PostbackProto = mixin(Base, Postback, {
-  category: 'callback' as const,
-  type: 'postback' as const,
-});
-
-const StandbyPostbackProto = mixin(Base, Postback, Standby, {
-  category: 'standby' as const,
-  type: 'postback' as const,
-});
-
-const ReferralProto = mixin(Base, Referral, {
-  category: 'action' as const,
-  type: 'referral' as const,
-});
-
-const OptinProto = mixin(Base, Optin, {
-  category: 'callback' as const,
-  type: 'optin' as const,
-});
-
-const OneTimeNotifOptinProto = mixin(Base, OneTimeNotifOptin, {
-  category: 'callback' as const,
-  type: 'one_time_notif_optin' as const,
-});
-
-const ReadProto = mixin(Base, Read, {
-  category: 'action' as const,
-  type: 'read' as const,
-});
-const StandbyReadProto = mixin(Base, Read, Standby, {
-  category: 'standby' as const,
-  type: 'read' as const,
-});
-
-const DeliveryProto = mixin(Base, Delivery, {
-  category: 'system' as const,
-  type: 'delivery' as const,
-});
-
-const StandbyDeliveryProto = mixin(Base, Delivery, Standby, {
-  category: 'standby' as const,
-  type: 'delivery' as const,
-});
-
-const AccountLinkingProto = mixin(Base, AccountLinking, {
-  category: 'action' as const,
-  type: 'account_linking' as const,
-});
-
-const GamePlayProto = mixin(Base, GamePlay, {
-  category: 'action' as const,
-  type: 'game_play' as const,
-});
-
-const PassThreadControlProto = mixin(Base, PassThreadControl, {
-  category: 'handover_protocol' as const,
-  type: 'pass_thread_control' as const,
-});
-
-const TakeThreadControlProto = mixin(Base, TakeThreadControl, {
-  category: 'handover_protocol' as const,
-  type: 'take_thread_control' as const,
-});
-
-const RequestThreadControlProto = mixin(Base, RequestThreadControl, {
-  category: 'handover_protocol' as const,
-  type: 'request_thread_control' as const,
-});
-
-const AppRolesProto = mixin(Base, AppRoles, {
-  category: 'handover_protocol' as const,
-  type: 'app_roles' as const,
-});
-
-const PolicyEnforcementProto = mixin(Base, PolicyEnforcement, {
-  category: 'system' as const,
-  type: 'policy_enforcement' as const,
-});
-
-const UnknownProto = mixin(Base, {
-  category: 'unknown' as const,
-  type: 'unknown' as const,
-});
+  EventInstancesCreator,
+  TextMessageEvent,
+  ImageMessageEvent,
+  VideoMessageEvent,
+  AudioMessageEvent,
+  FileMessageEvent,
+  LocationMessageEvent,
+  ProductTemplateMessageEvent,
+  FallbackMessageEvent,
+  QuickReplyMessageEvent,
+  ReactionEvent,
+  OneTimeNotifOptinEvent,
+  OptinEvent,
+  PolicyEnforcementEvent,
+  PostbackEvent,
+  ReferralEvent,
+  ReadEvent,
+  DeliveryEvent,
+  AccountLinkingEvent,
+  GamePlayEvent,
+  PassThreadControlEvent,
+  TakeThreadControlEvent,
+  RequestThreadControlEvent,
+  AppRolesEvent,
+  UnknownMessageEvent,
+  UnknownEvent,
+} from './events.js';
 
 const hasOwnProperty = (obj, prop) =>
   Object.prototype.hasOwnProperty.call(obj, prop);
@@ -281,166 +37,81 @@ const createEventFactory =
     Agent extends SociablyAgent,
     Chat extends MessengerChat,
     User extends SociablyUser,
-  >({
-    createAgent,
-    createChat,
-    createUser,
-  }: {
-    createAgent: (pageId: string) => Agent;
-    createChat: (pageId: string, target: MessagingTarget) => Chat;
-    createUser: (pageId: string, userId: string) => User;
-  }) =>
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  >(
+    instancesCreator: EventInstancesCreator<Agent, Chat, User>,
+  ) =>
   (pageId: string, isStandby: boolean, payload: MessengerRawEvent) => {
-    const page = createAgent(pageId);
+    const eventsArgs = [instancesCreator, pageId, payload, isStandby] as const;
 
     if (hasOwnProperty(payload, 'message')) {
-      const { message, sender, recepient } = payload;
-
-      const chat = message.is_echo
-        ? createChat(pageId, recepient)
-        : createChat(pageId, sender);
-      const user = message.is_echo
-        ? createUser(pageId, recepient.id)
-        : createUser(pageId, sender.id);
-
+      const { message } = payload;
       if (hasOwnProperty(message, 'text')) {
-        if (hasOwnProperty(message, 'quick_reply')) {
-          return isStandby
-            ? makeEvent(payload, page, chat, user, StandbyQuickReplyProto)
-            : makeEvent(payload, page, chat, user, QuickReplyProto);
-        }
-
-        return message.is_echo
-          ? makeEvent(payload, page, chat, user, EchoTextProto)
-          : isStandby
-          ? makeEvent(payload, page, chat, user, StandbyTextProto)
-          : makeEvent(payload, page, chat, user, TextProto);
+        return hasOwnProperty(message, 'quick_reply')
+          ? new QuickReplyMessageEvent(...eventsArgs)
+          : new TextMessageEvent(...eventsArgs);
       }
 
       switch (message.attachments[0].type) {
         case 'image':
-          return message.is_echo
-            ? makeEvent(payload, page, chat, user, EchoImageProto)
-            : isStandby
-            ? makeEvent(payload, page, chat, user, StandbyImageProto)
-            : makeEvent(payload, page, chat, user, ImageProto);
+          return new ImageMessageEvent(...eventsArgs);
         case 'video':
-          return message.is_echo
-            ? makeEvent(payload, page, chat, user, EchoVideoProto)
-            : isStandby
-            ? makeEvent(payload, page, chat, user, StandbyVideoProto)
-            : makeEvent(payload, page, chat, user, VideoProto);
+          return new VideoMessageEvent(...eventsArgs);
         case 'audio':
-          return message.is_echo
-            ? makeEvent(payload, page, chat, user, EchoAudioProto)
-            : isStandby
-            ? makeEvent(payload, page, chat, user, StandbyAudioProto)
-            : makeEvent(payload, page, chat, user, AudioProto);
+          return new AudioMessageEvent(...eventsArgs);
         case 'file':
-          return message.is_echo
-            ? makeEvent(payload, page, chat, user, EchoFileProto)
-            : isStandby
-            ? makeEvent(payload, page, chat, user, StandbyFileProto)
-            : makeEvent(payload, page, chat, user, FileProto);
+          return new FileMessageEvent(...eventsArgs);
         case 'location':
-          return isStandby
-            ? makeEvent(payload, page, chat, user, StandbyLocationProto)
-            : makeEvent(payload, page, chat, user, LocationProto);
+          return new LocationMessageEvent(...eventsArgs);
         case 'template':
-          return message.is_echo
-            ? makeEvent(payload, page, chat, user, EchoTemplateProto)
-            : hasOwnProperty(message.attachments[0].payload, 'product')
-            ? isStandby
-              ? makeEvent(
-                  payload,
-                  page,
-                  chat,
-                  user,
-                  StandbyProductTemplateProto,
-                )
-              : makeEvent(payload, page, chat, user, ProductTemplateProto)
-            : makeEvent(payload, page, chat, user, UnknownProto);
+          return hasOwnProperty(message.attachments[0].payload, 'product')
+            ? new ProductTemplateMessageEvent(...eventsArgs)
+            : new UnknownMessageEvent(...eventsArgs);
         case 'fallback':
-          return message.is_echo
-            ? makeEvent(payload, page, chat, user, EchoFallbackProto)
-            : isStandby
-            ? makeEvent(payload, page, chat, user, StandbyFallbackProto)
-            : makeEvent(payload, page, chat, user, FallbackProto);
+          return new FallbackMessageEvent(...eventsArgs);
+
         default:
-          return makeEvent(payload, page, chat, user, UnknownProto);
+          return new UnknownEvent(...eventsArgs);
       }
     }
 
     if (hasOwnProperty(payload, 'policy-enforcement')) {
-      return makeEvent(payload, page, null, null, PolicyEnforcementProto);
+      return new PolicyEnforcementEvent(...eventsArgs);
     }
 
     if (hasOwnProperty(payload, 'optin')) {
-      const { optin, sender } = payload;
-
-      if (optin.type === 'one_time_notif_req') {
-        return makeEvent(
-          payload,
-          page,
-          createChat(pageId, sender),
-          createUser(pageId, sender.id),
-          OneTimeNotifOptinProto,
-        );
+      if (payload.optin.type === 'one_time_notif_req') {
+        return new OneTimeNotifOptinEvent(...eventsArgs);
       }
-
-      const chat = !sender
-        ? createChat(pageId, { user_ref: optin.user_ref })
-        : createChat(pageId, sender);
-
-      const user = sender !== undefined ? createUser(pageId, sender.id) : null;
-
-      return makeEvent(payload, page, chat, user, OptinProto);
+      return new OptinEvent(...eventsArgs);
     }
 
     if (hasOwnProperty(payload, 'referral')) {
-      const { sender } = payload;
-      const chat = createChat(pageId, sender);
-      const user = sender.id ? createUser(pageId, sender.id) : null;
-      return makeEvent(payload, page, chat, user, ReferralProto);
+      return new ReferralEvent(...eventsArgs);
     }
 
     if (hasOwnProperty(payload, 'postback')) {
-      const { sender } = payload;
-      const chat = createChat(pageId, sender);
-      const user = sender.id ? createUser(pageId, sender.id) : null;
-      return isStandby
-        ? makeEvent(payload, page, chat, user, StandbyPostbackProto)
-        : makeEvent(payload, page, chat, user, PostbackProto);
+      return new PostbackEvent(...eventsArgs);
     }
 
-    const { sender } = payload;
-    const chat = createChat(pageId, sender);
-    const user = createUser(pageId, sender.id);
-
     return hasOwnProperty(payload, 'reaction')
-      ? makeEvent(payload, page, chat, user, ReactionProto)
+      ? new ReactionEvent(...eventsArgs)
       : hasOwnProperty(payload, 'read')
-      ? isStandby
-        ? makeEvent(payload, page, chat, user, StandbyReadProto)
-        : makeEvent(payload, page, chat, user, ReadProto)
+      ? new ReadEvent(...eventsArgs)
       : hasOwnProperty(payload, 'delivery')
-      ? isStandby
-        ? makeEvent(payload, page, chat, user, StandbyDeliveryProto)
-        : makeEvent(payload, page, chat, user, DeliveryProto)
+      ? new DeliveryEvent(...eventsArgs)
       : hasOwnProperty(payload, 'account_linking')
-      ? makeEvent(payload, page, chat, user, AccountLinkingProto)
+      ? new AccountLinkingEvent(...eventsArgs)
       : hasOwnProperty(payload, 'game_play')
-      ? makeEvent(payload, page, chat, user, GamePlayProto)
+      ? new GamePlayEvent(...eventsArgs)
       : hasOwnProperty(payload, 'take_thread_control')
-      ? makeEvent(payload, page, chat, user, TakeThreadControlProto)
+      ? new TakeThreadControlEvent(...eventsArgs)
       : hasOwnProperty(payload, 'pass_thread_control')
-      ? makeEvent(payload, page, chat, user, PassThreadControlProto)
+      ? new PassThreadControlEvent(...eventsArgs)
       : hasOwnProperty(payload, 'request_thread_control')
-      ? makeEvent(payload, page, chat, user, RequestThreadControlProto)
+      ? new RequestThreadControlEvent(...eventsArgs)
       : hasOwnProperty(payload, 'app_roles')
-      ? makeEvent(payload, page, chat, user, AppRolesProto)
-      : makeEvent(payload, page, chat, user, UnknownProto);
+      ? new AppRolesEvent(...eventsArgs)
+      : new UnknownEvent(...eventsArgs);
   };
 
 export default createEventFactory;

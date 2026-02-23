@@ -21,7 +21,7 @@ import type {
   EventInput,
 } from './types.js';
 
-/** @category Provider */
+/** @kind Provider */
 export class WebSocketReceiver<User extends null | SociablyUser, Auth> {
   private _bot: BotP;
   private _server: ServerP<User, Auth>;
@@ -54,7 +54,7 @@ export class WebSocketReceiver<User extends null | SociablyUser, Auth> {
 
     this._server.on('connect', ({ connId, user, request, authContext }) => {
       const value: ConnectEventValue = {
-        category: 'connection',
+        kind: 'connection',
         type: 'connect',
         payload: null,
       };
@@ -67,7 +67,7 @@ export class WebSocketReceiver<User extends null | SociablyUser, Auth> {
     this._server.on('disconnect', ({ reason }, ctx) => {
       const { connId, user, request, authContext } = ctx;
       const value: DisconnectEventValue = {
-        category: 'connection',
+        kind: 'connection',
         type: 'disconnect',
         payload: { reason },
       };

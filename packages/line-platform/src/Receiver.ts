@@ -27,7 +27,12 @@ type LineReceiverOptions = {
 
 const replyClosure = (bot: BotP, event: LineEvent) => {
   let isReplyTokenUsed = false;
+
   return (message: SociablyNode) => {
+    if (!event.thread) {
+      return Promise.resolve(null);
+    }
+
     const shouldUseReplyToken = 'replyToken' in event && !isReplyTokenUsed;
     isReplyTokenUsed = true;
 

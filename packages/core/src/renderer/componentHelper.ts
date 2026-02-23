@@ -15,7 +15,7 @@ import type {
 
 export const makeNativeComponent =
   (platform: string) =>
-  <Component extends NativeComponent<unknown, any>>(
+  <Component extends NativeComponent<any, any>>(
     componentFn: Component['$$render'],
   ): Component =>
     Object.defineProperties({} as Component, {

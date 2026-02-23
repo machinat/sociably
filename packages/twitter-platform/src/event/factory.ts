@@ -1,188 +1,34 @@
-import { mixin } from '@sociably/core/utils';
 import {
-  EventBase,
-  TweetBase,
-  CreateTweet,
-  ReplyTweet,
-  QuoteTweet,
-  Retweet,
-  Favorite,
-  UserRevoke,
-  UserToUserAction,
-  DirectMessageCreate,
-  DirectMessageAction,
-  DirectMessageTyping,
-  DirectMessageMarkRead,
-  MediaBase,
-  PhotoAttachment,
-  VideoAttachment,
-  AnimatedGifAttachment,
-  QuickReply,
-  DeleteTweet,
-  Unknown,
-} from './mixin.js';
-import { RawTwitterEventBody } from '../types.js';
-import { TwitterEvent } from './types.js';
-
-const makeEvent = <Proto extends TwitterEvent>(
-  forUserId: string,
-  userHasBlocked: undefined | boolean,
-  payload: Proto['payload'],
-  proto: Proto,
-): Proto => {
-  const event: Proto = Object.create(proto);
-
-  event.forUserId = forUserId;
-  event.userHasBlocked = userHasBlocked;
-  event.payload = payload;
-
-  return event;
-};
-
-const TweetProto = mixin(EventBase, TweetBase);
-
-const ReplyTweetProto = mixin(TweetProto, ReplyTweet, {
-  category: 'tweet' as const,
-  type: 'reply' as const,
-});
-
-const QuoteTweetProto = mixin(TweetProto, QuoteTweet, {
-  category: 'tweet' as const,
-  type: 'quote_tweet' as const,
-});
-
-const RetweetProto = mixin(TweetProto, Retweet, {
-  category: 'tweet' as const,
-  type: 'retweet' as const,
-});
-
-const TweetMentionProto = mixin(TweetProto, CreateTweet, {
-  category: 'tweet' as const,
-  type: 'mention' as const,
-});
-
-const EchoTweetProto = mixin(TweetProto, CreateTweet, {
-  category: 'echo' as const,
-  type: 'tweet' as const,
-});
-
-const EchoDeleteTweetProto = mixin(EventBase, DeleteTweet, {
-  category: 'echo' as const,
-  type: 'delete_tweet' as const,
-});
-
-const LikeProto = mixin(EventBase, Favorite);
-
-const ActionLikeProto = mixin(LikeProto, {
-  category: 'action' as const,
-  type: 'like' as const,
-});
-
-const EchoLikeProto = mixin(LikeProto, {
-  category: 'echo' as const,
-  type: 'like' as const,
-});
-
-const UserToUserActionProto = mixin(EventBase, UserToUserAction);
-
-const ActionFollowProto = mixin(UserToUserActionProto, {
-  category: 'action' as const,
-  type: 'follow' as const,
-});
-
-const EchoFollowProto = mixin(UserToUserActionProto, {
-  category: 'echo' as const,
-  type: 'follow' as const,
-});
-
-const EchoUnfollowProto = mixin(UserToUserActionProto, {
-  category: 'echo' as const,
-  type: 'unfollow' as const,
-});
-
-const EchoBlockProto = mixin(UserToUserActionProto, {
-  category: 'echo' as const,
-  type: 'block' as const,
-});
-
-const EchoUnblockProto = mixin(UserToUserActionProto, {
-  category: 'echo' as const,
-  type: 'unblock' as const,
-});
-
-const EchoMuteProto = mixin(UserToUserActionProto, {
-  category: 'echo' as const,
-  type: 'mute' as const,
-});
-
-const EchoUnmuteProto = mixin(UserToUserActionProto, {
-  category: 'echo' as const,
-  type: 'unmute' as const,
-});
-
-const DirectMessageProto = mixin(EventBase, DirectMessageCreate);
-
-const TextMessageProto = mixin(DirectMessageProto, {
-  category: 'message' as const,
-  type: 'text' as const,
-});
-
-const MediaProto = mixin(DirectMessageProto, MediaBase);
-
-const ImageMessageProto = mixin(MediaProto, PhotoAttachment, {
-  category: 'message' as const,
-  type: 'image' as const,
-});
-
-const VideoMessageProto = mixin(MediaProto, VideoAttachment, {
-  category: 'message' as const,
-  type: 'video' as const,
-});
-
-const GifMessageProto = mixin(MediaProto, AnimatedGifAttachment, {
-  category: 'message' as const,
-  type: 'animated_gif' as const,
-});
-
-const QuickReplyProto = mixin(DirectMessageProto, QuickReply, {
-  category: 'callback' as const,
-  type: 'quick_reply' as const,
-});
-
-const EchoMessageProto = mixin(DirectMessageProto, {
-  category: 'echo' as const,
-  type: 'message' as const,
-});
-
-const ActionTypingProto = mixin(
-  EventBase,
-  DirectMessageAction,
-  DirectMessageTyping,
-  {
-    category: 'action' as const,
-    type: 'typing' as const,
-  },
-);
-
-const ActionReadProto = mixin(
-  EventBase,
-  DirectMessageAction,
-  DirectMessageMarkRead,
-  {
-    category: 'action' as const,
-    type: 'read' as const,
-  },
-);
-
-const SubscriptionRevokeProto = mixin(EventBase, UserRevoke, {
-  category: 'system' as const,
-  type: 'subscription_revoke' as const,
-});
-
-const UnknownProto = mixin(EventBase, Unknown, {
-  category: 'unknown' as const,
-  type: 'unknown' as const,
-});
+  ReplyTweetEvent,
+  QuotedTweetEvent,
+  RetweetEvent,
+  MentionedTweetEvent,
+  EchoTweetEvent,
+  TextMessageEvent,
+  ImageMessageEvent,
+  VideoMessageEvent,
+  AnimatedGifMessageEvent,
+  QuickReplyEvent,
+  EchoMessageEvent,
+  LikeEvent,
+  EchoLikeEvent,
+  FollowEvent,
+  EchoFollowEvent,
+  EchoUnfollowEvent,
+  EchoBlockEvent,
+  EchoUnblockEvent,
+  EchoMuteEvent,
+  EchoUnmuteEvent,
+  EchoDirectMessageTypingEvent,
+  DirectMessageTypingEvent,
+  EchoDirectMessageMarkReadEvent,
+  DirectMessageMarkReadEvent,
+  EchoDeleteTweetEvent,
+  UserRevokeEvent,
+  UnknownEvent,
+  TwitterEvent,
+} from './events.js';
+import type { RawTwitterEventBody } from '../types.js';
 
 const eventFactory = (body: RawTwitterEventBody): TwitterEvent[] => {
   if ('tweet_create_events' in body) {
@@ -192,21 +38,21 @@ const eventFactory = (body: RawTwitterEventBody): TwitterEvent[] => {
 
     return body.tweet_create_events.map((rawTweet) => {
       if (rawTweet.user.id_str === forUserId) {
-        return makeEvent(forUserId, userHasBlocked, rawTweet, EchoTweetProto);
+        return new EchoTweetEvent(forUserId, rawTweet, userHasBlocked);
       }
       if (
         rawTweet.in_reply_to_status_id &&
         rawTweet.in_reply_to_user_id_str === forUserId
       ) {
-        return makeEvent(forUserId, userHasBlocked, rawTweet, ReplyTweetProto);
+        return new ReplyTweetEvent(forUserId, rawTweet, userHasBlocked);
       }
       if (rawTweet.retweeted_status?.user.id_str === forUserId) {
-        return makeEvent(forUserId, userHasBlocked, rawTweet, RetweetProto);
+        return new RetweetEvent(forUserId, rawTweet, userHasBlocked);
       }
       if (rawTweet.quoted_status?.user.id_str === forUserId) {
-        return makeEvent(forUserId, userHasBlocked, rawTweet, QuoteTweetProto);
+        return new QuotedTweetEvent(forUserId, rawTweet, userHasBlocked);
       }
-      return makeEvent(forUserId, userHasBlocked, rawTweet, TweetMentionProto);
+      return new MentionedTweetEvent(forUserId, rawTweet, userHasBlocked);
     });
   }
 
@@ -214,9 +60,9 @@ const eventFactory = (body: RawTwitterEventBody): TwitterEvent[] => {
     const { for_user_id: forUserId } = body;
     return body.favorite_events.map((rawFavorite) => {
       if (rawFavorite.user.id_str === forUserId) {
-        return makeEvent(forUserId, undefined, rawFavorite, ActionLikeProto);
+        return new EchoLikeEvent(forUserId, rawFavorite);
       }
-      return makeEvent(forUserId, undefined, rawFavorite, EchoLikeProto);
+      return new LikeEvent(forUserId, rawFavorite);
     });
   }
 
@@ -224,12 +70,12 @@ const eventFactory = (body: RawTwitterEventBody): TwitterEvent[] => {
     const { for_user_id: forUserId } = body;
     return body.follow_events.map((rawFollow) => {
       if (rawFollow.type === 'unfollow') {
-        return makeEvent(forUserId, undefined, rawFollow, EchoUnfollowProto);
+        return new EchoUnfollowEvent(forUserId, rawFollow);
       }
       if (rawFollow.source.id_str === forUserId) {
-        return makeEvent(forUserId, undefined, rawFollow, EchoFollowProto);
+        return new EchoFollowEvent(forUserId, rawFollow);
       }
-      return makeEvent(forUserId, undefined, rawFollow, ActionFollowProto);
+      return new FollowEvent(forUserId, rawFollow);
     });
   }
 
@@ -237,24 +83,24 @@ const eventFactory = (body: RawTwitterEventBody): TwitterEvent[] => {
     const { for_user_id: forUserId } = body;
     return body.block_events.map((rawBlock) => {
       if (rawBlock.type === 'unblock') {
-        return makeEvent(forUserId, undefined, rawBlock, EchoUnblockProto);
+        return new EchoUnblockEvent(forUserId, rawBlock);
       }
-      return makeEvent(forUserId, undefined, rawBlock, EchoBlockProto);
+      return new EchoBlockEvent(forUserId, rawBlock);
     });
   }
 
   if ('mute_events' in body) {
     const { for_user_id: forUserId } = body;
-    return body.mute_events.map((rawBlock) => {
-      if (rawBlock.type === 'unmute') {
-        return makeEvent(forUserId, undefined, rawBlock, EchoUnmuteProto);
+    return body.mute_events.map((rawMute) => {
+      if (rawMute.type === 'unmute') {
+        return new EchoUnmuteEvent(forUserId, rawMute);
       }
-      return makeEvent(forUserId, undefined, rawBlock, EchoMuteProto);
+      return new EchoMuteEvent(forUserId, rawMute);
     });
   }
 
   if ('user_event' in body) {
-    return [makeEvent('', undefined, body, SubscriptionRevokeProto)];
+    return [new UserRevokeEvent('', body)];
   }
 
   if ('direct_message_events' in body) {
@@ -262,24 +108,36 @@ const eventFactory = (body: RawTwitterEventBody): TwitterEvent[] => {
 
     return body.direct_message_events.map((rawMessage) => {
       const messageContent = rawMessage.message_create.message_data;
-      const event =
-        rawMessage.message_create.sender_id === forUserId
-          ? makeEvent(forUserId, undefined, rawMessage, EchoMessageProto)
-          : messageContent.attachment
-          ? messageContent.attachment.type === 'media'
-            ? messageContent.attachment.media.type === 'photo'
-              ? makeEvent(forUserId, undefined, rawMessage, ImageMessageProto)
-              : messageContent.attachment.media.type === 'video'
-              ? makeEvent(forUserId, undefined, rawMessage, VideoMessageProto)
-              : messageContent.attachment.media.type === 'animated_gif'
-              ? makeEvent(forUserId, undefined, rawMessage, GifMessageProto)
-              : makeEvent(forUserId, undefined, rawMessage, TextMessageProto)
-            : makeEvent(forUserId, undefined, rawMessage, TextMessageProto)
-          : messageContent.quick_reply_response
-          ? makeEvent(forUserId, undefined, rawMessage, QuickReplyProto)
-          : makeEvent(forUserId, undefined, rawMessage, TextMessageProto);
-      event.usersMapping = users;
-      event.appsMapping = apps;
+      let event: TwitterEvent;
+
+      if (rawMessage.message_create.sender_id === forUserId) {
+        event = new EchoMessageEvent(forUserId, rawMessage);
+      } else if (messageContent.attachment) {
+        if (messageContent.attachment.type === 'media') {
+          if (messageContent.attachment.media.type === 'photo') {
+            event = new ImageMessageEvent(forUserId, rawMessage);
+          } else if (messageContent.attachment.media.type === 'video') {
+            event = new VideoMessageEvent(forUserId, rawMessage);
+          } else if (messageContent.attachment.media.type === 'animated_gif') {
+            event = new AnimatedGifMessageEvent(forUserId, rawMessage);
+          } else {
+            event = new TextMessageEvent(forUserId, rawMessage);
+          }
+        } else {
+          event = new TextMessageEvent(forUserId, rawMessage);
+        }
+      } else if (messageContent.quick_reply_response) {
+        event = new QuickReplyEvent(forUserId, rawMessage);
+      } else {
+        event = new TextMessageEvent(forUserId, rawMessage);
+      }
+
+      if ('usersMapping' in event) {
+        event.usersMapping = users;
+      }
+      if ('appsMapping' in event) {
+        event.appsMapping = apps;
+      }
       return event;
     });
   }
@@ -288,13 +146,14 @@ const eventFactory = (body: RawTwitterEventBody): TwitterEvent[] => {
     const { for_user_id: forUserId, users } = body;
 
     return body.direct_message_indicate_typing_events.map((rawMessage) => {
-      const event = makeEvent(
-        forUserId,
-        undefined,
-        rawMessage,
-        ActionTypingProto,
-      );
-      event.usersMapping = users;
+      const event =
+        rawMessage.sender_id === forUserId
+          ? new EchoDirectMessageTypingEvent(forUserId, rawMessage)
+          : new DirectMessageTypingEvent(forUserId, rawMessage);
+
+      if ('usersMapping' in event) {
+        event.usersMapping = users;
+      }
       return event;
     });
   }
@@ -303,20 +162,26 @@ const eventFactory = (body: RawTwitterEventBody): TwitterEvent[] => {
     const { for_user_id: forUserId, users } = body;
 
     return body.direct_message_mark_read_events.map((rawRead) => {
-      const event = makeEvent(forUserId, undefined, rawRead, ActionReadProto);
-      event.usersMapping = users;
+      const event =
+        rawRead.sender_id === forUserId
+          ? new EchoDirectMessageMarkReadEvent(forUserId, rawRead)
+          : new DirectMessageMarkReadEvent(forUserId, rawRead);
+
+      if ('usersMapping' in event) {
+        event.usersMapping = users;
+      }
       return event;
     });
   }
 
   if ('tweet_delete_events' in body) {
-    return body.tweet_delete_events.map((rawMessage) =>
-      makeEvent(body.for_user_id, undefined, rawMessage, EchoDeleteTweetProto),
+    return body.tweet_delete_events.map(
+      (rawMessage) => new EchoDeleteTweetEvent(body.for_user_id, rawMessage),
     );
   }
 
   const { for_user_id: forUserId } = body;
-  return [makeEvent(forUserId, undefined, body, UnknownProto)];
+  return [new UnknownEvent(forUserId, body)];
 };
 
 export default eventFactory;

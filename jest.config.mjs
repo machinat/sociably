@@ -11,11 +11,16 @@ const baseConfigs = {
       '@swc/jest',
       {
         jsc: {
+          parser: {
+            syntax: 'typescript',
+            decorators: true,
+          },
           transform: {
             react: {
               pragma: 'Sociably.createElement',
               pragmaFrag: 'Sociably.Fragment',
             },
+            decoratorVersion: '2022-03',
           },
         },
       },

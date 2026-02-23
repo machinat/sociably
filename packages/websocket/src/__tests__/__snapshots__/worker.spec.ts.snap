@@ -41,7 +41,7 @@ exports[`work 1`] = `
             "type": "foo",
           },
           {
-            "category": "baz",
+            "kind": "baz",
             "payload": "3",
             "type": "bar",
           },

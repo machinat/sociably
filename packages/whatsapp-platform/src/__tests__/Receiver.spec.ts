@@ -168,12 +168,12 @@ describe('handling POST', () => {
     }
 
     const event1 = popEventMock.calls[0].args[0].event;
-    expect(event1.category).toBe('message');
+    expect(event1.kind).toBe('message');
     expect(event1.type).toBe('text');
     expect(event1.payload).toEqual(body.entry[0].changes[0].value.messages[0]);
 
     const event2 = popEventMock.calls[1].args[0].event;
-    expect(event2.category).toBe('message');
+    expect(event2.kind).toBe('message');
     expect(event2.type).toBe('image');
     expect(event2.payload).toEqual(body.entry[0].changes[0].value.messages[1]);
   });

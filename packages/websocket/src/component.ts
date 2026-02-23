@@ -13,10 +13,10 @@ export const Event: NativeComponent<
   EventInput,
   UnitSegment<EventInput>
 > = makeNativeComponent(WEBSOCKET)(function Event(node, path) {
-  const { type, category, payload } = node.props;
+  const { type, kind, payload } = node.props;
   return [
     makeUnitSegment(node, path, {
-      category,
+      kind,
       type,
       payload,
     }),

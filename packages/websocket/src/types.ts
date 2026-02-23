@@ -24,11 +24,11 @@ export type ConnIdentifier = {
 export type UpgradeRequestInfo = Omit<HttpRequestInfo, 'body'>;
 
 export type EventValue<
-  Category extends string = string,
+  Kind extends string = string,
   Type extends string = string,
   Payload = unknown,
 > = {
-  category: Category;
+  kind: Kind;
   type: Type;
   payload: Payload;
 };
@@ -55,7 +55,7 @@ export type WebSocketEvent<
 };
 
 export type EventInput = {
-  category?: string;
+  kind?: string;
   type: string;
   payload?: unknown;
 };

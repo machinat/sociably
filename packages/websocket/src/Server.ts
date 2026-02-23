@@ -82,7 +82,7 @@ type ServerOptions<User extends null | SociablyUser, Auth> = {
   heartbeatInterval?: number;
 };
 
-/** @category Provider */
+/** @kind Provider */
 export class WebSocketServer<
   User extends null | SociablyUser,
   Auth,
@@ -299,8 +299,8 @@ export class WebSocketServer<
   private async _dispatchRemote(target: DispatchTarget, values: EventInput[]) {
     return this._broker.dispatchRemote({
       target,
-      values: values.map(({ category, type, payload }) => ({
-        category,
+      values: values.map(({ kind, type, payload }) => ({
+        kind,
         type,
         payload: this.marshaler.marshal(payload),
       })),
@@ -322,8 +322,8 @@ export class WebSocketServer<
         socket
           .dispatch({
             connId,
-            values: values.map(({ category, type, payload }) => ({
-              category,
+            values: values.map(({ kind, type, payload }) => ({
+              kind,
               type,
               payload: this.marshaler.marshal(payload),
             })),
@@ -474,8 +474,8 @@ export class WebSocketServer<
     } else {
       this.emit(
         'events',
-        values.map(({ category, type, payload }) => ({
-          category,
+        values.map(({ kind, type, payload }) => ({
+          kind,
           type,
           payload: this.marshaler.unmarshal(payload),
         })),

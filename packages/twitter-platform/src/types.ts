@@ -11,7 +11,7 @@ import { IntermediateSegment, UnitSegment } from '@sociably/core/renderer';
 import { DispatchFrame, DispatchResponse } from '@sociably/core/engine';
 import { Interfaceable } from '@sociably/core/service';
 import type { WebhookMetadata } from '@sociably/http/webhook';
-import type { TwitterEvent } from './event/types.js';
+import type { TwitterEvent } from './event/events.js';
 import type TwitterChat from './Chat.js';
 import type TweetTarget from './TweetTarget.js';
 import type { TwitterBot } from './Bot.js';

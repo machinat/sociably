@@ -129,7 +129,7 @@ it('start connector and auth client', async () => {
 
   expect(eventSpy).toHaveBeenCalledWith({
     event: {
-      category: 'connection',
+      kind: 'connection',
       type: 'connect',
       payload: null,
       agent: null,
@@ -258,7 +258,7 @@ it('emit "event" when dispatched events received', async () => {
     [
       { type: 'start', payload: 'Welcome to Hyrule' },
       {
-        category: 'reaction',
+        kind: 'reaction',
         type: 'wasted',
         payload: 'Link is down! Legend over.',
       },
@@ -270,7 +270,7 @@ it('emit "event" when dispatched events received', async () => {
   // 'connect' event is the first call
   expect(eventSpy).toHaveBeenNthCalledWith(2, {
     event: {
-      category: 'default',
+      kind: 'default',
       type: 'start',
       payload: 'Welcome to Hyrule',
       agent: null,
@@ -283,7 +283,7 @@ it('emit "event" when dispatched events received', async () => {
   });
   expect(eventSpy).toHaveBeenNthCalledWith(3, {
     event: {
-      category: 'reaction',
+      kind: 'reaction',
       type: 'wasted',
       payload: 'Link is down! Legend over.',
       agent: null,
@@ -304,7 +304,7 @@ it('emit "event" when dispatched events received', async () => {
   expect(eventSpy).toHaveBeenCalledTimes(4);
   expect(eventSpy).toHaveBeenCalledWith({
     event: {
-      category: 'default',
+      kind: 'default',
       type: 'resurrect',
       payload: 'Hero never die!',
       agent: null,
@@ -325,14 +325,14 @@ it('send events', async () => {
   await expect(
     client.send([
       { type: 'foo', payload: 1 },
-      { type: 'bar', category: 'beer', payload: 2 },
+      { type: 'bar', kind: 'beer', payload: 2 },
     ]),
   ).resolves.toBe(undefined);
 
   expect(connector.send).toHaveBeenCalledTimes(1);
   expect(connector.send).toHaveBeenCalledWith([
     { type: 'foo', payload: 1 },
-    { type: 'bar', category: 'beer', payload: 2 },
+    { type: 'bar', kind: 'beer', payload: 2 },
   ]);
 
   await expect(client.send({ type: 'baz', payload: 3 })).resolves.toBe(
@@ -364,7 +364,7 @@ it.each([
     connector.emit('connect', { connId: '#conn', user });
     expect(eventSpy).toHaveBeenCalledWith({
       event: {
-        category: 'connection',
+        kind: 'connection',
         type: 'connect',
         payload: null,
         agent: null,
@@ -401,7 +401,7 @@ test('disconnected by server', async () => {
 
   expect(eventSpy).toHaveBeenLastCalledWith({
     event: {
-      category: 'connection',
+      kind: 'connection',
       type: 'disconnect',
       payload: { reason: 'See ya!' },
       agent: null,
@@ -435,7 +435,7 @@ test('.close()', async () => {
   connector.emit('disconnect', { reason: 'Bye!' }, { connId: '#conn', user });
   expect(eventSpy).toHaveBeenLastCalledWith({
     event: {
-      category: 'connection',
+      kind: 'connection',
       type: 'disconnect',
       payload: { reason: 'Bye!' },
       agent: null,

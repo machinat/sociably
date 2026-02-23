@@ -1,140 +1,143 @@
-import UserProfile from '../UserProfile.js';
 import {
-  TextProto,
-  AudioProto,
-  ImageProto,
-  DocumentProto,
-  VideoProto,
-  StickerProto,
-  UnknownProto,
-  ReferralProto,
-  ListInteractiveProto,
-  ButtonInteractiveProto,
-  QuickReplyProto,
-  UserNumberChangeProto,
-  UserIdentityChangeProto,
-  UnsupportedProto,
-  ReadProto,
-  SentProto,
-  DeliveredProto,
-  FailedProto,
-  ErrorProto,
-} from './protos.js';
-import { ContactData } from '../types.js';
-import { WhatsAppEvent, MessageEvent } from './types.js';
+  TextMessageEvent,
+  AudioMessageEvent,
+  ImageMessageEvent,
+  DocumentMessageEvent,
+  VideoMessageEvent,
+  StickerMessageEvent,
+  ListInteractiveEvent,
+  ButtonInteractiveEvent,
+  QuickReplyEvent,
+  UserNumberChangeEvent,
+  UserIdentityChangeEvent,
+  ReadEvent,
+  SentEvent,
+  DeliveredEvent,
+  FailedEvent,
+  ErrorEvent,
+  UnknownEvent,
+  ContactsMessageEvent,
+  WhatsAppEvent,
+  MessageEvent,
+  UnknownMessageEvent,
+} from './events.js';
+import {
+  ContactData,
+  MessageData,
+  StatusData,
+  ErrorData,
+  WhatsAppRawEvent,
+} from '../types.js';
 
 const makeMessageEvent = (
-  messageData,
+  messageData: MessageData,
   businessAccountId: string,
   agentNumberId: string,
   agentNumberDisplay: string,
   contacts: ContactData[],
 ): MessageEvent => {
   const messageType = messageData.type;
-  const messageProto =
+  const MessageConstructor =
     messageType === 'text'
-      ? TextProto
+      ? TextMessageEvent
       : messageType === 'image'
-      ? ImageProto
+      ? ImageMessageEvent
       : messageType === 'audio'
-      ? AudioProto
+      ? AudioMessageEvent
       : messageType === 'document'
-      ? DocumentProto
+      ? DocumentMessageEvent
       : messageType === 'video'
-      ? VideoProto
+      ? VideoMessageEvent
       : messageType === 'sticker'
-      ? StickerProto
-      : messageType === 'referral'
-      ? ReferralProto
+      ? StickerMessageEvent
+      : messageType === 'contacts'
+      ? ContactsMessageEvent
       : messageType === 'interactive'
-      ? messageData.interactive.type === 'button_reply'
-        ? ButtonInteractiveProto
-        : messageData.interactive.type === 'list_reply'
-        ? ListInteractiveProto
-        : UnknownProto
+      ? messageData.interactive?.button_reply
+        ? ButtonInteractiveEvent
+        : messageData.interactive?.list_reply
+        ? ListInteractiveEvent
+        : UnknownMessageEvent
       : messageType === 'button'
-      ? QuickReplyProto
+      ? QuickReplyEvent
       : messageType === 'system'
-      ? messageData.system.type === 'customer_changed_number'
-        ? UserNumberChangeProto
-        : messageData.system.type === 'customer_identity_changed'
-        ? UserIdentityChangeProto
-        : UnknownProto
+      ? messageData.system?.new_wa_id
+        ? UserNumberChangeEvent
+        : messageData.system?.identity
+        ? UserIdentityChangeEvent
+        : UnknownMessageEvent
       : messageType === 'unknown'
-      ? UnsupportedProto
-      : UnknownProto;
-
-  const event: MessageEvent = Object.create(messageProto);
-
-  event.payload = messageData;
-  event.businessAccountId = businessAccountId;
-  event.agentNumberId = agentNumberId;
-  event.agentNumberDisplay = agentNumberDisplay;
+      ? UnknownMessageEvent
+      : UnknownMessageEvent;
 
   const userNumber = messageData.from;
   const contact = contacts.find(
     ({ wa_id: numberId }) => numberId === userNumber,
   );
-  if (contact) {
-    event.userProfile = new UserProfile(userNumber, contact.profile);
-  }
 
+  const event = new MessageConstructor(
+    businessAccountId,
+    agentNumberId,
+    agentNumberDisplay,
+    messageData,
+    contact?.profile,
+  );
   return event;
 };
 
 const makeStatusEvent = (
-  statusData,
+  statusData: StatusData,
   businessAccountId: string,
   agentNumberId: string,
   agentNumberDisplay: string,
-): MessageEvent => {
-  const statusType = statusData.type;
-  const statusProto =
+): WhatsAppEvent => {
+  const statusType = statusData.status;
+  const StatusConstructor =
     statusType === 'read'
-      ? ReadProto
+      ? ReadEvent
       : statusType === 'delivered'
-      ? DeliveredProto
+      ? DeliveredEvent
       : statusType === 'sent'
-      ? SentProto
+      ? SentEvent
       : statusType === 'failed'
-      ? FailedProto
-      : UnknownProto;
+      ? FailedEvent
+      : UnknownEvent;
 
-  const event: MessageEvent = Object.create(statusProto);
-
-  event.payload = statusData;
-  event.businessAccountId = businessAccountId;
-  event.agentNumberId = agentNumberId;
-  event.agentNumberDisplay = agentNumberDisplay;
-
+  const event = new StatusConstructor(
+    businessAccountId,
+    agentNumberId,
+    agentNumberDisplay,
+    statusData,
+  );
   return event;
 };
 
 const makeErrorEvent = (
-  errorData,
+  errorData: ErrorData,
   businessAccountId: string,
   agentNumberId: string,
   agentNumberDisplay: string,
-): MessageEvent => {
-  const event: MessageEvent = Object.create(ErrorProto);
-
-  event.payload = errorData;
-  event.businessAccountId = businessAccountId;
-  event.agentNumberId = agentNumberId;
-  event.agentNumberDisplay = agentNumberDisplay;
-
+) => {
+  const event = new ErrorEvent(
+    businessAccountId,
+    agentNumberId,
+    agentNumberDisplay,
+    errorData,
+  );
   return event;
 };
 
-const eventFactory = (updataData): WhatsAppEvent[] => {
-  const { id: businessAccountId, changes } = updataData;
+const eventFactory = (
+  updateData: WhatsAppRawEvent['entry'][0],
+): WhatsAppEvent[] => {
+  const { id: businessAccountId, changes } = updateData;
   const events: WhatsAppEvent[] = [];
 
   for (const change of changes) {
     const {
       value: { metadata, contacts, messages, statuses, errors },
     } = change;
-    const agentNumber = metadata.phone_number_id;
+    const agentNumberId = metadata.phone_number_id;
     const agentNumberDisplay = metadata.display_phone_number;
 
     if (messages) {
@@ -143,9 +146,9 @@ const eventFactory = (updataData): WhatsAppEvent[] => {
           makeMessageEvent(
             message,
             businessAccountId,
-            agentNumber,
+            agentNumberId,
             agentNumberDisplay,
-            contacts,
+            contacts || [],
           ),
         );
       }
@@ -157,7 +160,7 @@ const eventFactory = (updataData): WhatsAppEvent[] => {
           makeStatusEvent(
             status,
             businessAccountId,
-            agentNumber,
+            agentNumberId,
             agentNumberDisplay,
           ),
         );
@@ -170,7 +173,7 @@ const eventFactory = (updataData): WhatsAppEvent[] => {
           makeErrorEvent(
             error,
             businessAccountId,
-            agentNumber,
+            agentNumberId,
             agentNumberDisplay,
           ),
         );

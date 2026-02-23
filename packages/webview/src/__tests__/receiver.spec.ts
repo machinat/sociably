@@ -102,7 +102,7 @@ it('pop events', () => {
     platform: 'webview',
     bot,
     event: {
-      category: 'connection',
+      kind: 'connection',
       type: 'connect',
       payload: null,
       agent: null,
@@ -115,7 +115,7 @@ it('pop events', () => {
 
   server.emit(
     'events',
-    [{ category: 'greet', type: 'hello', payload: 'world' }, { type: 'hug' }],
+    [{ kind: 'greet', type: 'hello', payload: 'world' }, { type: 'hug' }],
     connectionInfo,
   );
 
@@ -124,7 +124,7 @@ it('pop events', () => {
     platform: 'webview',
     bot,
     event: {
-      category: 'greet',
+      kind: 'greet',
       type: 'hello',
       payload: 'world',
       agent: null,
@@ -138,7 +138,7 @@ it('pop events', () => {
     platform: 'webview',
     bot,
     event: {
-      category: 'default',
+      kind: 'default',
       type: 'hug',
       payload: undefined,
       agent: null,
@@ -155,7 +155,7 @@ it('pop events', () => {
     platform: 'webview',
     bot,
     event: {
-      category: 'connection',
+      kind: 'connection',
       type: 'disconnect',
       payload: { reason: 'bye' },
       agent: null,

@@ -142,7 +142,7 @@ export class TelegramProfiler
       minWidth?: number;
     },
   ): Promise<null | PhotoResponse> {
-    const { photos } = await this.bot.requestApi<{ photos: RawPhotoSize[] }>({
+    const { photos } = await this.bot.requestApi<{ photos: RawPhotoSize[][] }>({
       agent,
       method: 'getUserProfilePhotos',
       params: { user_id: user.id },
@@ -178,7 +178,12 @@ export class TelegramProfiler
     chat: number | string | TelegramChat | TelegramChatSender,
     options?: { size?: 'big' | 'small' },
   ): Promise<null | PhotoResponse> {
-    const { photo } = await this.bot.requestApi<{ photo: RawPhotoSize }>({
+    const { photo } = await this.bot.requestApi<{
+      photo: {
+        small_file_id: string;
+        big_file_id: string;
+      };
+    }>({
       agent,
       method: 'getChat',
       params: {
