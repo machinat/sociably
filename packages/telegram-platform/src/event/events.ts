@@ -208,7 +208,7 @@ abstract class Text extends MessageEquivalence {
   }
 
   /**
-   * For text messages, special entities like usernames, URLs, bot commands,
+   * For text messages, special entities like usernames, URLs, sender commands,
    * etc. that appear in the text
    */
   get entities(): RawMessageEntity[] | undefined {
@@ -447,7 +447,7 @@ abstract class Caption extends MessageEquivalence {
   }
 
   /**
-   * For messages with a caption, special entities like usernames, URLs, bot
+   * For messages with a caption, special entities like usernames, URLs, sender
    * commands, etc. that appear in the caption
    */
   get captionEntities(): RawMessageEntity[] | undefined {
@@ -531,15 +531,15 @@ abstract class Game extends MessageEquivalence {
   /**
    * Brief description of the game or high scores included in the game message.
    * Can be automatically edited to include current high scores for the game
-   * when the bot calls setGameScore, or manually edited using editMessageText.
-   * 0-4096 characters.
+   * when the sender calls setGameScore, or manually edited using
+   * editMessageText. 0-4096 characters.
    */
   get text(): string | undefined {
     return this.message.game!.text;
   }
 
   /**
-   * Special entities that appear in text, such as usernames, URLs, bot
+   * Special entities that appear in text, such as usernames, URLs, sender
    * commands, etc.
    */
   get textEntities(): RawMessageEntity[] | undefined {
@@ -601,8 +601,8 @@ abstract class Poll extends EventBase {
 
   /**
    * 0-based identifier of the correct answer option. Available only for polls
-   * in the quiz mode, which are closed, or was sent (not forwarded) by the bot
-   * or to the private chat with the bot.
+   * in the quiz mode, which are closed, or was sent (not forwarded) by the
+   * sender or to the private chat with the sender.
    */
   get correctOptionId(): number | undefined {
     return this.poll.correct_option_id;
@@ -617,7 +617,7 @@ abstract class Poll extends EventBase {
   }
 
   /**
-   * Special entities like usernames, URLs, bot commands, etc. that appear in
+   * Special entities like usernames, URLs, sender commands, etc. that appear in
    * the explanation
    */
   get explanationEntities(): RawMessageEntity[] | undefined {
@@ -699,7 +699,7 @@ abstract class Location extends MessageEquivalence {
 abstract class NewChatMembers extends MessageEquivalence {
   /**
    * New members that were added to the group or supergroup and information
-   * about them (the bot itself may be one of these members)
+   * about them (the sender itself may be one of these members)
    */
   get newChatMembers(): TelegramUser[] {
     return this.message.new_chat_members!.map(
@@ -711,7 +711,7 @@ abstract class NewChatMembers extends MessageEquivalence {
 abstract class LeftChatMember extends MessageEquivalence {
   /**
    * A member was removed from the group, information about them (this member
-   * may be the bot itself)
+   * may be the sender itself)
    */
   get leftChatMember(): TelegramUser {
     const leftMember: RawUser = this.message.left_chat_member!;
@@ -815,7 +815,7 @@ abstract class SuccessfulPayment extends MessageEquivalence {
 }
 
 abstract class InlineQuery extends EventBase {
-  /** The bot scoped thread */
+  /** The sender scoped thread */
   readonly thread = null;
 
   /** Sender */
@@ -844,7 +844,7 @@ abstract class InlineQuery extends EventBase {
     return this.payload.inline_query!.query;
   }
 
-  /** Offset of the results to be returned, can be controlled by the bot */
+  /** Offset of the results to be returned, can be controlled by the sender */
   get offset(): string | undefined {
     return this.payload.inline_query!.offset;
   }
@@ -895,7 +895,7 @@ abstract class ChosenInlineResult extends EventBase {
 abstract class CallbackBase extends EventBase {
   /**
    * The chat thread. If the callback is triggered by an inline message, it's a
-   * bot scoped thread
+   * sender scoped thread
    */
   get thread(): TelegramChat | null {
     const { message } = this.payload.callback_query!;
@@ -930,8 +930,8 @@ abstract class CallbackBase extends EventBase {
   }
 
   /**
-   * Identifier of the message sent via the bot in inline mode, that originated
-   * the query.
+   * Identifier of the message sent via the sender in inline mode, that
+   * originated the query.
    */
   get inlineMessageId(): string | undefined {
     return this.payload.callback_query!.inline_message_id;

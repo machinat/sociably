@@ -14,15 +14,15 @@ export type UrlButtonProps = {
   /** Login mode only. New text of the button in forwarded messages. */
   forwardText?: string;
   /**
-   * Login mode only. Username of a bot, which will be used for user
-   * authorization. If not specified, the current bot's username will be
+   * Login mode only. Username of a sender, which will be used for user
+   * authorization. If not specified, the current sender's username will be
    * assumed. The url's domain must be the same as the domain linked with the
-   * bot.
+   * sender.
    */
   botUserName?: string;
   /**
-   * Login mode only. Pass True to request the permission for your bot to send
-   * messages to the user.
+   * Login mode only. Pass True to request the permission for your sender to
+   * send messages to the user.
    */
   requestWriteAccess?: boolean;
 };
@@ -91,7 +91,7 @@ export type SwitchQueryButtonProps = {
   /** Label text on the button. */
   text: string;
   /**
-   * The inline query to be inserted in the input field after the bot's
+   * The inline query to be inserted in the input field after the sender's
    * username. Default to empty string.
    */
   query?: string;
@@ -104,8 +104,8 @@ export type SwitchQueryButtonProps = {
 
 /**
  * Pressing the button will prompt the user to select one of their chats, open
- * that chat and insert the bot's username and the specified inline query in the
- * input field.
+ * that chat and insert the sender's username and the specified inline query in
+ * the input field.
  *
  * @category Component
  * @props {@link SwitchQueryButtonProps}
@@ -339,7 +339,7 @@ export type PollReplyProps = {
 };
 
 /**
- * The user will be asked to create a poll and send it to the bot when the
+ * The user will be asked to create a poll and send it to the sender when the
  * button is pressed. Available in private chats only
  *
  * @category Component
@@ -385,7 +385,7 @@ export type ReplyKeyboardProps = {
   /**
    * Use this parameter if you want to show the keyboard to specific users only.
    * Targets: 1) users that are @mentioned in the text of the Message object; 2)
-   * if the bot's message is a reply (has reply_to_message_id), sender of the
+   * if the sender's message is a reply (has reply_to_message_id), sender of the
    * original message.
    */
   selective?: boolean;
@@ -424,7 +424,7 @@ export type RemoveReplyKeyboardProps = {
   /**
    * Use this parameter if you want to remove the keyboard for specific users
    * only. Targets: 1) users that are @mentioned in the text of the Message
-   * object; 2) if the bot's message is a reply (has reply_to_message_id),
+   * object; 2) if the sender's message is a reply (has reply_to_message_id),
    * sender of the original message.
    */
   selective?: boolean;
@@ -452,7 +452,7 @@ export type ForceReplyProps = {
   /**
    * Use this parameter if you want to remove the keyboard for specific users
    * only. Targets: 1) users that are @mentioned in the text of the Message
-   * object; 2) if the bot's message is a reply (has reply_to_message_id),
+   * object; 2) if the sender's message is a reply (has reply_to_message_id),
    * sender of the original message.
    */
   selective?: boolean;

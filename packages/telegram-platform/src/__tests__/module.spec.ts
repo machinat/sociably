@@ -1,7 +1,7 @@
 import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { serviceProviderFactory } from '@sociably/core/service';
-import BaseBot from '@sociably/core/base/Bot.js';
+import BaseSender from '@sociably/core/base/Sender.js';
 import BaseProfiler from '@sociably/core/base/Profiler.js';
 import BaseMarshaler from '@sociably/core/base/Marshaler.js';
 import { InMemoryState } from '@sociably/dev-tools';
@@ -14,13 +14,13 @@ import { TelegramReceiver } from '../Receiver.js';
 import TelegramChatProfile from '../ChatProfile.js';
 import TelegramUserProfile from '../UserProfile.js';
 import { TelegramProfiler } from '../Profiler.js';
-import { TelegramBot } from '../Bot.js';
+import { TelegramSender } from '../Sender.js';
 import { AgentSettingsAccessorI } from '../interface.js';
 import { TelegramAssetsManager, saveUploadedFile } from '../asset/index.js';
 
 it('export interfaces', () => {
   expect(Telegram.Receiver).toBe(TelegramReceiver);
-  expect(Telegram.Bot).toBe(TelegramBot);
+  expect(Telegram.Sender).toBe(TelegramSender);
   expect(Telegram.Profiler).toBe(TelegramProfiler);
   expect(Telegram.Configs).toMatchInlineSnapshot(`
     {
@@ -87,17 +87,23 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [bot, receiver, configsProvided, profiler, assetsManager, routings] =
-      app.useServices([
-        Telegram.Bot,
-        Telegram.Receiver,
-        Telegram.Configs,
-        Telegram.Profiler,
-        Telegram.AssetsManager,
-        Http.RequestRouteList,
-      ]);
+    const [
+      sender,
+      receiver,
+      configsProvided,
+      profiler,
+      assetsManager,
+      routings,
+    ] = app.useServices([
+      Telegram.Sender,
+      Telegram.Receiver,
+      Telegram.Configs,
+      Telegram.Profiler,
+      Telegram.AssetsManager,
+      Http.RequestRouteList,
+    ]);
 
-    expect(bot).toBeInstanceOf(TelegramBot);
+    expect(sender).toBeInstanceOf(TelegramSender);
     expect(receiver).toBeInstanceOf(TelegramReceiver);
     expect(profiler).toBeInstanceOf(TelegramProfiler);
     expect(assetsManager).toBeInstanceOf(TelegramAssetsManager);
@@ -130,12 +136,12 @@ describe('initModule(configs)', () => {
     await app.start();
 
     const [bots, profilers, marshalTypes] = app.useServices([
-      BaseBot.PlatformMap,
+      BaseSender.PlatformMap,
       BaseProfiler.PlatformMap,
       BaseMarshaler.TypeList,
     ]);
 
-    expect(bots.get('telegram')).toBeInstanceOf(TelegramBot);
+    expect(bots.get('telegram')).toBeInstanceOf(TelegramSender);
     expect(profilers.get('telegram')).toBeInstanceOf(TelegramProfiler);
     expect(marshalTypes).toEqual(
       expect.arrayContaining([
@@ -276,7 +282,7 @@ describe('initModule(configs)', () => {
     await app.stop();
   });
 
-  it('throw if no bot settings source provided', () => {
+  it('throw if no sender settings source provided', () => {
     expect(() =>
       Telegram.initModule({ secretToken: '_SECRET_' }),
     ).toThrowErrorMatchingInlineSnapshot(
@@ -284,8 +290,8 @@ describe('initModule(configs)', () => {
     );
   });
 
-  test('.startHook() start bot', async () => {
-    const bot = moxy({ start: async () => {} });
+  test('.startHook() start sender', async () => {
+    const sender = moxy({ start: async () => {} });
     const module = Telegram.initModule({
       agentSettings: {
         botToken: '12345:_BOT_TOKEN_',
@@ -295,12 +301,12 @@ describe('initModule(configs)', () => {
     });
 
     const { startHook } = module;
-    await expect(startHook!.$$factory(bot)).resolves.toBe(undefined);
-    expect(bot.start).toHaveBeenCalledTimes(1);
+    await expect(startHook!.$$factory(sender)).resolves.toBe(undefined);
+    expect(sender.start).toHaveBeenCalledTimes(1);
   });
 
-  test('.stopHook() stop bot', async () => {
-    const bot = moxy({ stop: async () => {} });
+  test('.stopHook() stop sender', async () => {
+    const sender = moxy({ stop: async () => {} });
     const module = Telegram.initModule({
       agentSettings: {
         botToken: '12345:_BOT_TOKEN_',
@@ -310,7 +316,7 @@ describe('initModule(configs)', () => {
     });
 
     const { stopHook } = module;
-    await expect(stopHook!.$$factory(bot)).resolves.toBe(undefined);
-    expect(bot.stop).toHaveBeenCalledTimes(1);
+    await expect(stopHook!.$$factory(sender)).resolves.toBe(undefined);
+    expect(sender.stop).toHaveBeenCalledTimes(1);
   });
 });

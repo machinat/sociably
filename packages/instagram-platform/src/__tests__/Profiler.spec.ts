@@ -1,5 +1,5 @@
 import moxy from '@moxyjs/moxy';
-import type { InstagramBot } from '../Bot.js';
+import type { InstagramSender } from '../Sender.js';
 import InstagramAgent from '../Agent.js';
 import InstagramUser from '../User.js';
 import UserProfile from '../UserProfile.js';
@@ -17,7 +17,7 @@ const rawProfileData = {
   is_business_follow_user: false,
 };
 
-const bot = moxy<InstagramBot>({
+const sender = moxy<InstagramSender>({
   requestApi: async () => rawProfileData,
 } as never);
 
@@ -25,11 +25,11 @@ const agent = new InstagramAgent('1234567890');
 const user = new InstagramUser('1234567890', '_USER_ID_');
 
 beforeEach(() => {
-  bot.mock.reset();
+  sender.mock.reset();
 });
 
 test('fetch profile from api', async () => {
-  const profiler = new InstagramProfiler(bot);
+  const profiler = new InstagramProfiler(sender);
   const profile = await profiler.getUserProfile(agent, user);
 
   expect(profile?.id).toBe('xxxxxxxxx');
@@ -48,8 +48,8 @@ test('fetch profile from api', async () => {
   expect(profile?.isBusinessFollowUser).toBe(false);
   expect(profile?.data).toEqual(rawProfileData);
 
-  expect(bot.requestApi).toHaveReturnedTimes(1);
-  expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+  expect(sender.requestApi).toHaveReturnedTimes(1);
+  expect(sender.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
     {
       "agent": InstagramAgent {
         "$$typeofAgent": true,

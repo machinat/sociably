@@ -12,7 +12,7 @@ import Auth, {
 import BasicAuthenticator from '@sociably/auth/basicAuth';
 import { attachWebviewParamsOnUrl } from '@sociably/webview/client';
 import { TELEGRAM } from '../constant.js';
-import BotP from '../Bot.js';
+import SenderP from '../Sender.js';
 import TelegramUser from '../User.js';
 import { AgentSettingsAccessorI } from '../interface.js';
 import type TelegramApiError from '../Error.js';
@@ -77,7 +77,7 @@ type ServerAuthenticatorOptions = {
 export class TelegramServerAuthenticator
   implements ServerAuthenticator<never, TelegramAuthData, TelegramAuthContext>
 {
-  bot: BotP;
+  sender: SenderP;
   settingsAccessor: AgentSettingsAccessorI;
   operator: Auth.HttpOperator;
   appName: undefined | string;
@@ -86,12 +86,12 @@ export class TelegramServerAuthenticator
   platform = TELEGRAM;
 
   constructor(
-    bot: BotP,
+    sender: SenderP,
     settingsAccessor: AgentSettingsAccessorI,
     operator: Auth.HttpOperator,
     { appName, appIconUrl }: ServerAuthenticatorOptions = {},
   ) {
-    this.bot = bot;
+    this.sender = sender;
     this.settingsAccessor = settingsAccessor;
     this.operator = operator;
     this.appName = appName;
@@ -317,12 +317,12 @@ export class TelegramServerAuthenticator
     const agent = new TelegramUser(botId, true);
     try {
       const [chatMember, chatData] = await Promise.all([
-        this.bot.requestApi({
+        this.sender.requestApi({
           agent,
           method: 'getChatMember',
           params: { chat_id: chatId, user_id: userId },
         }),
-        this.bot.requestApi({
+        this.sender.requestApi({
           agent,
           method: 'getChat',
           params: { chat_id: chatId },
@@ -366,13 +366,13 @@ export class TelegramServerAuthenticator
 const ServerAuthenticatorP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [
-    BotP,
+    SenderP,
     AgentSettingsAccessorI,
     Auth.HttpOperator,
     { require: BasicAuthenticator, optional: true },
   ],
-  factory: (bot, settingsAccessor, operator, basicAuthenticator) =>
-    new TelegramServerAuthenticator(bot, settingsAccessor, operator, {
+  factory: (sender, settingsAccessor, operator, basicAuthenticator) =>
+    new TelegramServerAuthenticator(sender, settingsAccessor, operator, {
       appName: basicAuthenticator?.appName,
       appIconUrl: basicAuthenticator?.appIconUrl,
     }),

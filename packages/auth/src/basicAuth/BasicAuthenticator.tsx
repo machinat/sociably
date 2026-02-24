@@ -204,7 +204,7 @@ export class BasicAuthenticator {
     req: IncomingMessage,
     res: ServerResponse,
     {
-      bot,
+      sender,
       platform,
       platformName,
       platformColor,
@@ -253,7 +253,7 @@ export class BasicAuthenticator {
       const domain = new URL(this.operator.getRedirectUrl(state.redirect))
         .hostname;
       try {
-        await bot.render(
+        await sender.render(
           thread,
           <CodeMessage
             code={code}

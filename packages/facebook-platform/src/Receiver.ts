@@ -1,14 +1,14 @@
 import type { PopEventWrapper } from '@sociably/core';
 import { MetaWebhookReceiver } from '@sociably/meta-api';
 import { serviceProviderClass } from '@sociably/core/service';
-import BotP from './Bot.js';
+import SenderP from './Sender.js';
 import eventFactory from './event/factory.js';
 import { ConfigsI, PlatformUtilitiesI } from './interface.js';
 import { FACEBOOK } from './constant.js';
 import type { FacebookEventContext } from './types.js';
 
 type FacebookReceiverOptions = {
-  bot: BotP;
+  sender: SenderP;
   popEventWrapper: PopEventWrapper<FacebookEventContext, null>;
   appSecret: string;
   webhookVerifyToken: string;
@@ -23,7 +23,7 @@ type FacebookReceiverOptions = {
  */
 export class FacebookReceiver extends MetaWebhookReceiver<FacebookEventContext> {
   constructor({
-    bot,
+    sender,
     appSecret,
     webhookVerifyToken,
     shouldHandleChallenge = true,
@@ -38,7 +38,7 @@ export class FacebookReceiver extends MetaWebhookReceiver<FacebookEventContext> 
       listeningPlatforms: [
         {
           platform: FACEBOOK,
-          bot,
+          sender,
           objectType: 'page',
           makeEventsFromUpdate: (updateData) => {
             const { id: pageId, messaging, stanby } = updateData;
@@ -58,7 +58,7 @@ export class FacebookReceiver extends MetaWebhookReceiver<FacebookEventContext> 
 
 const ReceiverP = serviceProviderClass({
   lifetime: 'singleton',
-  deps: [ConfigsI, BotP, PlatformUtilitiesI],
+  deps: [ConfigsI, SenderP, PlatformUtilitiesI],
   factory: (
     {
       shouldHandleChallenge,
@@ -66,11 +66,11 @@ const ReceiverP = serviceProviderClass({
       shouldVerifyRequest,
       appSecret,
     },
-    bot,
+    sender,
     { popEventWrapper },
   ) =>
     new FacebookReceiver({
-      bot,
+      sender,
       popEventWrapper,
       shouldHandleChallenge,
       webhookVerifyToken,

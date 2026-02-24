@@ -1,7 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import moxy from '@moxyjs/moxy';
 import type { AuthHttpOperator } from '@sociably/auth';
-import type { TelegramBot } from '../../Bot.js';
+import type { TelegramSender } from '../../Sender.js';
 import { TelegramServerAuthenticator } from '../ServerAuthenticator.js';
 import TelegramChat from '../../Chat.js';
 import TelegramUser from '../../User.js';
@@ -37,7 +37,7 @@ const httpOperator = moxy<AuthHttpOperator>({
   getAuthUrl: () => 'https://sociably.io/MyApp/auth/telegram',
 } as never);
 
-const bot = moxy<TelegramBot>({
+const sender = moxy<TelegramSender>({
   requestApi() {
     throw new Error();
   },
@@ -46,13 +46,13 @@ const bot = moxy<TelegramBot>({
 const botUser = new TelegramUser(12345, true);
 
 const authenticator = new TelegramServerAuthenticator(
-  bot,
+  sender,
   agentSettingsAccessor,
   httpOperator,
 );
 
 beforeEach(() => {
-  bot.mock.reset();
+  sender.mock.reset();
   res.mock.reset();
   httpOperator.mock.reset();
   agentSettingsAccessor.mock.reset();
@@ -126,7 +126,7 @@ describe('.delegateAuthRequest() on root route', () => {
     const req = createReq({ url: `/auth/telegram?${search}` });
 
     // getChatMember
-    bot.requestApi.mock.fakeOnce(async () => ({
+    sender.requestApi.mock.fakeOnce(async () => ({
       user: {
         id: 67890,
         first_name: 'John',
@@ -138,7 +138,7 @@ describe('.delegateAuthRequest() on root route', () => {
     }));
 
     // getChat
-    bot.requestApi.mock.fakeOnce(async () => ({
+    sender.requestApi.mock.fakeOnce(async () => ({
       id: 55555,
       type: 'group',
       title: 'Does',
@@ -151,8 +151,8 @@ describe('.delegateAuthRequest() on root route', () => {
       trailingPath: '',
     });
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(2);
-    expect(bot.requestApi).toHaveBeenNthCalledWith(1, {
+    expect(sender.requestApi).toHaveBeenCalledTimes(2);
+    expect(sender.requestApi).toHaveBeenNthCalledWith(1, {
       agent: botUser,
       method: 'getChatMember',
       params: {
@@ -160,7 +160,7 @@ describe('.delegateAuthRequest() on root route', () => {
         chat_id: 55555,
       },
     });
-    expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
+    expect(sender.requestApi).toHaveBeenNthCalledWith(2, {
       agent: botUser,
       method: 'getChat',
       params: { chat_id: 55555 },
@@ -186,7 +186,7 @@ describe('.delegateAuthRequest() on root route', () => {
     });
   });
 
-  it('fail if bot settings not found', async () => {
+  it('fail if sender settings not found', async () => {
     agentSettingsAccessor.getAgentSettings.mock.fakeResolvedValue(null);
 
     const search = new URLSearchParams({
@@ -202,7 +202,7 @@ describe('.delegateAuthRequest() on root route', () => {
       trailingPath: '',
     });
 
-    expect(bot.requestApi).not.toHaveBeenCalled();
+    expect(sender.requestApi).not.toHaveBeenCalled();
 
     expect(httpOperator.issueError).toHaveBeenCalledTimes(1);
     expect(httpOperator.issueError).toHaveBeenCalledWith(
@@ -225,7 +225,7 @@ describe('.delegateAuthRequest() on root route', () => {
 
     const req = createReq({ url: `/auth/telegram?${search}` });
 
-    bot.requestApi.mock.fake(async () => {
+    sender.requestApi.mock.fake(async () => {
       throw new TelegramApiError({
         ok: false,
         error_code: 400,
@@ -240,7 +240,7 @@ describe('.delegateAuthRequest() on root route', () => {
       trailingPath: '',
     });
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(2);
+    expect(sender.requestApi).toHaveBeenCalledTimes(2);
 
     expect(httpOperator.issueError).toHaveBeenCalledTimes(1);
     expect(httpOperator.issueError).toHaveBeenCalledWith(
@@ -399,7 +399,7 @@ describe('.delegateAuthRequest() on login route', () => {
     const req = createReq({ url: `/auth/telegram/login?botId=12345` });
 
     const authenticatorWithAppDetails = new TelegramServerAuthenticator(
-      bot,
+      sender,
       agentSettingsAccessor,
       httpOperator,
       {
@@ -442,7 +442,7 @@ describe('.delegateAuthRequest() on login route', () => {
     );
   });
 
-  test('redirect with error if bot settings not found', async () => {
+  test('redirect with error if sender settings not found', async () => {
     agentSettingsAccessor.getAgentSettings.mock.fakeResolvedValue(null);
 
     const req = createReq({
@@ -543,7 +543,7 @@ describe('.verifyRefreshment()', () => {
 
   it('verify user is a chat member if `chat` is specified', async () => {
     // getChatMember
-    bot.requestApi.mock.fakeOnce(async () => ({
+    sender.requestApi.mock.fakeOnce(async () => ({
       user: {
         id: 67890,
         first_name: 'John',
@@ -555,7 +555,7 @@ describe('.verifyRefreshment()', () => {
     }));
 
     // getChat
-    bot.requestApi.mock.fakeOnce(async () => ({
+    sender.requestApi.mock.fakeOnce(async () => ({
       id: 55555,
       type: 'group',
       title: 'Does',
@@ -582,8 +582,8 @@ describe('.verifyRefreshment()', () => {
       data: authData,
     });
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(2);
-    expect(bot.requestApi).toHaveBeenNthCalledWith(1, {
+    expect(sender.requestApi).toHaveBeenCalledTimes(2);
+    expect(sender.requestApi).toHaveBeenNthCalledWith(1, {
       agent: botUser,
       method: 'getChatMember',
       params: {
@@ -591,7 +591,7 @@ describe('.verifyRefreshment()', () => {
         chat_id: 55555,
       },
     });
-    expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
+    expect(sender.requestApi).toHaveBeenNthCalledWith(2, {
       agent: botUser,
       method: 'getChat',
       params: { chat_id: 55555 },
@@ -599,7 +599,7 @@ describe('.verifyRefreshment()', () => {
   });
 
   it('fail if chat member check fails', async () => {
-    bot.requestApi.mock.fake(async () => {
+    sender.requestApi.mock.fake(async () => {
       throw new TelegramApiError({
         ok: false,
         error_code: 404,
@@ -626,10 +626,10 @@ describe('.verifyRefreshment()', () => {
       reason: 'Bad Request: user not found',
     });
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(2);
+    expect(sender.requestApi).toHaveBeenCalledTimes(2);
   });
 
-  it('fail if bot settings not found', async () => {
+  it('fail if sender settings not found', async () => {
     agentSettingsAccessor.getAgentSettings.mock.fakeResolvedValue(null);
 
     await expect(

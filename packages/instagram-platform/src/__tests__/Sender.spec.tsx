@@ -7,10 +7,15 @@ import Queue from '@sociably/core/queue';
 import _Engine from '@sociably/core/engine';
 import * as MetaApiModule from '@sociably/meta-api';
 import { MetaApiWorker as _Worker, MetaApiError } from '@sociably/meta-api';
-import { FacebookBot } from '../Bot.js';
-import { Image, Expression, TextReply } from '../components/index.js';
-import FacebookChat from '../Chat.js';
-import FacebookPage from '../Page.js';
+import { InstagramSender } from '../Sender.js';
+import {
+  Image,
+  Expression,
+  TextReply,
+  ImagePost,
+} from '../components/index.js';
+import InstagramChat from '../Chat.js';
+import InstagramAgent from '../Agent.js';
 
 const Renderer = _Renderer as Moxy<typeof _Renderer>;
 const Engine = _Engine as Moxy<typeof _Engine>;
@@ -37,24 +42,27 @@ jest.mock('@sociably/meta-api', () => {
 const initScope = moxy(() => moxy());
 const dispatchWrapper = moxy((x) => x);
 
-const pageId = '1234567890';
+const accountId = '1234567890';
+const pageId = '1111111111';
 const accessToken = '_ACCESS_TOKEN_';
+const userAccessToken = '_USER_ACCESS_TOKEN_';
 const appId = '_APP_ID_';
 const appSecret = '_APP_SECRET_';
+const username = 'jojodoe666';
 
-const agentSettingsAccessor = {
-  getAgentSettings: async () => ({ pageId, accessToken }),
-  getAgentSettingsBatch: async () => [{ pageId, accessToken }],
+const agentSettings = {
+  accountId,
+  pageId,
+  accessToken,
+  username,
+  userAccessToken,
 };
+const agentSettingsAccessor = moxy({
+  getAgentSettings: async () => agentSettings,
+  getAgentSettingsBatch: async () => [agentSettings],
+});
 
-const page = new FacebookPage(pageId);
-
-const message = (
-  <Expression quickReplies={<TextReply title="Hi!" payload="👋" />}>
-    Hello <b>World!</b>
-    <Image url="https://sociably.io/greeting.png" />
-  </Expression>
-);
+const agent = new InstagramAgent(accountId);
 
 let graphApi;
 const bodySpy = moxy(() => true);
@@ -73,7 +81,7 @@ afterEach(() => {
 
 describe('.constructor(options)', () => {
   it('assemble core modules', () => {
-    const bot = new FacebookBot({
+    const sender = new InstagramSender({
       appId,
       appSecret,
       agentSettingsAccessor,
@@ -81,14 +89,14 @@ describe('.constructor(options)', () => {
       dispatchWrapper,
     });
 
-    expect(bot.engine).toBeInstanceOf(Engine);
+    expect(sender.engine).toBeInstanceOf(Engine);
 
     expect(Renderer).toHaveBeenCalledTimes(1);
-    expect(Renderer).toHaveBeenCalledWith('facebook', expect.any(Function));
+    expect(Renderer).toHaveBeenCalledWith('instagram', expect.any(Function));
 
     expect(Engine).toHaveBeenCalledTimes(1);
     expect(Engine).toHaveBeenCalledWith(
-      'facebook',
+      'instagram',
       expect.any(Renderer),
       expect.any(Queue),
       expect.any(Worker),
@@ -108,7 +116,7 @@ describe('.constructor(options)', () => {
 
   it('pass options to worker', () => {
     expect(
-      new FacebookBot({
+      new InstagramSender({
         appId,
         appSecret,
         agentSettingsAccessor,
@@ -131,7 +139,7 @@ describe('.constructor(options)', () => {
 });
 
 test('.start() and .stop() start/stop engine', () => {
-  const bot = new FacebookBot({
+  const sender = new InstagramSender({
     appId,
     appSecret,
     agentSettingsAccessor,
@@ -139,15 +147,26 @@ test('.start() and .stop() start/stop engine', () => {
     dispatchWrapper,
   });
 
-  bot.start();
-  expect(bot.engine.start).toHaveBeenCalledTimes(1);
+  sender.start();
+  expect(sender.engine.start).toHaveBeenCalledTimes(1);
 
-  bot.stop();
-  expect(bot.engine.stop).toHaveBeenCalledTimes(1);
+  sender.stop();
+  expect(sender.engine.stop).toHaveBeenCalledTimes(1);
 });
 
-describe('.message(thread, message, options)', () => {
-  const bot = new FacebookBot({ agentSettingsAccessor, appId, appSecret });
+describe('.message(thread, content)', () => {
+  const sender = new InstagramSender({
+    agentSettingsAccessor,
+    appId,
+    appSecret,
+  });
+
+  const message = (
+    <Expression quickReplies={<TextReply title="Hi!" payload="👋" />}>
+      Hello <b>World!</b>
+      <Image url="https://sociably.io/greeting.png" />
+    </Expression>
+  );
 
   let apiStatus;
   beforeEach(() => {
@@ -156,26 +175,26 @@ describe('.message(thread, message, options)', () => {
       body: JSON.stringify({ message_id: 'xxx', recipient_id: 'xxx' }),
     };
     apiStatus = graphApi.reply(200, [messageResult, messageResult]);
-    bot.start();
+    sender.start();
   });
 
   afterEach(() => {
-    bot.stop();
+    sender.stop();
   });
 
-  const chat = new FacebookChat('1234567890', { id: '9876543210' });
+  const chat = new InstagramChat('1234567890', { id: '9876543210' });
 
   it('resolves null if message is empty', async () => {
     const empties = [undefined, null, [], <></>];
     for (const empty of empties) {
       // eslint-disable-next-line no-await-in-loop
-      await expect(bot.message(chat, empty)).resolves.toBe(null);
+      await expect(sender.message(chat, empty)).resolves.toBe(null);
       expect(apiStatus.isDone()).toBe(false);
     }
   });
 
   it('send messages to me/messages api', async () => {
-    const response = await bot.message(chat, message);
+    const response = await sender.message(chat, message);
     expect(response).toMatchSnapshot();
 
     for (const result of response!.results) {
@@ -214,9 +233,9 @@ describe('.message(thread, message, options)', () => {
   });
 
   test('message options', async () => {
-    const response = await bot.message(chat, message, {
+    const response = await sender.message(chat, message, {
       messagingType: 'MESSAGE_TAG',
-      tag: 'TRANSPORTATION_UPDATE',
+      tag: 'HUMAN_AGENT',
       notificationType: 'SILENT_PUSH',
       personaId: 'billy17',
     });
@@ -242,7 +261,7 @@ describe('.message(thread, message, options)', () => {
           "notification_type": "SILENT_PUSH",
           "persona_id": "billy17",
           "recipient": "{"id":"9876543210"}",
-          "tag": "TRANSPORTATION_UPDATE",
+          "tag": "HUMAN_AGENT",
         },
         {
           "message": "{"attachment":{"type":"image","payload":{"url":"https://sociably.io/greeting.png"}},"quick_replies":[{"content_type":"text","title":"Hi!","payload":"👋"}]}",
@@ -250,7 +269,7 @@ describe('.message(thread, message, options)', () => {
           "notification_type": "SILENT_PUSH",
           "persona_id": "billy17",
           "recipient": "{"id":"9876543210"}",
-          "tag": "TRANSPORTATION_UPDATE",
+          "tag": "HUMAN_AGENT",
         },
       ]
     `);
@@ -259,21 +278,85 @@ describe('.message(thread, message, options)', () => {
   });
 });
 
-describe('.uploadChatAttachment(page, message)', () => {
-  const bot = new FacebookBot({ agentSettingsAccessor, appId, appSecret });
+describe('.post(agent, content)', () => {
+  const sender = new InstagramSender({
+    agentSettingsAccessor,
+    appId,
+    appSecret,
+  });
 
+  let apiStatus;
   beforeEach(() => {
-    bot.start();
+    apiStatus = graphApi.reply(200, [
+      { code: 200, body: '{"id":1111111111}' },
+      { code: 200, body: '{"id":2222222222}' },
+    ]);
+    sender.start();
   });
 
   afterEach(() => {
-    bot.stop();
+    sender.stop();
+  });
+
+  it('throw if userAccessToken for the agent is unavailable', async () => {
+    agentSettingsAccessor.getAgentSettings.mock.fakeOnce(async () => ({
+      ...agentSettings,
+      userAccessToken: undefined,
+    }));
+
+    await expect(
+      sender.post(agent, <ImagePost url="http://..." />),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"user access token is not provided to make a post"`,
+    );
+  });
+
+  it('throw if content is empty', async () => {
+    const empties = [undefined, null, [], <></>];
+    for (const empty of empties) {
+      // eslint-disable-next-line no-await-in-loop
+      await expect(sender.post(agent, empty)).rejects.toThrowError(
+        'post content is empty',
+      );
+    }
+  });
+
+  it('make the post through media APIs', async () => {
+    await expect(
+      sender.post(agent, <ImagePost url="http://..." />),
+    ).resolves.toEqual({ id: 2222222222 });
+
+    expect(bodySpy).toHaveBeenCalledTimes(1);
+    const body = bodySpy.mock.calls[0].args[0];
+
+    const requests = JSON.parse(body.batch);
+    expect(requests).toMatchSnapshot();
+
+    expect(apiStatus.isDone()).toBe(true);
+  });
+});
+
+describe('.uploadChatAttachment(agent, message)', () => {
+  const sender = new InstagramSender({
+    agentSettingsAccessor,
+    appId,
+    appSecret,
+  });
+
+  beforeEach(() => {
+    sender.start();
+  });
+
+  afterEach(() => {
+    sender.stop();
   });
 
   it('resolves null if message is empty', async () => {
     const empties = [undefined, null, [], <></>];
     for (const empty of empties) {
-      await expect(bot.uploadChatAttachment(page, empty)).resolves.toBe(null); // eslint-disable-line no-await-in-loop
+      await expect(sender.uploadChatAttachment(agent, empty)).resolves.toBe(
+        null,
+      ); // eslint-disable-line no-await-in-loop
     }
   });
 
@@ -283,8 +366,8 @@ describe('.uploadChatAttachment(page, message)', () => {
     ]);
 
     await expect(
-      bot.uploadChatAttachment(
-        page,
+      sender.uploadChatAttachment(
+        agent,
         <Image url="https://sociably.io/trollface.png" />,
       ),
     ).resolves.toEqual({ attachmentId: 401759795 });
@@ -302,6 +385,7 @@ describe('.uploadChatAttachment(page, message)', () => {
     expect(querystring.decode(reqest.body)).toMatchInlineSnapshot(`
       {
         "message": "{"attachment":{"type":"image","payload":{"url":"https://sociably.io/trollface.png"}}}",
+        "platform": "instagram",
       }
     `);
 
@@ -311,14 +395,18 @@ describe('.uploadChatAttachment(page, message)', () => {
 
 describe('.requestApi(options)', () => {
   it('call facebook graph api', async () => {
-    const bot = new FacebookBot({ agentSettingsAccessor, appId, appSecret });
-    bot.start();
+    const sender = new InstagramSender({
+      agentSettingsAccessor,
+      appId,
+      appSecret,
+    });
+    sender.start();
 
     const apiCall = graphApi.reply(200, [{ code: 200, body: '{"foo":"bar"}' }]);
 
     await expect(
-      bot.requestApi({
-        agent: page,
+      sender.requestApi({
+        agent,
         method: 'POST',
         url: 'foo',
         params: { bar: 'baz' },
@@ -336,13 +424,17 @@ describe('.requestApi(options)', () => {
   });
 
   test('with accessToken option', async () => {
-    const bot = new FacebookBot({ agentSettingsAccessor, appId, appSecret });
-    await bot.start();
+    const sender = new InstagramSender({
+      agentSettingsAccessor,
+      appId,
+      appSecret,
+    });
+    await sender.start();
 
     graphApi.reply(200, [{ code: 200, body: '{"foo":"bar"}' }]);
     await expect(
-      bot.requestApi({
-        agent: page,
+      sender.requestApi({
+        agent,
         method: 'POST',
         url: 'foo',
         params: { bar: 'baz' },
@@ -359,13 +451,17 @@ describe('.requestApi(options)', () => {
   });
 
   test('with asApp option', async () => {
-    const bot = new FacebookBot({ agentSettingsAccessor, appId, appSecret });
-    await bot.start();
+    const sender = new InstagramSender({
+      agentSettingsAccessor,
+      appId,
+      appSecret,
+    });
+    await sender.start();
 
     graphApi.reply(200, [{ code: 200, body: '{"foo":"bar"}' }]);
     await expect(
-      bot.requestApi({
-        agent: page,
+      sender.requestApi({
+        agent,
         method: 'POST',
         url: 'foo',
         params: { bar: 'baz' },
@@ -382,8 +478,12 @@ describe('.requestApi(options)', () => {
   });
 
   it('throw MetaApiError if api call fail', async () => {
-    const bot = new FacebookBot({ agentSettingsAccessor, appId, appSecret });
-    bot.start();
+    const sender = new InstagramSender({
+      agentSettingsAccessor,
+      appId,
+      appSecret,
+    });
+    sender.start();
 
     const apiCall = graphApi.reply(200, [
       {
@@ -401,8 +501,8 @@ describe('.requestApi(options)', () => {
     ]);
 
     try {
-      await bot.requestApi({
-        agent: page,
+      await sender.requestApi({
+        agent,
         method: 'POST',
         url: 'foo',
         params: { bar: 'baz' },

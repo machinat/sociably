@@ -5,9 +5,9 @@ import { LineReceiver } from '../Receiver.js';
 import LineChannel from '../Channel.js';
 import LineChat from '../Chat.js';
 import LineUser from '../User.js';
-import type { LineBot } from '../Bot.js';
+import type { LineSender } from '../Sender.js';
 
-const bot = moxy<LineBot>({
+const sender = moxy<LineSender>({
   render: async () => ({ jobs: [], tasks: [], results: [] }),
 } as never);
 
@@ -72,7 +72,7 @@ it.each(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
   'responds 405 if req.method is %s',
   async (method) => {
     const receiver = new LineReceiver({
-      bot,
+      sender,
       agentSettingsAccessor,
       popEventWrapper,
       shouldVerifyRequest: false,
@@ -90,7 +90,7 @@ it.each(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
 
 it('responds 400 if body is empty', async () => {
   const receiver = new LineReceiver({
-    bot,
+    sender,
     agentSettingsAccessor,
     popEventWrapper,
     shouldVerifyRequest: false,
@@ -107,7 +107,7 @@ it('responds 400 if body is empty', async () => {
 
 it('responds 400 if body is not not valid json format', async () => {
   const receiver = new LineReceiver({
-    bot,
+    sender,
     agentSettingsAccessor,
     popEventWrapper,
     shouldVerifyRequest: false,
@@ -124,7 +124,7 @@ it('responds 400 if body is not not valid json format', async () => {
 
 it('responds 400 if body is in invalid format', async () => {
   const receiver = new LineReceiver({
-    bot,
+    sender,
     agentSettingsAccessor,
     popEventWrapper,
     shouldVerifyRequest: false,
@@ -144,7 +144,7 @@ it('responds 400 if body is in invalid format', async () => {
 
 it('respond 200 and pop events received', async () => {
   const receiver = new LineReceiver({
-    bot,
+    sender,
     agentSettingsAccessor,
     popEventWrapper,
     shouldVerifyRequest: false,
@@ -198,7 +198,7 @@ it('respond 200 and pop events received', async () => {
     args: [ctx],
   } of popEventMock.calls) {
     expect(ctx.platform).toBe('line');
-    expect(ctx.bot).toBe(bot);
+    expect(ctx.sender).toBe(sender);
 
     const { metadata, event } = ctx;
 
@@ -240,7 +240,7 @@ it('respond 200 and pop events received', async () => {
 
 test('reply(message)', async () => {
   const receiver = new LineReceiver({
-    bot,
+    sender,
     agentSettingsAccessor,
     popEventWrapper,
     shouldVerifyRequest: false,
@@ -262,19 +262,19 @@ test('reply(message)', async () => {
     tasks: [],
   });
 
-  expect(bot.render).toHaveBeenCalledTimes(1);
-  expect(bot.render).toHaveBeenCalledWith(event.thread, 'hello world', {
+  expect(sender.render).toHaveBeenCalledTimes(1);
+  expect(sender.render).toHaveBeenCalledWith(event.thread, 'hello world', {
     replyToken: event.replyToken,
   });
 
   await reply('hello world');
-  expect(bot.render).toHaveBeenCalledTimes(2);
-  expect(bot.render).toHaveBeenCalledWith(event.thread, 'hello world', {});
+  expect(sender.render).toHaveBeenCalledTimes(2);
+  expect(sender.render).toHaveBeenCalledWith(event.thread, 'hello world', {});
 });
 
 it('validate request', async () => {
   const receiver = new LineReceiver({
-    bot,
+    sender,
     agentSettingsAccessor,
     popEventWrapper,
     shouldVerifyRequest: true,
@@ -325,7 +325,7 @@ it('validate request', async () => {
 
 it('responds 401 if request validation failed', async () => {
   const receiver = new LineReceiver({
-    bot,
+    sender,
     agentSettingsAccessor,
     popEventWrapper,
     shouldVerifyRequest: true,

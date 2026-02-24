@@ -27,7 +27,7 @@ import type {
   WebSocketResult,
   WebSocketDispatchResponse,
 } from '@sociably/websocket';
-import type { BotP } from './Bot.js';
+import type { SenderP } from './Sender.js';
 import type WebviewConnection from './Connection.js';
 
 export type {
@@ -81,7 +81,7 @@ export type WebviewEventContext<
   platform: 'webview';
   event: WebviewEvent<Value, UserOfAuthenticator<Authenticator>>;
   metadata: WebviewMetadata<ContextOfAuthenticator<Authenticator>>;
-  bot: BotP;
+  sender: SenderP;
   reply(message: SociablyNode): Promise<null | WebSocketDispatchResponse>;
 };
 

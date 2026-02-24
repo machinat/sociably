@@ -26,7 +26,7 @@ import {
 } from '@sociably/meta-messenger-platform-base';
 import InstagramChat from './Chat.js';
 import InstagramAgent from './Agent.js';
-import type { InstagramBot } from './Bot.js';
+import type { InstagramSender } from './Sender.js';
 import { AgentSettingsAccessorI } from './interface.js';
 import type { InstagramEvent } from './event/types.js';
 import type { INSTAGRAM } from './constant.js';
@@ -95,7 +95,7 @@ export type InstagramEventContext = {
   platform: typeof INSTAGRAM;
   event: InstagramEvent;
   metadata: WebhookMetadata;
-  bot: InstagramBot;
+  sender: InstagramSender;
   reply(message: SociablyNode): Promise<null | MetaApiDispatchResponse>;
 };
 

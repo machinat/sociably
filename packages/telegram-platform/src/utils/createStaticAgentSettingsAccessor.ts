@@ -9,7 +9,7 @@ const createStaticAgentSettingsAccessor = (
     settings.find(({ botToken }) => botToken.startsWith(`${botId}:`)) || null;
 
   return {
-    getAgentSettings: async (bot) => findSettingsWithMatchedToken(bot),
+    getAgentSettings: async (sender) => findSettingsWithMatchedToken(sender),
     getAgentSettingsBatch: async (bots) =>
       bots.map(findSettingsWithMatchedToken),
   };

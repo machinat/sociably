@@ -38,7 +38,7 @@ export type AnswerCallbackQueryProps = {
    * and accepted the conditions via @Botfather, specify the URL that opens your
    * game — note that this will only work if the query comes from a
    * callback_game button. Otherwise, you may use links like
-   * t.me/your_bot?start=XXXX that open your bot with a parameter.
+   * t.me/your_bot?start=XXXX that open your sender with a parameter.
    */
   url?: string;
   /**
@@ -1190,12 +1190,12 @@ export type AnswerInlineQueryProps = {
   nextOffset?: string;
   /**
    * If passed, clients will display a button with specified text that switches
-   * the user to a private chat with the bot and sends the bot a start message
-   * with the parameter switch_pm_parameter
+   * the user to a private chat with the sender and sends the sender a start
+   * message with the parameter switch_pm_parameter
    */
   switchPmText?: string;
   /**
-   * Deep-linking parameter for the /start message sent to the bot when user
+   * Deep-linking parameter for the /start message sent to the sender when user
    * presses the switch button. 1-64 characters, only A-Z, a-z, 0-9, _ and - are
    * allowed.
    */

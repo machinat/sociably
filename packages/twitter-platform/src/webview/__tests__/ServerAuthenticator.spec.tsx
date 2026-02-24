@@ -2,14 +2,14 @@ import moxy from '@moxyjs/moxy';
 import BasicAuthenticator from '@sociably/auth/basicAuth';
 import TwitterUser from '../../User.js';
 import TwitterChat from '../../Chat.js';
-import TwitterBot from '../../Bot.js';
+import TwitterSender from '../../Sender.js';
 import TwitterProfiler from '../../Profiler.js';
 import UserProfile from '../../UserProfile.js';
 import TwitterApiError from '../../Error.js';
 import ServerAuthenticator from '../ServerAuthenticator.js';
 import { RawUser } from '../../types.js';
 
-const bot = moxy<TwitterBot>({
+const sender = moxy<TwitterSender>({
   requestApi() {},
 } as never);
 
@@ -45,7 +45,7 @@ beforeEach(() => {
 describe('.delegateAuthRequest(req, res, routing)', () => {
   test('pass to handler created by BasicAuthenticator', async () => {
     const authenticator = new ServerAuthenticator(
-      bot,
+      sender,
       profiler,
       basicAuthenticator,
     );
@@ -67,7 +67,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
   });
 
   test('BasicAuthenticator.createRequestDelegator() options', async () => {
-    (() => new ServerAuthenticator(bot, profiler, basicAuthenticator))();
+    (() => new ServerAuthenticator(sender, profiler, basicAuthenticator))();
 
     expect(basicAuthenticator.createRequestDelegator).toHaveReturnedTimes(1);
 
@@ -75,15 +75,15 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
       basicAuthenticator.createRequestDelegator.mock.calls[0].args[0];
     expect(delegatorOptions).toMatchInlineSnapshot(`
       {
-        "bot": {
-          "requestApi": [MockFunction moxy(requestApi)],
-        },
         "checkAuthData": [Function],
         "checkCurrentAuthUsability": [Function],
         "platform": "twitter",
         "platformColor": "#1D9BF0",
         "platformImageUrl": "https://sociably.js.org/img/icon/twitter.png",
         "platformName": "Twitter",
+        "sender": {
+          "requestApi": [MockFunction moxy(requestApi)],
+        },
         "verifyCredential": [Function],
       }
     `);
@@ -106,7 +106,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
   });
 
   test('option.checkCurrentAuthUsability() check if auth is still valid', () => {
-    (() => new ServerAuthenticator(bot, profiler, basicAuthenticator))();
+    (() => new ServerAuthenticator(sender, profiler, basicAuthenticator))();
 
     const { checkCurrentAuthUsability } =
       basicAuthenticator.createRequestDelegator.mock.calls[0].args[0];
@@ -132,7 +132,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
   });
 
   test('options.verifyCredential() verify user by profiler.getUserProfiler()', async () => {
-    (() => new ServerAuthenticator(bot, profiler, basicAuthenticator))();
+    (() => new ServerAuthenticator(sender, profiler, basicAuthenticator))();
 
     const { verifyCredential } =
       basicAuthenticator.createRequestDelegator.mock.calls[0].args[0];
@@ -177,7 +177,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
 
 test('.getAuthUrl(id, path)', () => {
   const authenticator = new ServerAuthenticator(
-    bot,
+    sender,
     profiler,
     basicAuthenticator,
   );
@@ -217,7 +217,7 @@ test('.getAuthUrl(id, path)', () => {
 
 test('.verifyCredential() fails anyway', async () => {
   const authenticator = new ServerAuthenticator(
-    bot,
+    sender,
     profiler,
     basicAuthenticator,
   );
@@ -233,7 +233,7 @@ test('.verifyCredential() fails anyway', async () => {
 
 describe('.verifyRefreshment(data)', () => {
   const authenticator = new ServerAuthenticator(
-    bot,
+    sender,
     profiler,
     basicAuthenticator,
   );
@@ -281,7 +281,7 @@ describe('.verifyRefreshment(data)', () => {
 
 test('.checkAuthData(data)', () => {
   const authenticator = new ServerAuthenticator(
-    bot,
+    sender,
     profiler,
     basicAuthenticator,
   );

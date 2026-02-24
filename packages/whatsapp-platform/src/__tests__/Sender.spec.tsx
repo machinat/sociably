@@ -8,7 +8,7 @@ import _Engine from '@sociably/core/engine';
 import { MetaApiWorker as _Worker, MetaApiError } from '@sociably/meta-api';
 import WhatsAppAgent from '../Agent.js';
 import WhatsAppChat from '../Chat.js';
-import { WhatsAppBot } from '../Bot.js';
+import { WhatsAppSender } from '../Sender.js';
 import { Image, ButtonsTemplate, ReplyButton } from '../components/index.js';
 
 const Renderer = _Renderer as Moxy<typeof _Renderer>;
@@ -64,14 +64,14 @@ afterEach(() => {
 describe('#constructor(options)', () => {
   it('throw if accessToken not given', () => {
     expect(
-      () => new WhatsAppBot({ businessNumber, appSecret } as never),
+      () => new WhatsAppSender({ businessNumber, appSecret } as never),
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.accessToken should not be empty"`,
     );
   });
 
   it('assemble core modules', () => {
-    const bot = new WhatsAppBot({
+    const sender = new WhatsAppSender({
       appId,
       appSecret,
       initScope,
@@ -79,7 +79,7 @@ describe('#constructor(options)', () => {
       accessToken,
     });
 
-    expect(bot.engine).toBeInstanceOf(Engine);
+    expect(sender.engine).toBeInstanceOf(Engine);
 
     expect(Renderer).toHaveBeenCalledTimes(1);
     expect(Renderer).toHaveBeenCalledWith('whatsapp', expect.any(Function));
@@ -106,7 +106,7 @@ describe('#constructor(options)', () => {
 
   it('pass options to worker', async () => {
     expect(
-      new WhatsAppBot({
+      new WhatsAppSender({
         initScope,
         dispatchWrapper,
         accessToken,
@@ -129,7 +129,7 @@ describe('#constructor(options)', () => {
 });
 
 test('#start() and #stop() start/stop engine', () => {
-  const bot = new WhatsAppBot({
+  const sender = new WhatsAppSender({
     initScope,
     dispatchWrapper,
     accessToken,
@@ -137,15 +137,15 @@ test('#start() and #stop() start/stop engine', () => {
     appSecret,
   });
 
-  bot.start();
-  expect(bot.engine.start).toHaveBeenCalledTimes(1);
+  sender.start();
+  expect(sender.engine.start).toHaveBeenCalledTimes(1);
 
-  bot.stop();
-  expect(bot.engine.stop).toHaveBeenCalledTimes(1);
+  sender.stop();
+  expect(sender.engine.stop).toHaveBeenCalledTimes(1);
 });
 
 describe('#render(thread, message, options)', () => {
-  const bot = new WhatsAppBot({ accessToken, appId, appSecret });
+  const sender = new WhatsAppSender({ accessToken, appId, appSecret });
   const sucessfulResult = {
     messaging_product: 'whatsapp',
     contacts: [{ input: '9876543210', wa_id: '9876543210' }],
@@ -159,11 +159,11 @@ describe('#render(thread, message, options)', () => {
       body: JSON.stringify(sucessfulResult),
     };
     apiStatus = graphApi.reply(200, [messageResult, messageResult]);
-    bot.start();
+    sender.start();
   });
 
   afterEach(() => {
-    bot.stop();
+    sender.stop();
   });
 
   it('resolves null if message is empty', async () => {
@@ -171,14 +171,14 @@ describe('#render(thread, message, options)', () => {
     for (const empty of empties) {
       // eslint-disable-next-line no-await-in-loop
       await expect(
-        bot.render(new WhatsAppChat('1234567890', '9876543210'), empty),
+        sender.render(new WhatsAppChat('1234567890', '9876543210'), empty),
       ).resolves.toBe(null);
       expect(apiStatus.isDone()).toBe(false);
     }
   });
 
   it('post to NUMBER/messages api', async () => {
-    const response = await bot.render(
+    const response = await sender.render(
       new WhatsAppChat('1234567890', '9876543210'),
       message,
     );
@@ -217,14 +217,14 @@ describe('#render(thread, message, options)', () => {
 });
 
 describe('#uploadMedia(message)', () => {
-  const bot = new WhatsAppBot({ accessToken, appId, appSecret });
+  const sender = new WhatsAppSender({ accessToken, appId, appSecret });
 
   beforeEach(() => {
-    bot.start();
+    sender.start();
   });
 
   afterEach(() => {
-    bot.stop();
+    sender.stop();
   });
 
   it('resolves null if message is empty', async () => {
@@ -232,7 +232,7 @@ describe('#uploadMedia(message)', () => {
     for (const empty of empties) {
       // eslint-disable-next-line no-await-in-loop
       await expect(
-        bot.uploadMedia(new WhatsAppAgent('1234567890'), empty),
+        sender.uploadMedia(new WhatsAppAgent('1234567890'), empty),
       ).resolves.toBe(null);
     }
   });
@@ -242,7 +242,7 @@ describe('#uploadMedia(message)', () => {
       { code: 200, body: JSON.stringify({ id: 401759795 }) },
     ]);
 
-    const result = await bot.uploadMedia(
+    const result = await sender.uploadMedia(
       new WhatsAppAgent('1234567890'),
       <Image file={{ data: Buffer.from('foo'), contentType: 'image/png' }} />,
     );
@@ -259,13 +259,13 @@ describe('#uploadMedia(message)', () => {
 
 describe('#requestApi()', () => {
   it('call facebook graph api', async () => {
-    const bot = new WhatsAppBot({ accessToken, appId, appSecret });
-    bot.start();
+    const sender = new WhatsAppSender({ accessToken, appId, appSecret });
+    sender.start();
 
     const apiCall = graphApi.reply(200, [{ code: 200, body: '{"foo":"bar"}' }]);
 
     await expect(
-      bot.requestApi({ method: 'POST', url: 'foo', params: { bar: 'baz' } }),
+      sender.requestApi({ method: 'POST', url: 'foo', params: { bar: 'baz' } }),
     ).resolves.toEqual({
       foo: 'bar',
     });
@@ -274,8 +274,8 @@ describe('#requestApi()', () => {
   });
 
   it('throw MetaApiError if api call fail', async () => {
-    const bot = new WhatsAppBot({ accessToken, appId, appSecret });
-    bot.start();
+    const sender = new WhatsAppSender({ accessToken, appId, appSecret });
+    sender.start();
 
     const apiCall = graphApi.reply(200, [
       {
@@ -293,7 +293,7 @@ describe('#requestApi()', () => {
     ]);
 
     try {
-      await bot.requestApi({
+      await sender.requestApi({
         method: 'POST',
         url: 'foo',
         params: { bar: 'baz' },

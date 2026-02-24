@@ -5,12 +5,12 @@ import moxy, { Mock, Moxy } from '@moxyjs/moxy';
 import { TelegramReceiver } from '../Receiver.js';
 import TelegramChat from '../Chat.js';
 import TelegramUser from '../User.js';
-import type { TelegramBot } from '../Bot.js';
+import type { TelegramSender } from '../Sender.js';
 
 const botId = 1111111;
 const secretToken = '_SECRET_TOKEN_';
 
-const bot = moxy<TelegramBot>({
+const sender = moxy<TelegramSender>({
   render: async () => ({ tasks: [], results: [], jobs: [] }),
 } as never);
 
@@ -87,7 +87,7 @@ const validRoutingInfo = {
 };
 
 beforeEach(() => {
-  bot.mock.reset();
+  sender.mock.reset();
   popEventMock.reset();
   popEventWrapper.mock.reset();
   agentSettingsAccessor.mock.reset();
@@ -97,7 +97,7 @@ it.each(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
   'respond 405 if req.method is %s',
   async (method) => {
     const receiver = new TelegramReceiver({
-      bot,
+      sender,
       agentSettingsAccessor,
       shouldVerifySecretToken: false,
       secretToken,
@@ -114,9 +114,9 @@ it.each(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
   },
 );
 
-it('respond 404 if bot ID entry path is invalid', async () => {
+it('respond 404 if sender ID entry path is invalid', async () => {
   const receiver = new TelegramReceiver({
-    bot,
+    sender,
     agentSettingsAccessor,
     secretToken,
     shouldVerifySecretToken: false,
@@ -160,9 +160,9 @@ it('respond 404 if bot ID entry path is invalid', async () => {
   expect(res.finished).toBe(true);
 });
 
-it('respond 404 if bot settings not found', async () => {
+it('respond 404 if sender settings not found', async () => {
   const receiver = new TelegramReceiver({
-    bot,
+    sender,
     agentSettingsAccessor,
     secretToken,
     shouldVerifySecretToken: false,
@@ -186,7 +186,7 @@ it('respond 404 if bot settings not found', async () => {
 
 it('respond 400 if body is empty', async () => {
   const receiver = new TelegramReceiver({
-    bot,
+    sender,
     agentSettingsAccessor,
     secretToken,
     shouldVerifySecretToken: false,
@@ -204,7 +204,7 @@ it('respond 400 if body is empty', async () => {
 
 it('respond 400 if body is not in valid json format', async () => {
   const receiver = new TelegramReceiver({
-    bot,
+    sender,
     agentSettingsAccessor,
     secretToken,
     shouldVerifySecretToken: false,
@@ -226,7 +226,7 @@ it('respond 400 if body is not in valid json format', async () => {
 
 it('respond 200 and pop events received', async () => {
   const receiver = new TelegramReceiver({
-    bot,
+    sender,
     agentSettingsAccessor,
     secretToken,
     shouldVerifySecretToken: false,
@@ -247,7 +247,7 @@ it('respond 200 and pop events received', async () => {
   const context = popEventMock.calls[0].args[0];
 
   expect(context.platform).toBe('telegram');
-  expect(context.bot).toBe(bot);
+  expect(context.sender).toBe(sender);
   expect(context.metadata).toEqual({
     source: 'webhook',
     request: {
@@ -272,7 +272,7 @@ it('respond 200 and pop events received', async () => {
 
 describe('constext.reply(message)', () => {
   const receiver = new TelegramReceiver({
-    bot,
+    sender,
     agentSettingsAccessor,
     secretToken,
     shouldVerifySecretToken: false,
@@ -300,8 +300,8 @@ describe('constext.reply(message)', () => {
       }
     `);
 
-    expect(bot.render).toHaveBeenCalledTimes(1);
-    expect(bot.render).toHaveBeenCalledWith(event.thread, 'hello world');
+    expect(sender.render).toHaveBeenCalledTimes(1);
+    expect(sender.render).toHaveBeenCalledWith(event.thread, 'hello world');
   });
 
   it('render using event.agent if no event.thread', async () => {
@@ -326,17 +326,17 @@ describe('constext.reply(message)', () => {
     const [{ reply, event }] = popEventMock.calls[0].args;
     await reply('hello callback_query');
 
-    expect(bot.render).toHaveBeenCalledTimes(1);
-    expect(bot.render).toHaveBeenCalledWith(
+    expect(sender.render).toHaveBeenCalledTimes(1);
+    expect(sender.render).toHaveBeenCalledWith(
       event.agent,
       'hello callback_query',
     );
   });
 });
 
-it('verify "x-telegram-bot-api-secret-token" header matching options.secretToken', async () => {
+it('verify "x-telegram-sender-api-secret-token" header matching options.secretToken', async () => {
   const receiver = new TelegramReceiver({
-    bot,
+    sender,
     secretToken,
     agentSettingsAccessor,
     popEventWrapper,
@@ -356,7 +356,7 @@ it('verify "x-telegram-bot-api-secret-token" header matching options.secretToken
 
   const req2 = createReq({
     method: 'POST',
-    headers: { 'x-telegram-bot-api-secret-token': '_WRONG_TOKEN_' },
+    headers: { 'x-telegram-sender-api-secret-token': '_WRONG_TOKEN_' },
     url: `/${botId}`,
     body: JSON.stringify(updateBody),
   });
@@ -375,7 +375,7 @@ it('verify "x-telegram-bot-api-secret-token" header matching options.secretToken
 
   const req3 = createReq({
     method: 'POST',
-    headers: { 'x-telegram-bot-api-secret-token': '_SECRET_TOKEN_' },
+    headers: { 'x-telegram-sender-api-secret-token': '_SECRET_TOKEN_' },
     url: `/${botId}`,
     body: JSON.stringify(updateBody),
   });

@@ -2,7 +2,7 @@ import { serviceProviderClass } from '@sociably/core/service';
 import type { UserProfiler } from '@sociably/core/base/Profiler.js';
 import type TwitterUser from './User.js';
 import TwitterUserProfile from './UserProfile.js';
-import BotP from './Bot.js';
+import SenderP from './Sender.js';
 import { TWITTER } from './constant.js';
 import type { RawUser, RawSettings } from './types.js';
 
@@ -14,11 +14,11 @@ type GetUserProfileOptions = {
 
 /** @category Provider */
 export class TwitterProfiler implements UserProfiler<TwitterUser, TwitterUser> {
-  bot: BotP;
+  sender: SenderP;
   platform = TWITTER;
 
-  constructor(bot: BotP) {
-    this.bot = bot;
+  constructor(sender: SenderP) {
+    this.sender = sender;
   }
 
   /** Get profile of the user. */
@@ -39,7 +39,7 @@ export class TwitterProfiler implements UserProfiler<TwitterUser, TwitterUser> {
     let rawUser = typeof user === 'string' ? null : user.data;
 
     if (fromApi || !rawUser) {
-      rawUser = await this.bot.requestApi<RawUser>({
+      rawUser = await this.sender.requestApi<RawUser>({
         agent,
         method: 'GET',
         url: '1.1/users/show.json',
@@ -49,7 +49,7 @@ export class TwitterProfiler implements UserProfiler<TwitterUser, TwitterUser> {
 
     let rawSettings: undefined | RawSettings;
     if (withSettings) {
-      rawSettings = await this.bot.requestApi({
+      rawSettings = await this.sender.requestApi({
         agent,
         method: 'GET',
         url: '1.1/account/settings.json',
@@ -62,7 +62,7 @@ export class TwitterProfiler implements UserProfiler<TwitterUser, TwitterUser> {
 
 const ProfilerP = serviceProviderClass({
   lifetime: 'scoped',
-  deps: [BotP],
+  deps: [SenderP],
 })(TwitterProfiler);
 
 type ProfilerP = TwitterProfiler;

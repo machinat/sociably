@@ -1,7 +1,7 @@
 import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { serviceProviderFactory } from '@sociably/core/service';
-import BaseBot from '@sociably/core/base/Bot.js';
+import BaseSender from '@sociably/core/base/Sender.js';
 import BaseProfiler from '@sociably/core/base/Profiler.js';
 import BaseMarshaler from '@sociably/core/base/Marshaler.js';
 import Http from '@sociably/http';
@@ -15,7 +15,7 @@ import WhatsAppUser from '../User.js';
 import WhatsAppUserProfile from '../UserProfile.js';
 import { WhatsAppProfiler } from '../Profiler.js';
 import { WhatsAppReceiver } from '../Receiver.js';
-import { WhatsAppBot } from '../Bot.js';
+import { WhatsAppSender } from '../Sender.js';
 
 const agentSettings = {
   phoneNumber: '+1234567890',
@@ -24,7 +24,7 @@ const agentSettings = {
 
 it('export interfaces', () => {
   expect(WhatsApp.Receiver).toBe(WhatsAppReceiver);
-  expect(WhatsApp.Bot).toBe(WhatsAppBot);
+  expect(WhatsApp.Sender).toBe(WhatsAppSender);
   expect(WhatsApp.Profiler).toBe(WhatsAppProfiler);
   expect(WhatsApp.Configs).toMatchInlineSnapshot(`
     {
@@ -88,17 +88,23 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [bot, receiver, profiler, assetsManager, configsProvided, routings] =
-      app.useServices([
-        WhatsApp.Bot,
-        WhatsApp.Receiver,
-        WhatsApp.Profiler,
-        WhatsApp.AssetsManager,
-        WhatsApp.Configs,
-        Http.RequestRouteList,
-      ]);
+    const [
+      sender,
+      receiver,
+      profiler,
+      assetsManager,
+      configsProvided,
+      routings,
+    ] = app.useServices([
+      WhatsApp.Sender,
+      WhatsApp.Receiver,
+      WhatsApp.Profiler,
+      WhatsApp.AssetsManager,
+      WhatsApp.Configs,
+      Http.RequestRouteList,
+    ]);
 
-    expect(bot).toBeInstanceOf(WhatsAppBot);
+    expect(sender).toBeInstanceOf(WhatsAppSender);
     expect(receiver).toBeInstanceOf(WhatsAppReceiver);
     expect(profiler).toBeInstanceOf(WhatsAppProfiler);
     expect(assetsManager).toBeInstanceOf(WhatsAppAssetsManager);
@@ -111,7 +117,7 @@ describe('initModule(configs)', () => {
       },
     ]);
 
-    bot.stop();
+    sender.stop();
   });
 
   test('provide base interfaces', async () => {
@@ -132,15 +138,15 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [bot, bots, profilers, marshalTypes] = app.useServices([
-      WhatsApp.Bot,
-      BaseBot.PlatformMap,
+    const [sender, bots, profilers, marshalTypes] = app.useServices([
+      WhatsApp.Sender,
+      BaseSender.PlatformMap,
       BaseProfiler.PlatformMap,
       BaseMarshaler.TypeList,
     ]);
 
-    expect(bot).toBeInstanceOf(WhatsAppBot);
-    expect(bots.get('whatsapp')).toBe(bot);
+    expect(sender).toBeInstanceOf(WhatsAppSender);
+    expect(bots.get('whatsapp')).toBe(sender);
     expect(profilers.get('whatsapp')).toBeInstanceOf(WhatsAppProfiler);
     expect(marshalTypes).toEqual(
       expect.arrayContaining([
@@ -151,7 +157,7 @@ describe('initModule(configs)', () => {
       ]),
     );
 
-    bot.stop();
+    sender.stop();
   });
 
   test('with configs.agentSettings', async () => {
@@ -320,11 +326,11 @@ describe('initModule(configs)', () => {
       { name: 'whatsapp', path: '.', handler: expect.any(Function) },
     ]);
 
-    app.useServices([WhatsApp.Bot])[0].stop();
+    app.useServices([WhatsApp.Sender])[0].stop();
   });
 
-  test('#startHook() start bot', async () => {
-    const bot = moxy({ start: async () => {} });
+  test('#startHook() start sender', async () => {
+    const sender = moxy({ start: async () => {} });
     const module = WhatsApp.initModule({
       agentSettings,
       accessToken: '_ACCESS_TOKEN_',
@@ -333,12 +339,12 @@ describe('initModule(configs)', () => {
       webhookVerifyToken: '_VERIFY_TOKEN_',
     });
 
-    await expect(module.startHook!.$$factory(bot)).resolves.toBe(undefined);
-    expect(bot.start).toHaveBeenCalledTimes(1);
+    await expect(module.startHook!.$$factory(sender)).resolves.toBe(undefined);
+    expect(sender.start).toHaveBeenCalledTimes(1);
   });
 
-  test('#stopHook() stop bot', async () => {
-    const bot = moxy({ stop: async () => {} });
+  test('#stopHook() stop sender', async () => {
+    const sender = moxy({ stop: async () => {} });
     const module = WhatsApp.initModule({
       agentSettings,
       accessToken: '_ACCESS_TOKEN_',
@@ -347,7 +353,7 @@ describe('initModule(configs)', () => {
       webhookVerifyToken: '_VERIFY_TOKEN_',
     });
 
-    await expect(module.stopHook!.$$factory(bot)).resolves.toBe(undefined);
-    expect(bot.stop).toHaveBeenCalledTimes(1);
+    await expect(module.stopHook!.$$factory(sender)).resolves.toBe(undefined);
+    expect(sender.stop).toHaveBeenCalledTimes(1);
   });
 });

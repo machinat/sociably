@@ -1,6 +1,6 @@
 import type {
   SociablyNode,
-  SociablyBot,
+  SociablySender,
   InitScopeFn,
   DispatchWrapper,
 } from '@sociably/core';
@@ -34,8 +34,8 @@ const toConnection = ({ serverId, id }: ConnIdentifier) =>
   new WebSocketConnection(serverId, id);
 
 /** @category Provider */
-export class WebSocketBot
-  implements SociablyBot<WebSocketConnection, WebSocketJob, WebSocketResult>
+export class WebSocketSender
+  implements SociablySender<WebSocketConnection, WebSocketJob, WebSocketResult>
 {
   private _server: ServerP<any, unknown>;
   engine: Engine<
@@ -152,7 +152,7 @@ export class WebSocketBot
   }
 }
 
-export const BotP = serviceProviderClass({
+export const SenderP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [
     ServerP,
@@ -160,11 +160,11 @@ export const BotP = serviceProviderClass({
     { require: PlatformUtilitiesI, optional: true },
   ],
   factory: (server, moduleUtils, platformUtils) =>
-    new WebSocketBot(
+    new WebSocketSender(
       server,
       moduleUtils?.initScope,
       platformUtils?.dispatchWrapper,
     ),
-})(WebSocketBot);
+})(WebSocketSender);
 
-export type BotP = WebSocketBot;
+export type SenderP = WebSocketSender;

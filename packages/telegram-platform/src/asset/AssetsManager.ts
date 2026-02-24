@@ -1,6 +1,6 @@
 import { serviceProviderClass, StateRepository } from '@sociably/core';
 import Http from '@sociably/http';
-import BotP from '../Bot.js';
+import SenderP from '../Sender.js';
 import TelegramUser from '../User.js';
 import { ConfigsI } from '../interface.js';
 import { TELEGRAM } from '../constant.js';
@@ -23,15 +23,15 @@ type DefaultSettings = {
  */
 export class TelegramAssetsManager {
   private stateRepository: StateRepository;
-  private bot: BotP;
+  private sender: SenderP;
   defaultSettings: DefaultSettings;
 
   constructor(
-    bot: BotP,
+    sender: SenderP,
     stateRepository: StateRepository,
     defaultSettings: DefaultSettings = {},
   ) {
-    this.bot = bot;
+    this.sender = sender;
     this.stateRepository = stateRepository;
     this.defaultSettings = defaultSettings;
   }
@@ -111,8 +111,8 @@ export class TelegramAssetsManager {
 
   /**
    * Use this method to specify a URL and receive incoming updates via an
-   * outgoing webhook. Whenever there is an update for the bot, we will send an
-   * HTTPS POST request to the specified URL, containing a JSON-serialized
+   * outgoing webhook. Whenever there is an update for the sender, we will send
+   * an HTTPS POST request to the specified URL, containing a JSON-serialized
    * Update. In case of an unsuccessful request, we will give up after a
    * reasonable amount of attempts. Returns True on success. If you'd like to
    * make sure that the webhook was set by you, you can specify secret data in
@@ -135,12 +135,12 @@ export class TelegramAssetsManager {
       /**
        * The maximum allowed number of simultaneous HTTPS connections to the
        * webhook for update delivery, 1-100. Defaults to 40. Use lower values to
-       * limit the load on your bot's server, and higher values to increase your
-       * bot's throughput.
+       * limit the load on your sender's server, and higher values to increase
+       * your sender's throughput.
        */
       maxConnections?: number;
       /**
-       * A list of the update types you want your bot to receive. Specify an
+       * A list of the update types you want your sender to receive. Specify an
        * empty list to receive all update types except chat_member (default). If
        * not specified, the previous setting will be used. Please note that this
        * parameter doesn't affect updates created before the call to the
@@ -167,7 +167,7 @@ export class TelegramAssetsManager {
     }
     const agentId = typeof agent === 'number' ? agent : agent.id;
 
-    await this.bot.requestApi({
+    await this.sender.requestApi({
       agent,
       method: 'setWebhook',
       params: {
@@ -189,7 +189,7 @@ export class TelegramAssetsManager {
       dropPendingUpdates?: boolean;
     },
   ): Promise<void> {
-    await this.bot.requestApi({
+    await this.sender.requestApi({
       agent,
       method: 'deleteWebhook',
       params: {
@@ -201,9 +201,9 @@ export class TelegramAssetsManager {
 
 const AssetsManagerP = serviceProviderClass({
   lifetime: 'scoped',
-  deps: [BotP, StateRepository, Http.Connector, ConfigsI],
-  factory: (bot, stateRepository, connector, { webhookPath, secretToken }) =>
-    new TelegramAssetsManager(bot, stateRepository, {
+  deps: [SenderP, StateRepository, Http.Connector, ConfigsI],
+  factory: (sender, stateRepository, connector, { webhookPath, secretToken }) =>
+    new TelegramAssetsManager(sender, stateRepository, {
       webhookUrl: connector.getServerUrl(webhookPath),
       secretToken,
     }),

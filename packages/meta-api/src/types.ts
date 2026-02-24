@@ -3,7 +3,7 @@ import type {
   SociablyAgent,
   EventContext,
   SociablyEvent,
-  AnySociablyBot,
+  AnySociablySender,
 } from '@sociably/core';
 import type { DispatchResponse } from '@sociably/core/engine';
 import { WebhookMetadata } from '@sociably/http/webhook';
@@ -81,11 +81,11 @@ export type GraphApiErrorBody = {
 export type MetaApiEventContext = EventContext<
   SociablyEvent<unknown>,
   WebhookMetadata,
-  AnySociablyBot
+  AnySociablySender
 >;
 
 export type ListeningPlatformOptions<Context extends MetaApiEventContext> = {
-  bot: Context['bot'];
+  sender: Context['sender'];
   platform: Context['platform'];
   objectType: string;
   makeEventsFromUpdate: (raw) => Context['event'][];
@@ -111,7 +111,7 @@ export type MetaRequestApiOptions<Agent extends MetaApiAgent> = {
   accessToken?: string;
 };
 
-export type MetaApiBot<Agent extends MetaApiAgent> = {
+export type MetaApiSender<Agent extends MetaApiAgent> = {
   requestApi<ResBody extends MetaApiResponseBody>(
     options: MetaRequestApiOptions<Agent>,
   ): Promise<ResBody>;

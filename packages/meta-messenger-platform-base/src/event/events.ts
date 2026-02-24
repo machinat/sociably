@@ -552,7 +552,7 @@ export class GamePlayEvent<
 
   /**
    * ID of the user in the Instant Game name-space. By linking this ID to the
-   * PSID received in the sender field, the bot can send messages to a user
+   * PSID received in the sender field, the sender can send messages to a user
    * after a game play
    */
   get playerId(): string {

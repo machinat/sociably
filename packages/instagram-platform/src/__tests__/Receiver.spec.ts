@@ -4,9 +4,9 @@ import moxy, { Mock } from '@moxyjs/moxy';
 import InstagramChat from '../Chat.js';
 import InstagramUser from '../User.js';
 import { InstagramReceiver } from '../Receiver.js';
-import type { InstagramBot } from '../Bot.js';
+import type { InstagramSender } from '../Sender.js';
 
-const bot = moxy<InstagramBot>({
+const sender = moxy<InstagramSender>({
   render: () => ({ jobs: [], results: [], tasks: [] }),
 } as never);
 
@@ -60,7 +60,7 @@ beforeEach(() => {
 describe('handling POST', () => {
   it('respond 404 if "object" field is not "instagram"', async () => {
     const receiver = new InstagramReceiver({
-      bot,
+      sender,
       shouldVerifyRequest: false,
       appSecret: '...',
       shouldHandleChallenge: false,
@@ -84,7 +84,7 @@ describe('handling POST', () => {
 
   it('respond 200 and popEvents', async () => {
     const receiver = new InstagramReceiver({
-      bot,
+      sender,
       popEventWrapper,
       shouldVerifyRequest: false,
       appSecret: '...',
@@ -140,7 +140,7 @@ describe('handling POST', () => {
       args: [context],
     } of popEventMock.calls) {
       expect(context.platform).toBe('instagram');
-      expect(context.bot).toBe(bot);
+      expect(context.sender).toBe(sender);
 
       expect(context.event.user).toEqual(new InstagramUser('12345', '67890'));
       expect(context.event.thread).toEqual(
@@ -166,7 +166,7 @@ describe('handling POST', () => {
 
   it('create thread from optin.user_ref if no sender', async () => {
     const receiver = new InstagramReceiver({
-      bot,
+      sender,
       popEventWrapper,
       shouldHandleChallenge: false,
       webhookVerifyToken: '...',
@@ -226,7 +226,7 @@ describe('handling POST', () => {
     for (const { args } of popEventMock.calls) {
       const [context] = args;
       expect(context.platform).toBe('instagram');
-      expect(context.bot).toBe(bot);
+      expect(context.sender).toBe(sender);
 
       expect(context.event.type).toBe('optin');
       expect(context.metadata).toEqual({
@@ -238,7 +238,7 @@ describe('handling POST', () => {
 
   test('context.reply(message)', async () => {
     const receiver = new InstagramReceiver({
-      bot,
+      sender,
       popEventWrapper,
       shouldHandleChallenge: false,
       appSecret: '...',
@@ -265,7 +265,7 @@ describe('handling POST', () => {
       }
     `);
 
-    expect(bot.render).toHaveBeenCalledTimes(1);
-    expect(bot.render).toHaveBeenCalledWith(event.thread, 'hello world');
+    expect(sender.render).toHaveBeenCalledTimes(1);
+    expect(sender.render).toHaveBeenCalledWith(event.thread, 'hello world');
   });
 });

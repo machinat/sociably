@@ -1,14 +1,14 @@
 import type { PopEventWrapper } from '@sociably/core';
 import { MetaWebhookReceiver } from '@sociably/meta-api';
 import { serviceProviderClass } from '@sociably/core/service';
-import BotP from './Bot.js';
+import SenderP from './Sender.js';
 import eventFactory from './event/factory.js';
 import { ConfigsI, PlatformUtilitiesI } from './interface.js';
 import { INSTAGRAM } from './constant.js';
 import type { InstagramEventContext } from './types.js';
 
 type InstagramReceiverOptions = {
-  bot: BotP;
+  sender: SenderP;
   popEventWrapper: PopEventWrapper<InstagramEventContext, null>;
   appSecret: string;
   webhookVerifyToken: string;
@@ -23,7 +23,7 @@ type InstagramReceiverOptions = {
  */
 export class InstagramReceiver extends MetaWebhookReceiver<InstagramEventContext> {
   constructor({
-    bot,
+    sender,
     appSecret,
     webhookVerifyToken,
     shouldHandleChallenge = true,
@@ -38,7 +38,7 @@ export class InstagramReceiver extends MetaWebhookReceiver<InstagramEventContext
       listeningPlatforms: [
         {
           platform: INSTAGRAM,
-          bot,
+          sender,
           objectType: 'instagram',
           makeEventsFromUpdate: (updateData) => {
             const { id: agentId, messaging, stanby } = updateData;
@@ -58,7 +58,7 @@ export class InstagramReceiver extends MetaWebhookReceiver<InstagramEventContext
 
 const ReceiverP = serviceProviderClass({
   lifetime: 'singleton',
-  deps: [ConfigsI, BotP, PlatformUtilitiesI],
+  deps: [ConfigsI, SenderP, PlatformUtilitiesI],
   factory: (
     {
       shouldHandleChallenge,
@@ -66,11 +66,11 @@ const ReceiverP = serviceProviderClass({
       shouldVerifyRequest,
       appSecret,
     },
-    bot,
+    sender,
     { popEventWrapper },
   ) =>
     new InstagramReceiver({
-      bot,
+      sender,
       popEventWrapper,
       shouldHandleChallenge,
       webhookVerifyToken,

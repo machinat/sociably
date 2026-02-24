@@ -7,7 +7,7 @@ import {
 import BasicAuthenticator from '@sociably/auth/basicAuth';
 import { MetaApiError } from '@sociably/meta-api';
 import { attachWebviewParamsOnUrl } from '@sociably/webview/client';
-import BotP from '../Bot.js';
+import SenderP from '../Sender.js';
 import ProfilerP from '../Profiler.js';
 import FacebookPage from '../Page.js';
 import FacebookChat from '../Chat.js';
@@ -33,7 +33,7 @@ export class FacebookServerAuthenticator
   platform = FACEBOOK;
 
   constructor(
-    bot: BotP,
+    sender: SenderP,
     profiler: ProfilerP,
     basicAuthenticator: BasicAuthenticator,
     settingsAccessor: AgentSettingsAccessorI,
@@ -46,7 +46,7 @@ export class FacebookServerAuthenticator
       FacebookAuthData,
       FacebookChat
     >({
-      bot,
+      sender,
       platform: FACEBOOK,
       platformName: 'Facebook',
       platformColor: '#4B69FF',
@@ -158,7 +158,7 @@ export class FacebookServerAuthenticator
 
 const ServerAuthenticatorP = serviceProviderClass({
   lifetime: 'singleton',
-  deps: [BotP, ProfilerP, BasicAuthenticator, AgentSettingsAccessorI],
+  deps: [SenderP, ProfilerP, BasicAuthenticator, AgentSettingsAccessorI],
 })(FacebookServerAuthenticator);
 
 type ServerAuthenticatorP = FacebookServerAuthenticator;

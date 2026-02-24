@@ -15,7 +15,7 @@ import WebSocket, {
 } from '@sociably/websocket';
 import { WEBVIEW } from './constant.js';
 import { WebviewSocketServer, PlatformUtilitiesI } from './interface.js';
-import { BotP } from './Bot.js';
+import { SenderP } from './Sender.js';
 import WebviewConnection from './Connection.js';
 import createEvent from './utils/createEvent.js';
 import { createThreadTopicKey, createUserTopicKey } from './utils/topicKey.js';
@@ -26,29 +26,21 @@ export class WebviewReceiver<
   Authenticator extends AnyServerAuthenticator,
   Value extends EventValue,
 > {
-  private _bot: BotP;
-  private _server: WebviewSocketServer<Authenticator>;
-
-  private _popError: PopErrorFn;
   private _popEvent: PopEventFn<
     WebviewEventContext<Authenticator, Value>,
     null
   >;
 
   constructor(
-    bot: BotP,
-    server: WebviewSocketServer<Authenticator>,
+    private _sender: SenderP,
+    private _server: WebviewSocketServer<Authenticator>,
     popEventWrapper: PopEventWrapper<
       WebviewEventContext<Authenticator, Value>,
       null
     >,
-    popError: PopErrorFn,
+    private _popError: PopErrorFn,
   ) {
-    this._bot = bot;
-    this._server = server;
-
     this._popEvent = popEventWrapper(() => Promise.resolve(null));
-    this._popError = popError;
 
     this._server.on(
       'events',
@@ -110,7 +102,7 @@ export class WebviewReceiver<
   ) {
     this._popEvent({
       platform: WEBVIEW,
-      bot: this._bot,
+      sender: this._sender,
       event: createEvent(value, connection, user),
       metadata: {
         source: 'websocket',
@@ -118,20 +110,21 @@ export class WebviewReceiver<
         connection,
         auth: authContext,
       },
-      reply: (message) => this._bot.render(connection, message),
+      reply: (message) => this._sender.render(connection, message),
     }).catch(this._popError);
   }
 }
 
 export const ReceiverP = serviceProviderClass({
   lifetime: 'singleton',
-  deps: [BotP, WebSocket.Server, ModuleUtilitiesI, PlatformUtilitiesI],
-  factory: (
-    bot,
-    server: WebviewSocketServer<AnyServerAuthenticator>,
-    { popError },
-    { popEventWrapper },
-  ) => new WebviewReceiver(bot, server, popEventWrapper, popError),
+  deps: [SenderP, WebSocket.Server, ModuleUtilitiesI, PlatformUtilitiesI],
+  factory: (sender, server, { popError }, { popEventWrapper }) =>
+    new WebviewReceiver(
+      sender,
+      server as WebviewSocketServer<AnyServerAuthenticator>,
+      popEventWrapper,
+      popError,
+    ),
 })(WebviewReceiver);
 
 export type ReceiverP<

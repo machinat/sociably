@@ -3,9 +3,9 @@ import moxy, { Mock } from '@moxyjs/moxy';
 import type { WebSocketServer } from '../Server.js';
 import { WebSocketReceiver } from '../Receiver.js';
 import WebSocketConnection from '../Connection.js';
-import type { WebSocketBot } from '../Bot.js';
+import type { WebSocketSender } from '../Sender.js';
 
-const bot = moxy<WebSocketBot>({
+const sender = moxy<WebSocketSender>({
   render: async () => ({ jobs: [], results: [], tasks: [] }),
 } as never);
 
@@ -34,7 +34,7 @@ beforeEach(() => {
 });
 
 it('pop events', () => {
-  (() => new WebSocketReceiver(bot, server, popEventWrapper, popError))();
+  (() => new WebSocketReceiver(sender, server, popEventWrapper, popError))();
 
   expect(popEventWrapper).toHaveBeenCalledTimes(1);
   expect(popEventWrapper).toHaveBeenCalledWith(expect.any(Function));
@@ -60,7 +60,7 @@ it('pop events', () => {
   expect(popEventMock).toHaveBeenCalledTimes(1);
   expect(popEventMock).toHaveBeenCalledWith({
     platform: 'websocket',
-    bot,
+    sender,
     event: {
       kind: 'connection',
       type: 'connect',
@@ -82,7 +82,7 @@ it('pop events', () => {
   expect(popEventMock).toHaveBeenCalledTimes(3);
   expect(popEventMock).toHaveBeenNthCalledWith(2, {
     platform: 'websocket',
-    bot,
+    sender,
     event: {
       kind: 'greet',
       type: 'hello',
@@ -96,7 +96,7 @@ it('pop events', () => {
   });
   expect(popEventMock).toHaveBeenNthCalledWith(3, {
     platform: 'websocket',
-    bot,
+    sender,
     event: {
       kind: 'default',
       type: 'hug',
@@ -113,7 +113,7 @@ it('pop events', () => {
   expect(popEventMock).toHaveBeenCalledTimes(4);
   expect(popEventMock).toHaveBeenNthCalledWith(4, {
     platform: 'websocket',
-    bot,
+    sender,
     event: {
       kind: 'connection',
       type: 'disconnect',
@@ -130,7 +130,7 @@ it('pop events', () => {
 });
 
 test('reply(message) sugar', async () => {
-  (() => new WebSocketReceiver(bot, server, popEventWrapper, popError))();
+  (() => new WebSocketReceiver(sender, server, popEventWrapper, popError))();
 
   server.emit('connect', {
     connId: '_CONN_ID_',
@@ -150,12 +150,12 @@ test('reply(message) sugar', async () => {
     }
   `);
 
-  expect(bot.render).toHaveBeenCalledTimes(1);
-  expect(bot.render).toHaveBeenCalledWith(event.thread, 'hello world');
+  expect(sender.render).toHaveBeenCalledTimes(1);
+  expect(sender.render).toHaveBeenCalledWith(event.thread, 'hello world');
 });
 
 it('pop error', () => {
-  (() => new WebSocketReceiver(bot, server, popEventWrapper, popError))();
+  (() => new WebSocketReceiver(sender, server, popEventWrapper, popError))();
 
   server.emit('error', new Error('BOO!'));
 

@@ -4,7 +4,7 @@ import Sociably from '@sociably/core';
 import _Engine from '@sociably/core/engine';
 import _Renderer from '@sociably/core/renderer';
 import Queue from '@sociably/core/queue';
-import { LineBot } from '../Bot.js';
+import { LineSender } from '../Sender.js';
 import LineChannel from '../Channel.js';
 import LineChat from '../Chat.js';
 import _Worker from '../Worker.js';
@@ -83,7 +83,7 @@ const message = (
 
 describe('.constructor(options)', () => {
   it('assemble components', () => {
-    const bot = new LineBot({
+    const sender = new LineSender({
       agentSettingsAccessor,
       maxRequestConnections: 999,
       initScope,
@@ -93,7 +93,7 @@ describe('.constructor(options)', () => {
     expect(Renderer).toHaveBeenCalledTimes(1);
     expect(Renderer).toHaveBeenCalledWith('line', expect.any(Function));
 
-    expect(bot.engine).toBeInstanceOf(Engine);
+    expect(sender.engine).toBeInstanceOf(Engine);
     expect(Engine).toHaveBeenCalledTimes(1);
     expect(Engine).toHaveBeenCalledWith(
       'line',
@@ -112,8 +112,8 @@ describe('.constructor(options)', () => {
 describe('.render(chat, node, options)', () => {
   it('make api calls', async () => {
     jest.useRealTimers();
-    const bot = new LineBot({ agentSettingsAccessor });
-    await bot.start();
+    const sender = new LineSender({ agentSettingsAccessor });
+    await sender.start();
 
     const apiCall1 = lineApi
       .post('/v2/bot/message/push', {
@@ -140,7 +140,7 @@ describe('.render(chat, node, options)', () => {
       .post('/v2/bot/user/john_doe/richmenu/newbie', '')
       .reply(200, '{}');
 
-    const response = await bot.render(
+    const response = await sender.render(
       new LineChat('_CHANNEL_ID_', 'user', 'john_doe'),
       message,
     );
@@ -151,8 +151,8 @@ describe('.render(chat, node, options)', () => {
   });
 
   it('works with replyToken', async () => {
-    const bot = new LineBot({ agentSettingsAccessor });
-    await bot.start();
+    const sender = new LineSender({ agentSettingsAccessor });
+    await sender.start();
 
     const apiCall1 = lineApi
       .post('/v2/bot/message/reply', {
@@ -180,7 +180,7 @@ describe('.render(chat, node, options)', () => {
       .post('/v2/bot/user/john_doe/richmenu/newbie', '')
       .reply(200, '{}');
 
-    const response = await bot.render(
+    const response = await sender.render(
       new LineChat('_CHANNEL_ID_', 'user', 'john_doe'),
       message,
       { replyToken: '__REPLY_TOKEN__' },
@@ -192,13 +192,13 @@ describe('.render(chat, node, options)', () => {
   });
 
   it('return null if message is empty', async () => {
-    const bot = new LineBot({ agentSettingsAccessor });
-    await bot.start();
+    const sender = new LineSender({ agentSettingsAccessor });
+    await sender.start();
 
     for (const empty of [null, undefined, [], <></>, true, false]) {
       // eslint-disable-next-line no-await-in-loop
       await expect(
-        bot.render(new LineChat('_CHANNEL_ID_', 'user', 'john_doe'), empty),
+        sender.render(new LineChat('_CHANNEL_ID_', 'user', 'john_doe'), empty),
       ).resolves.toBe(null);
     }
   });
@@ -206,20 +206,20 @@ describe('.render(chat, node, options)', () => {
 
 describe('.renderMulticast(channel, userIds, message)', () => {
   it('return null if message is empty', async () => {
-    const bot = new LineBot({ agentSettingsAccessor });
-    await bot.start();
+    const sender = new LineSender({ agentSettingsAccessor });
+    await sender.start();
 
     for (const empty of [null, undefined, [], <></>, true, false]) {
       // eslint-disable-next-line no-await-in-loop
       await expect(
-        bot.renderMulticast(channel, ['no', 'one', 'knows'], empty),
+        sender.renderMulticast(channel, ['no', 'one', 'knows'], empty),
       ).resolves.toBe(null);
     }
   });
 
   it('make api call to message/mulitcast', async () => {
-    const bot = new LineBot({ agentSettingsAccessor });
-    await bot.start();
+    const sender = new LineSender({ agentSettingsAccessor });
+    await sender.start();
 
     const apiCall1 = lineApi
       .post('/v2/bot/message/multicast', {
@@ -250,7 +250,7 @@ describe('.renderMulticast(channel, userIds, message)', () => {
       })
       .reply(200, '{}');
 
-    const response = await bot.renderMulticast(
+    const response = await sender.renderMulticast(
       channel,
       ['john', 'wick', 'dog'],
       message,
@@ -264,15 +264,15 @@ describe('.renderMulticast(channel, userIds, message)', () => {
 
 describe('.requestApi(options)', () => {
   it('call line REST api', async () => {
-    const bot = new LineBot({ agentSettingsAccessor });
-    await bot.start();
+    const sender = new LineSender({ agentSettingsAccessor });
+    await sender.start();
 
     const apiCall = lineApi
       .post('/v2/bot/foo', { bar: 'baz' })
       .reply(200, '{"foo":"bar.baz"}');
 
     await expect(
-      bot.requestApi({
+      sender.requestApi({
         agent: channel,
         method: 'POST',
         url: 'v2/bot/foo',
@@ -286,15 +286,15 @@ describe('.requestApi(options)', () => {
   });
 
   it('throw LineApiError if api call fail', async () => {
-    const bot = new LineBot({ agentSettingsAccessor });
-    await bot.start();
+    const sender = new LineSender({ agentSettingsAccessor });
+    await sender.start();
 
     const apiCall = lineApi
       .post('/v2/bot/foo', { bar: 'baz' })
       .reply(400, { message: 'bad' });
 
     try {
-      await bot.requestApi({
+      await sender.requestApi({
         agent: channel,
         method: 'POST',
         url: 'v2/bot/foo',

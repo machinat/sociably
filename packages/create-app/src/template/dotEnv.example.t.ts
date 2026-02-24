@@ -145,12 +145,12 @@ TWITTER_WEBHOOK_ENV= default
 `}${when(platforms.includes('telegram'))`
 
 # Telegram Settings
-#   Go to @BotFather (https://t.me/botfather) and send '/newbot' to create a bot.
+#   Go to @BotFather (https://t.me/botfather) and send '/newbot' to create a sender.
 
-# bot token from the BotFather
+# sender token from the BotFather
 TELEGRAM_BOT_TOKEN= 123456:AaBbCc12345...
 
-# bot username
+# sender username
 TELEGRAM_BOT_NAME= my_bot
 
 # a secret token to protect webhook

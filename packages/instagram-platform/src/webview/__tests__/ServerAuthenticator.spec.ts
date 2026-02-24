@@ -3,7 +3,7 @@ import BasicAuthenticator, {
   AuthDelegatorOptions,
 } from '@sociably/auth/basicAuth';
 import { MetaApiError } from '@sociably/meta-api';
-import InstagramBot from '../../Bot.js';
+import InstagramSender from '../../Sender.js';
 import InstagramProfiler from '../../Profiler.js';
 import InstagramAgent from '../../Agent.js';
 import InstagramUser from '../../User.js';
@@ -12,7 +12,7 @@ import UserProfile from '../../UserProfile.js';
 import ServerAuthenticator from '../ServerAuthenticator.js';
 import { InstagramAuthCredential, InstagramAuthData } from '../types.js';
 
-const bot = moxy<InstagramBot>({ a: 'bot' } as never);
+const sender = moxy<InstagramSender>({ a: 'sender' } as never);
 
 const profileData = {
   id: '43210',
@@ -81,7 +81,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
   >;
   beforeEach(() => {
     authenticator = new ServerAuthenticator(
-      bot,
+      sender,
       profiler,
       basicAuthenticator,
       agentSettingsAccessor,
@@ -102,15 +102,15 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
 
     expect(delegatorOptions).toMatchInlineSnapshot(`
       {
-        "bot": {
-          "a": "bot",
-        },
         "checkAuthData": [Function],
         "checkCurrentAuthUsability": [Function],
         "platform": "instagram",
         "platformColor": "#4B69FF",
         "platformImageUrl": "https://sociably.js.org/img/icon/messenger.png",
         "platformName": "Instagram",
+        "sender": {
+          "a": "sender",
+        },
         "verifyCredential": [Function],
       }
     `);
@@ -224,7 +224,7 @@ test('.getAuthUrl(id, path)', async () => {
   const user = new InstagramUser('1234567890', '9876543210');
 
   const authenticator = new ServerAuthenticator(
-    bot,
+    sender,
     profiler,
     basicAuthenticator,
     agentSettingsAccessor,
@@ -265,7 +265,7 @@ test('.getAuthUrl(id, path)', async () => {
 
 test('.verifyCredential() fails anyway', async () => {
   const authenticator = new ServerAuthenticator(
-    bot,
+    sender,
     profiler,
     basicAuthenticator,
     agentSettingsAccessor,
@@ -282,7 +282,7 @@ test('.verifyCredential() fails anyway', async () => {
 
 describe('.verifyRefreshment(data)', () => {
   const authenticator = new ServerAuthenticator(
-    bot,
+    sender,
     profiler,
     basicAuthenticator,
     agentSettingsAccessor,
@@ -334,7 +334,7 @@ describe('.verifyRefreshment(data)', () => {
 
 test('.checkAuthData(data)', () => {
   const authenticator = new ServerAuthenticator(
-    bot,
+    sender,
     profiler,
     basicAuthenticator,
     agentSettingsAccessor,

@@ -2,7 +2,7 @@ import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import type StateRepositoryI from '@sociably/core/base/StateRepository.js';
 import TwitterUser from '../../User.js';
-import type { TwitterBot } from '../../Bot.js';
+import type { TwitterSender } from '../../Sender.js';
 import { Photo } from '../../components/Media.js';
 import { TwitterAssetsManager } from '../AssetsManager.js';
 
@@ -21,7 +21,7 @@ const stateRepository = moxy<StateRepositoryI>({
   },
 } as never);
 
-const bot = moxy<TwitterBot>({
+const sender = moxy<TwitterSender>({
   id: 123456,
   requestApi() {},
   uploadMedia() {},
@@ -33,11 +33,11 @@ const agent = new TwitterUser('1234567890');
 beforeEach(() => {
   stateRepository.mock.reset();
   state.mock.reset();
-  bot.mock.reset();
+  sender.mock.reset();
 });
 
 test('get asset id', async () => {
-  const manager = new TwitterAssetsManager(bot, stateRepository);
+  const manager = new TwitterAssetsManager(sender, stateRepository);
 
   await expect(
     Promise.all([
@@ -90,7 +90,7 @@ test('get asset id', async () => {
 });
 
 test('save asset id', async () => {
-  const manager = new TwitterAssetsManager(bot, stateRepository);
+  const manager = new TwitterAssetsManager(sender, stateRepository);
 
   await expect(
     Promise.all([
@@ -151,7 +151,7 @@ test('save asset id', async () => {
 });
 
 test('get all assets', async () => {
-  const manager = new TwitterAssetsManager(bot, stateRepository);
+  const manager = new TwitterAssetsManager(sender, stateRepository);
 
   await expect(
     Promise.all([
@@ -194,7 +194,7 @@ test('get all assets', async () => {
 });
 
 test('unsave asset id', async () => {
-  const manager = new TwitterAssetsManager(bot, stateRepository);
+  const manager = new TwitterAssetsManager(sender, stateRepository);
 
   await expect(
     Promise.all([
@@ -239,7 +239,7 @@ test('unsave asset id', async () => {
 
 describe('.uploadMedia(tag, media)', () => {
   it('render and save media', async () => {
-    const manager = new TwitterAssetsManager(bot, stateRepository);
+    const manager = new TwitterAssetsManager(sender, stateRepository);
     const photo = <Photo url="https://sociably.io/img/foo.jpg" />;
     const uploadResponse = {
       type: 'photo',
@@ -254,14 +254,14 @@ describe('.uploadMedia(tag, media)', () => {
         media_id_string: '111111111111111111',
       },
     };
-    bot.uploadMedia.mock.fake(async () => [uploadResponse]);
+    sender.uploadMedia.mock.fake(async () => [uploadResponse]);
 
     await expect(manager.uploadMedia(agent, 'foo', photo)).resolves.toEqual(
       uploadResponse,
     );
 
-    expect(bot.uploadMedia).toHaveBeenCalledTimes(1);
-    expect(bot.uploadMedia).toHaveBeenCalledWith(agent, photo);
+    expect(sender.uploadMedia).toHaveBeenCalledTimes(1);
+    expect(sender.uploadMedia).toHaveBeenCalledWith(agent, photo);
 
     expect(
       stateRepository.globalState.mock.calls[0].args[0],
@@ -272,7 +272,7 @@ describe('.uploadMedia(tag, media)', () => {
   });
 
   it('throw if media is empty', async () => {
-    const manager = new TwitterAssetsManager(bot, stateRepository);
+    const manager = new TwitterAssetsManager(sender, stateRepository);
 
     await expect(
       manager.uploadMedia(agent, 'foo', null),
@@ -283,9 +283,9 @@ describe('.uploadMedia(tag, media)', () => {
 });
 
 test('.createWelcomeMessage(name, message)', async () => {
-  const manager = new TwitterAssetsManager(bot, stateRepository);
+  const manager = new TwitterAssetsManager(sender, stateRepository);
 
-  bot.createWelcomeMessage.mock.fake(async () => ({
+  sender.createWelcomeMessage.mock.fake(async () => ({
     welcome_message: {
       id: '844385345234',
       created_timestamp: '1470182274821',
@@ -302,7 +302,7 @@ test('.createWelcomeMessage(name, message)', async () => {
     ),
   ).resolves.toBe('844385345234');
 
-  expect(bot.createWelcomeMessage).toHaveBeenCalledWith(
+  expect(sender.createWelcomeMessage).toHaveBeenCalledWith(
     agent,
     'my_welcome_message',
     <p>Hello World!</p>,
@@ -313,26 +313,26 @@ test('.createWelcomeMessage(name, message)', async () => {
   ).toMatchInlineSnapshot(`"$twitter.welcome_message.1234567890"`);
   expect(state.set).toHaveBeenCalledWith('my_welcome_message', '844385345234');
 
-  bot.createWelcomeMessage.mock.fake(async () => null);
+  sender.createWelcomeMessage.mock.fake(async () => null);
   await expect(
     manager.createWelcomeMessage(agent, 'my_welcome_message', null),
   ).rejects.toThrowErrorMatchingInlineSnapshot(`"message content is empty"`);
 
   expect(state.set).toHaveBeenCalledTimes(1);
-  expect(bot.createWelcomeMessage).toHaveBeenCalledTimes(2);
+  expect(sender.createWelcomeMessage).toHaveBeenCalledTimes(2);
 });
 
 test('.deleteWelcomeMessage(name)', async () => {
-  const manager = new TwitterAssetsManager(bot, stateRepository);
+  const manager = new TwitterAssetsManager(sender, stateRepository);
 
   state.get.mock.fake(async () => '1234567890');
-  bot.requestApi.mock.fake(async () => ({}));
+  sender.requestApi.mock.fake(async () => ({}));
 
   await expect(
     manager.deleteWelcomeMessage(agent, 'my_welcome_message'),
   ).resolves.toBe('1234567890');
 
-  expect(bot.requestApi).toHaveBeenCalledWith({
+  expect(sender.requestApi).toHaveBeenCalledWith({
     agent,
     method: 'DELETE',
     url: '1.1/direct_messages/welcome_messages/destroy.json',
@@ -352,13 +352,13 @@ test('.deleteWelcomeMessage(name)', async () => {
   );
 
   expect(state.delete).toHaveBeenCalledTimes(1);
-  expect(bot.requestApi).toHaveBeenCalledTimes(1);
+  expect(sender.requestApi).toHaveBeenCalledTimes(1);
 });
 
 test('.createCustomProfile(tag, name, img)', async () => {
-  const manager = new TwitterAssetsManager(bot, stateRepository);
+  const manager = new TwitterAssetsManager(sender, stateRepository);
 
-  bot.requestApi.mock.fake(async () => ({
+  sender.requestApi.mock.fake(async () => ({
     custom_profile: {
       id: '1234567890',
       created_timestamp: '1479767168196',
@@ -380,7 +380,7 @@ test('.createCustomProfile(tag, name, img)', async () => {
     ),
   ).resolves.toBe('1234567890');
 
-  expect(bot.requestApi).toHaveBeenCalledWith({
+  expect(sender.requestApi).toHaveBeenCalledWith({
     agent,
     method: 'POST',
     url: '1.1/custom_profiles/new.json',
@@ -397,21 +397,21 @@ test('.createCustomProfile(tag, name, img)', async () => {
   ).toMatchInlineSnapshot(`"$twitter.custom_profile.1234567890"`);
   expect(state.set).toHaveBeenCalledWith('my_custom_profile', '1234567890');
 
-  expect(bot.requestApi).toHaveBeenCalledTimes(1);
+  expect(sender.requestApi).toHaveBeenCalledTimes(1);
   expect(state.set).toHaveBeenCalledTimes(1);
 });
 
 test('.deleteCustomProfile(name)', async () => {
-  const manager = new TwitterAssetsManager(bot, stateRepository);
+  const manager = new TwitterAssetsManager(sender, stateRepository);
 
   state.get.mock.fake(async () => '1234567890');
-  bot.requestApi.mock.fake(async () => ({}));
+  sender.requestApi.mock.fake(async () => ({}));
 
   await expect(
     manager.deleteCustomProfile(agent, 'my_custom_profile'),
   ).resolves.toBe('1234567890');
 
-  expect(bot.requestApi).toHaveBeenCalledWith({
+  expect(sender.requestApi).toHaveBeenCalledWith({
     agent,
     method: 'DELETE',
     url: '1.1/custom_profiles/destroy.json',
@@ -431,5 +431,5 @@ test('.deleteCustomProfile(name)', async () => {
   );
 
   expect(state.delete).toHaveBeenCalledTimes(1);
-  expect(bot.requestApi).toHaveBeenCalledTimes(1);
+  expect(sender.requestApi).toHaveBeenCalledTimes(1);
 });

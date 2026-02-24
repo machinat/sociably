@@ -1,11 +1,11 @@
 import moxy from '@moxyjs/moxy';
-import TwitterBot from '../Bot.js';
+import TwitterSender from '../Sender.js';
 import TwitterUser from '../User.js';
 import TwitterUserProfile from '../UserProfile.js';
 import TwitterProfiler from '../Profiler.js';
 import { RawUser } from '../types.js';
 
-const bot = moxy<TwitterBot>({
+const sender = moxy<TwitterSender>({
   requestApi: () => ({}),
 } as never);
 
@@ -35,34 +35,34 @@ const settingsData = {
 };
 
 beforeEach(() => {
-  bot.mock.reset();
+  sender.mock.reset();
 });
 
 describe('.getUserProfile(user)', () => {
   it('use data attached with the user by default', async () => {
     const user = new TwitterUser('6253282', userData);
-    const profiler = new TwitterProfiler(bot);
+    const profiler = new TwitterProfiler(sender);
 
     const profile = await profiler.getUserProfile(agent, user);
 
     expect(profile instanceof TwitterUserProfile).toBe(true);
     expect(profile.id).toBe('6253282');
 
-    expect(bot.requestApi).not.toHaveBeenCalled();
+    expect(sender.requestApi).not.toHaveBeenCalled();
   });
 
   it("get data from API if it's not attached with the user", async () => {
     const user = new TwitterUser('6253282');
-    const profiler = new TwitterProfiler(bot);
+    const profiler = new TwitterProfiler(sender);
 
-    bot.requestApi.mock.fake(async () => userData);
+    sender.requestApi.mock.fake(async () => userData);
     const profile = await profiler.getUserProfile(agent, user);
 
     expect(profile instanceof TwitterUserProfile).toBe(true);
     expect(profile.id).toBe('6253282');
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(1);
-    expect(bot.requestApi).toHaveBeenCalledWith({
+    expect(sender.requestApi).toHaveBeenCalledTimes(1);
+    expect(sender.requestApi).toHaveBeenCalledWith({
       agent,
       method: 'GET',
       url: '1.1/users/show.json',
@@ -75,9 +75,9 @@ describe('.getUserProfile(user)', () => {
 
   it('use data from API if fromApi option is true', async () => {
     const user = new TwitterUser('6253282', userData);
-    const profiler = new TwitterProfiler(bot);
+    const profiler = new TwitterProfiler(sender);
 
-    bot.requestApi.mock.fake(async () => ({
+    sender.requestApi.mock.fake(async () => ({
       ...userData,
       description: 'This time it is from API',
     }));
@@ -87,8 +87,8 @@ describe('.getUserProfile(user)', () => {
 
     expect(profile.description).toBe('This time it is from API');
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(1);
-    expect(bot.requestApi).toHaveBeenCalledWith({
+    expect(sender.requestApi).toHaveBeenCalledTimes(1);
+    expect(sender.requestApi).toHaveBeenCalledWith({
       agent,
       method: 'GET',
       url: '1.1/users/show.json',
@@ -101,9 +101,9 @@ describe('.getUserProfile(user)', () => {
 
   it('get settings data if withSettings option is true', async () => {
     const user = new TwitterUser('6253282', userData);
-    const profiler = new TwitterProfiler(bot);
+    const profiler = new TwitterProfiler(sender);
 
-    bot.requestApi.mock.fake(async () => settingsData);
+    sender.requestApi.mock.fake(async () => settingsData);
     const profile = await profiler.getUserProfile(agent, user, {
       withSettings: true,
     });
@@ -112,8 +112,8 @@ describe('.getUserProfile(user)', () => {
     expect(profile.timeZone).toBe(-8);
     expect(profile.languageCode).toBe('en');
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(1);
-    expect(bot.requestApi).toHaveBeenCalledWith({
+    expect(sender.requestApi).toHaveBeenCalledTimes(1);
+    expect(sender.requestApi).toHaveBeenCalledWith({
       agent,
       method: 'GET',
       url: '1.1/account/settings.json',
@@ -122,9 +122,9 @@ describe('.getUserProfile(user)', () => {
 
   test('withEntities option', async () => {
     const user = new TwitterUser('6253282');
-    const profiler = new TwitterProfiler(bot);
+    const profiler = new TwitterProfiler(sender);
 
-    bot.requestApi.mock.fake(async () => userData);
+    sender.requestApi.mock.fake(async () => userData);
     const profile = await profiler.getUserProfile(agent, user, {
       withEntities: true,
     });
@@ -132,8 +132,8 @@ describe('.getUserProfile(user)', () => {
     expect(profile instanceof TwitterUserProfile).toBe(true);
     expect(profile.id).toBe('6253282');
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(1);
-    expect(bot.requestApi).toHaveBeenCalledWith({
+    expect(sender.requestApi).toHaveBeenCalledTimes(1);
+    expect(sender.requestApi).toHaveBeenCalledWith({
       agent,
       method: 'GET',
       url: '1.1/users/show.json',

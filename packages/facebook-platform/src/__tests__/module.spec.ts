@@ -1,7 +1,7 @@
 import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { serviceProviderFactory } from '@sociably/core/service';
-import BaseBot from '@sociably/core/base/Bot.js';
+import BaseSender from '@sociably/core/base/Sender.js';
 import BaseProfiler from '@sociably/core/base/Profiler.js';
 import BaseMarshaler from '@sociably/core/base/Marshaler.js';
 import Http from '@sociably/http';
@@ -18,11 +18,11 @@ import FacebookUser from '../User.js';
 import FacebookUserProfile from '../UserProfile.js';
 import { FacebookProfiler } from '../Profiler.js';
 import { FacebookReceiver } from '../Receiver.js';
-import { FacebookBot } from '../Bot.js';
+import { FacebookSender } from '../Sender.js';
 
 it('export interfaces', () => {
   expect(Facebook.Receiver).toBe(FacebookReceiver);
-  expect(Facebook.Bot).toBe(FacebookBot);
+  expect(Facebook.Sender).toBe(FacebookSender);
   expect(Facebook.Profiler).toBe(FacebookProfiler);
   expect(Facebook.Configs).toMatchInlineSnapshot(`
     {
@@ -91,7 +91,7 @@ describe('initModule(configs)', () => {
     await app.start();
 
     const [
-      bot,
+      sender,
       receiver,
       profiler,
       configsProvided,
@@ -99,7 +99,7 @@ describe('initModule(configs)', () => {
       routings,
       agentSettingsAccessor,
     ] = app.useServices([
-      Facebook.Bot,
+      Facebook.Sender,
       Facebook.Receiver,
       Facebook.Profiler,
       Facebook.Configs,
@@ -108,7 +108,7 @@ describe('initModule(configs)', () => {
       AgentSettingsAccessorI,
     ]);
 
-    expect(bot).toBeInstanceOf(FacebookBot);
+    expect(sender).toBeInstanceOf(FacebookSender);
     expect(receiver).toBeInstanceOf(FacebookReceiver);
     expect(profiler).toBeInstanceOf(FacebookProfiler);
     expect(assetManager).toBeInstanceOf(FacebookAssetsManager);
@@ -125,7 +125,7 @@ describe('initModule(configs)', () => {
       getAgentSettingsBatch: expect.any(Function),
     });
 
-    bot.stop();
+    sender.stop();
   });
 
   test('provide base interfaces', async () => {
@@ -148,15 +148,15 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [bot, bots, profilers, marshalTypes] = app.useServices([
-      Facebook.Bot,
-      BaseBot.PlatformMap,
+    const [sender, bots, profilers, marshalTypes] = app.useServices([
+      Facebook.Sender,
+      BaseSender.PlatformMap,
       BaseProfiler.PlatformMap,
       BaseMarshaler.TypeList,
     ]);
 
-    expect(bot).toBeInstanceOf(FacebookBot);
-    expect(bots.get('facebook')).toBe(bot);
+    expect(sender).toBeInstanceOf(FacebookSender);
+    expect(bots.get('facebook')).toBe(sender);
     expect(profilers.get('facebook')).toBeInstanceOf(FacebookProfiler);
     expect(marshalTypes).toEqual(
       expect.arrayContaining([
@@ -167,7 +167,7 @@ describe('initModule(configs)', () => {
       ]),
     );
 
-    bot.stop();
+    sender.stop();
   });
 
   test('default webhookPath to "."', async () => {
@@ -201,7 +201,7 @@ describe('initModule(configs)', () => {
       },
     ]);
 
-    app.useServices([Facebook.Bot])[0].stop();
+    app.useServices([Facebook.Sender])[0].stop();
   });
 
   test('with configs.agentSettings', async () => {
@@ -348,8 +348,8 @@ describe('initModule(configs)', () => {
     );
   });
 
-  test('#startHook() start bot', async () => {
-    const bot = moxy({ start: async () => {} });
+  test('#startHook() start sender', async () => {
+    const sender = moxy({ start: async () => {} });
     const module = Facebook.initModule({
       agentSettings: {
         pageId: '1234567890',
@@ -360,12 +360,12 @@ describe('initModule(configs)', () => {
       webhookVerifyToken: '...',
     });
 
-    await expect(module.startHook!.$$factory(bot)).resolves.toBe(undefined);
-    expect(bot.start).toHaveBeenCalledTimes(1);
+    await expect(module.startHook!.$$factory(sender)).resolves.toBe(undefined);
+    expect(sender.start).toHaveBeenCalledTimes(1);
   });
 
-  test('#stopHook() stop bot', async () => {
-    const bot = moxy<FacebookBot>({ stop: async () => {} } as never);
+  test('#stopHook() stop sender', async () => {
+    const sender = moxy<FacebookSender>({ stop: async () => {} } as never);
     const module = Facebook.initModule({
       agentSettings: {
         pageId: '1234567890',
@@ -376,7 +376,7 @@ describe('initModule(configs)', () => {
       webhookVerifyToken: '...',
     });
 
-    await expect(module.stopHook!.$$factory(bot)).resolves.toBe(undefined);
-    expect(bot.stop).toHaveBeenCalledTimes(1);
+    await expect(module.stopHook!.$$factory(sender)).resolves.toBe(undefined);
+    expect(sender.stop).toHaveBeenCalledTimes(1);
   });
 });

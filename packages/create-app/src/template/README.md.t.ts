@@ -56,9 +56,9 @@ use \`npm run migrate -- --down\` to revert.
 
 #### Start Developing
 
-Now you can go to the chat platforms and try your bot.
+Now you can go to the chat platforms and try your sender.
 Keep the dev server running while developing.
-The changes in codes will immediately reflect on the bot.
+The changes in codes will immediately reflect on the sender.
 
 ## Learn More
 

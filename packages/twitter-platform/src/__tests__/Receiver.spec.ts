@@ -5,9 +5,9 @@ import moxy, { Mock, Moxy } from '@moxyjs/moxy';
 import { TwitterReceiver } from '../Receiver.js';
 import TwitterChat from '../Chat.js';
 import TwitterUser from '../User.js';
-import type { TwitterBot } from '../Bot.js';
+import type { TwitterSender } from '../Sender.js';
 
-const bot = moxy<TwitterBot>({
+const sender = moxy<TwitterSender>({
   render: async () => ({ tasks: [], results: [], jobs: [] }),
 } as never);
 
@@ -84,14 +84,14 @@ const messageEventBody = {
 const appSecret = '__APP_SECRET__';
 
 beforeEach(() => {
-  bot.mock.reset();
+  sender.mock.reset();
   popEventMock.reset();
   popEventWrapper.mock.reset();
 });
 
 it('throw if options.appSecret is empty', () => {
   expect(
-    () => new TwitterReceiver({ bot, popEventWrapper } as never),
+    () => new TwitterReceiver({ sender, popEventWrapper } as never),
   ).toThrowErrorMatchingInlineSnapshot(
     `"options.appSecret should not be empty"`,
   );
@@ -101,7 +101,7 @@ it.each(['PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
   'responds 405 if req.method is %s',
   async (method) => {
     const receiver = new TwitterReceiver({
-      bot,
+      sender,
       popEventWrapper,
       appSecret,
     });
@@ -117,7 +117,7 @@ it.each(['PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
 );
 
 it('responds 400 if body is empty', async () => {
-  const receiver = new TwitterReceiver({ bot, popEventWrapper, appSecret });
+  const receiver = new TwitterReceiver({ sender, popEventWrapper, appSecret });
 
   const req = createReq({ method: 'POST' });
   const res = createRes();
@@ -130,7 +130,7 @@ it('responds 400 if body is empty', async () => {
 
 it('responds 400 if body is not valid json', async () => {
   const receiver = new TwitterReceiver({
-    bot,
+    sender,
     popEventWrapper,
     appSecret,
     shouldVerifyRequest: false,
@@ -147,7 +147,7 @@ it('responds 400 if body is not valid json', async () => {
 
 it('respond 200 and pop events', async () => {
   const receiver = new TwitterReceiver({
-    bot,
+    sender,
     popEventWrapper,
     appSecret,
     shouldVerifyRequest: false,
@@ -165,7 +165,7 @@ it('respond 200 and pop events', async () => {
   const context = popEventMock.calls[0].args[0];
 
   expect(context.platform).toBe('twitter');
-  expect(context.bot).toBe(bot);
+  expect(context.sender).toBe(sender);
   expect(context.metadata).toEqual({
     source: 'webhook',
     request: { method: 'POST', url: '/', headers: {}, body: bodyStr },
@@ -194,7 +194,7 @@ it('respond 200 and pop events', async () => {
 
 describe('context.reply(message)', () => {
   const receiver = new TwitterReceiver({
-    bot,
+    sender,
     popEventWrapper,
     appSecret,
     shouldVerifyRequest: false,
@@ -216,8 +216,8 @@ describe('context.reply(message)', () => {
       }
     `);
 
-    expect(bot.render).toHaveBeenCalledTimes(1);
-    expect(bot.render).toHaveBeenCalledWith(event.thread, 'hello world');
+    expect(sender.render).toHaveBeenCalledTimes(1);
+    expect(sender.render).toHaveBeenCalledWith(event.thread, 'hello world');
   });
 
   it('throw if context.thread is null', async () => {
@@ -244,12 +244,12 @@ describe('context.reply(message)', () => {
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"Cannot reply to user_revoke event with no chat thread info"`,
     );
-    expect(bot.render).not.toHaveBeenCalled();
+    expect(sender.render).not.toHaveBeenCalled();
   });
 });
 
 it('verify request with appSecret', async () => {
-  const receiver = new TwitterReceiver({ bot, popEventWrapper, appSecret });
+  const receiver = new TwitterReceiver({ sender, popEventWrapper, appSecret });
   const payload =
     '{"for_user_id":"930524282358325248","tweet_delete_events":[{"status":{"id":"1045405559317569537","user_id":"930524282358325248"},"timestamp_ms":"1432228155593"}]}';
 
@@ -294,7 +294,7 @@ it('verify request with appSecret', async () => {
 });
 
 it('handle webhook challenge', async () => {
-  const receiver = new TwitterReceiver({ bot, popEventWrapper, appSecret });
+  const receiver = new TwitterReceiver({ sender, popEventWrapper, appSecret });
 
   const res1 = createRes();
   await receiver.handleRequest(

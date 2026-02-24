@@ -73,7 +73,7 @@ export type UrlButtonProps = Messenger.UrlButtonProps;
 /**
  * When the postback button is tapped, the Messenger Platform sends an event to
  * your postback webhook. This is useful when you want to invoke an action in
- * your bot. This button can be used with the Button Template and Generic
+ * your sender. This button can be used with the Button Template and Generic
  * Template.
  *
  * @category Component
@@ -129,8 +129,8 @@ export const LogoutButton: NativeComponent<{}, FacebookIntermediateSegment> =
   makeFacebookComponent(Messenger.LogoutButton);
 
 /**
- * The game play button launches an Instant Game that is associated with the bot
- * page.
+ * The game play button launches an Instant Game that is associated with the
+ * sender page.
  *
  * @category Component
  * @props {@link GamePlayButtonProps}

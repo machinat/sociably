@@ -5,7 +5,7 @@ import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities.js';
 import { serviceProviderClass } from '@sociably/core/service';
 import type {
   SociablyNode,
-  SociablyBot,
+  SociablySender,
   InitScopeFn,
   DispatchWrapper,
 } from '@sociably/core';
@@ -21,7 +21,7 @@ import {
 import {
   createChatJobs,
   createUploadChatAttachmentJobs,
-  MessengerBot,
+  MessengerSender,
 } from '@sociably/meta-messenger-platform-base';
 import { renderGeneralComponents } from '@sociably/meta-messenger-platform-base/components';
 import { INSTAGRAM } from './constant.js';
@@ -42,7 +42,7 @@ import type {
   InstagramThread,
 } from './types.js';
 
-type InstagramBotOptions = {
+type InstagramSenderOptions = {
   appId: string;
   appSecret: string;
   graphApiVersion?: string;
@@ -61,14 +61,14 @@ type UploadAttachmentResult = {
 };
 
 /**
- * InstagramBot render messages and make API call to Instagram platform.
+ * InstagramSender render messages and make API call to Instagram platform.
  *
  * @category Provider
  */
-export class InstagramBot
+export class InstagramSender
   implements
-    MessengerBot<MetaApiAgent>,
-    SociablyBot<InstagramChat, MetaApiJob, MetaApiResult>
+    MessengerSender<MetaApiAgent>,
+    SociablySender<InstagramChat, MetaApiJob, MetaApiResult>
 {
   graphApiVersion: string;
   agentSettingsAccessor: InstgramAgentSettingsAccessor;
@@ -91,7 +91,7 @@ export class InstagramBot
     agentSettingsAccessor,
     initScope,
     dispatchWrapper,
-  }: InstagramBotOptions) {
+  }: InstagramSenderOptions) {
     this.graphApiVersion = graphApiVersion;
     this.agentSettingsAccessor = agentSettingsAccessor;
 
@@ -238,7 +238,7 @@ export class InstagramBot
   }
 }
 
-const BotP = serviceProviderClass({
+const SenderP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [
     ConfigsI,
@@ -252,7 +252,7 @@ const BotP = serviceProviderClass({
     moduleUitils,
     platformUtils,
   ) =>
-    new InstagramBot({
+    new InstagramSender({
       agentSettingsAccessor,
       appId,
       appSecret,
@@ -260,7 +260,7 @@ const BotP = serviceProviderClass({
       initScope: moduleUitils?.initScope,
       dispatchWrapper: platformUtils?.dispatchWrapper,
     }),
-})(InstagramBot);
+})(InstagramSender);
 
-type BotP = InstagramBot;
-export default BotP;
+type SenderP = InstagramSender;
+export default SenderP;

@@ -1,7 +1,7 @@
 import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { serviceProviderFactory } from '@sociably/core/service';
-import BaseBot from '@sociably/core/base/Bot.js';
+import BaseSender from '@sociably/core/base/Sender.js';
 import BaseProfiler from '@sociably/core/base/Profiler.js';
 import BaseMarshaler from '@sociably/core/base/Marshaler.js';
 import Http from '@sociably/http';
@@ -18,11 +18,11 @@ import InstagramUser from '../User.js';
 import InstagramUserProfile from '../UserProfile.js';
 import { InstagramProfiler } from '../Profiler.js';
 import { InstagramReceiver } from '../Receiver.js';
-import { InstagramBot } from '../Bot.js';
+import { InstagramSender } from '../Sender.js';
 
 it('export interfaces', () => {
   expect(Instagram.Receiver).toBe(InstagramReceiver);
-  expect(Instagram.Bot).toBe(InstagramBot);
+  expect(Instagram.Sender).toBe(InstagramSender);
   expect(Instagram.Profiler).toBe(InstagramProfiler);
   expect(Instagram.Configs).toMatchInlineSnapshot(`
     {
@@ -92,7 +92,7 @@ describe('initModule(configs)', () => {
     await app.start();
 
     const [
-      bot,
+      sender,
       receiver,
       profiler,
       configsProvided,
@@ -100,7 +100,7 @@ describe('initModule(configs)', () => {
       routings,
       agentSettingsAccessor,
     ] = app.useServices([
-      Instagram.Bot,
+      Instagram.Sender,
       Instagram.Receiver,
       Instagram.Profiler,
       Instagram.Configs,
@@ -109,7 +109,7 @@ describe('initModule(configs)', () => {
       AgentSettingsAccessorI,
     ]);
 
-    expect(bot).toBeInstanceOf(InstagramBot);
+    expect(sender).toBeInstanceOf(InstagramSender);
     expect(receiver).toBeInstanceOf(InstagramReceiver);
     expect(profiler).toBeInstanceOf(InstagramProfiler);
     expect(assetManager).toBeInstanceOf(InstagramAssetsManager);
@@ -126,7 +126,7 @@ describe('initModule(configs)', () => {
       getAgentSettingsBatch: expect.any(Function),
     });
 
-    bot.stop();
+    sender.stop();
   });
 
   test('provide base interfaces', async () => {
@@ -146,15 +146,15 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [bot, bots, profilers, marshalTypes] = app.useServices([
-      Instagram.Bot,
-      BaseBot.PlatformMap,
+    const [sender, bots, profilers, marshalTypes] = app.useServices([
+      Instagram.Sender,
+      BaseSender.PlatformMap,
       BaseProfiler.PlatformMap,
       BaseMarshaler.TypeList,
     ]);
 
-    expect(bot).toBeInstanceOf(InstagramBot);
-    expect(bots.get('instagram')).toBe(bot);
+    expect(sender).toBeInstanceOf(InstagramSender);
+    expect(bots.get('instagram')).toBe(sender);
     expect(profilers.get('instagram')).toBeInstanceOf(InstagramProfiler);
     expect(marshalTypes).toEqual(
       expect.arrayContaining([
@@ -165,7 +165,7 @@ describe('initModule(configs)', () => {
       ]),
     );
 
-    bot.stop();
+    sender.stop();
   });
 
   test('default webhookPath to "."', async () => {
@@ -196,7 +196,7 @@ describe('initModule(configs)', () => {
       },
     ]);
 
-    app.useServices([Instagram.Bot])[0].stop();
+    app.useServices([Instagram.Sender])[0].stop();
   });
 
   test('with configs.agentSettings', async () => {
@@ -330,8 +330,8 @@ describe('initModule(configs)', () => {
     );
   });
 
-  test('#startHook() start bot', async () => {
-    const bot = moxy({ start: async () => {} });
+  test('#startHook() start sender', async () => {
+    const sender = moxy({ start: async () => {} });
     const module = Instagram.initModule({
       agentSettings,
       appId: '...',
@@ -339,12 +339,12 @@ describe('initModule(configs)', () => {
       webhookVerifyToken: '...',
     });
 
-    await expect(module.startHook!.$$factory(bot)).resolves.toBe(undefined);
-    expect(bot.start).toHaveBeenCalledTimes(1);
+    await expect(module.startHook!.$$factory(sender)).resolves.toBe(undefined);
+    expect(sender.start).toHaveBeenCalledTimes(1);
   });
 
-  test('#stopHook() stop bot', async () => {
-    const bot = moxy<InstagramBot>({ stop: async () => {} } as never);
+  test('#stopHook() stop sender', async () => {
+    const sender = moxy<InstagramSender>({ stop: async () => {} } as never);
     const module = Instagram.initModule({
       agentSettings,
       appId: '...',
@@ -352,7 +352,7 @@ describe('initModule(configs)', () => {
       webhookVerifyToken: '...',
     });
 
-    await expect(module.stopHook!.$$factory(bot)).resolves.toBe(undefined);
-    expect(bot.stop).toHaveBeenCalledTimes(1);
+    await expect(module.stopHook!.$$factory(sender)).resolves.toBe(undefined);
+    expect(sender.stop).toHaveBeenCalledTimes(1);
   });
 });

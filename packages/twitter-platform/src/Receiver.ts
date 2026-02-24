@@ -6,7 +6,7 @@ import type { PopEventWrapper, SociablyNode } from '@sociably/core';
 import { WebhookReceiver, WebhookHandler } from '@sociably/http/webhook';
 import { serviceProviderClass } from '@sociably/core/service';
 import eventFactory from './event/factory.js';
-import BotP from './Bot.js';
+import SenderP from './Sender.js';
 import { ConfigsI, PlatformUtilitiesI } from './interface.js';
 import { TWITTER } from './constant.js';
 import type { TwitterEventContext } from './types.js';
@@ -14,7 +14,7 @@ import type { TwitterEventContext } from './types.js';
 const BigIntJSON = _BigIntJSON({ useNativeBigInt: true });
 
 type TwitterReceiverOptions = {
-  bot: BotP;
+  sender: SenderP;
   appSecret: string;
   shouldVerifyRequest?: boolean;
   popEventWrapper: PopEventWrapper<TwitterEventContext, null>;
@@ -28,7 +28,7 @@ const verifyPayload = (secret: string, payload: string, signature: unknown) => {
 };
 
 const handleWebhook = ({
-  bot,
+  sender,
   popEventWrapper,
   appSecret,
   shouldVerifyRequest = true,
@@ -98,7 +98,7 @@ const handleWebhook = ({
       issuingEvents.push(
         popEvent({
           platform: TWITTER,
-          bot,
+          sender,
           event,
           metadata,
           reply: async (message: SociablyNode) => {
@@ -107,7 +107,7 @@ const handleWebhook = ({
                 `Cannot reply to ${event.type} event with no chat thread info`,
               );
             }
-            return bot.render(event.thread, message);
+            return sender.render(event.thread, message);
           },
         }),
       );
@@ -133,10 +133,10 @@ export class TwitterReceiver extends WebhookReceiver {
 
 const ReceiverP = serviceProviderClass({
   lifetime: 'singleton',
-  deps: [ConfigsI, BotP, PlatformUtilitiesI],
-  factory: ({ appSecret, shouldVerifyRequest }, bot, { popEventWrapper }) =>
+  deps: [ConfigsI, SenderP, PlatformUtilitiesI],
+  factory: ({ appSecret, shouldVerifyRequest }, sender, { popEventWrapper }) =>
     new TwitterReceiver({
-      bot,
+      sender,
       popEventWrapper,
       appSecret,
       shouldVerifyRequest,

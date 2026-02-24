@@ -14,7 +14,7 @@ import type { WebhookMetadata } from '@sociably/http/webhook';
 import type { TwitterEvent } from './event/events.js';
 import type TwitterChat from './Chat.js';
 import type TweetTarget from './TweetTarget.js';
-import type { TwitterBot } from './Bot.js';
+import type { TwitterSender } from './Sender.js';
 import type TwitterUser from './User.js';
 import { AgentSettingsAccessorI } from './interface.js';
 
@@ -167,7 +167,7 @@ export type TwitterEventContext = {
   platform: 'twitter';
   event: TwitterEvent;
   metadata: WebhookMetadata;
-  bot: TwitterBot;
+  sender: TwitterSender;
   reply(node: SociablyNode): Promise<null | TwitterDispatchResponse>;
 };
 

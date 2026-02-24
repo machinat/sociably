@@ -14,7 +14,7 @@ import type { WebhookMetadata } from '@sociably/http/webhook';
 import type { TelegramEvent } from './event/events.js';
 import { AgentSettingsAccessorI } from './interface.js';
 import type TelegramChat from './Chat.js';
-import type { TelegramBot } from './Bot.js';
+import type { TelegramSender } from './Sender.js';
 
 export * from './event/events.js';
 
@@ -23,39 +23,39 @@ export type TelegramParseMode = 'HTML' | 'MarkdownV2' | 'Markdown' | 'None';
 
 export type RawUser = {
   /**
-   * Unique identifier for this user or bot. This number may have more than 32
-   * significant bits and some programming languages may have difficulty/silent
-   * defects in interpreting it. But it has at most 52 significant bits, so a
-   * 64-bit integer or double-precision float type are safe for storing this
-   * identifier.
+   * Unique identifier for this user or sender. This number may have more than
+   * 32 significant bits and some programming languages may have
+   * difficulty/silent defects in interpreting it. But it has at most 52
+   * significant bits, so a 64-bit integer or double-precision float type are
+   * safe for storing this identifier.
    */
   id: number;
-  /** True, if this user is a bot */
+  /** True, if this user is a sender */
   is_bot: boolean;
-  /** User's or bot's first name */
+  /** User's or sender's first name */
   first_name: string;
-  /** User's or bot's last name */
+  /** User's or sender's last name */
   last_name?: string;
-  /** User's or bot's username */
+  /** User's or sender's username */
   username?: string;
   /** IETF language tag of the user's language */
   language_code?: string;
   /** True, if this user is a Telegram Premium user */
   is_premium?: boolean;
-  /** True, if this user added the bot to the attachment menu */
+  /** True, if this user added the sender to the attachment menu */
   added_to_attachment_menu?: boolean;
-  /** True, if the bot can be invited to groups. Returned only in getMe. */
+  /** True, if the sender can be invited to groups. Returned only in getMe. */
   can_join_groups?: boolean;
-  /** True, if privacy mode is disabled for the bot. Returned only in getMe. */
+  /** True, if privacy mode is disabled for the sender. Returned only in getMe. */
   can_read_all_group_messages?: boolean;
-  /** True, if the bot supports inline queries. Returned only in getMe. */
+  /** True, if the sender supports inline queries. Returned only in getMe. */
   supports_inline_queries?: boolean;
   /**
-   * True, if the bot can be connected to a Telegram Business account to receive
-   * its messages. Returned only in getMe.
+   * True, if the sender can be connected to a Telegram Business account to
+   * receive its messages. Returned only in getMe.
    */
   can_connect_to_business?: boolean;
-  /** True, if the bot has a main Web App. Returned only in getMe. */
+  /** True, if the sender has a main Web App. Returned only in getMe. */
   has_main_web_app?: boolean;
 };
 
@@ -113,7 +113,7 @@ export type RawMessage = {
    * by the user
    */
   sender_boost_count?: number;
-  /** The bot that actually sent the message on behalf of the business account */
+  /** The sender that actually sent the message on behalf of the business account */
   sender_business_bot?: RawUser;
   /** Date the message was sent in Unix time */
   date: number;
@@ -227,7 +227,7 @@ export type RawMessage = {
   successful_payment?: RawSuccessfulPayment;
   /** Message is a service message about a refunded payment */
   refunded_payment?: RawRefundedPayment;
-  /** Service message: users were shared with the bot */
+  /** Service message: users were shared with the sender */
   users_shared?: RawUsersShared;
   chat_shared?: RawChatShared;
   gift?: RawGiftInfo;
@@ -272,7 +272,7 @@ export type RawInlineQuery = {
   from: RawUser;
   /** Text of the query (up to 256 characters) */
   query: string;
-  /** Offset of the results to be returned, can be controlled by the bot */
+  /** Offset of the results to be returned, can be controlled by the sender */
   offset: string;
   /**
    * Type of the chat from which the inline query was sent. Can be either
@@ -306,11 +306,14 @@ export type RawCallbackQuery = {
   id: string;
   /** Sender */
   from: RawUser;
-  /** Message sent by the bot with the callback button that originated the query */
+  /**
+   * Message sent by the sender with the callback button that originated the
+   * query
+   */
   message?: RawMaybeInaccessibleMessage;
   /**
-   * Identifier of the message sent via the bot in inline mode, that originated
-   * the query.
+   * Identifier of the message sent via the sender in inline mode, that
+   * originated the query.
    */
   inline_message_id?: string;
   /**
@@ -390,8 +393,8 @@ export type RawPoll = {
   allows_multiple_answers: boolean;
   /**
    * 0-based identifier of the correct answer option. Available only for polls
-   * in the quiz mode, which are closed, or was sent (not forwarded) by the bot
-   * or to the private chat with the bot.
+   * in the quiz mode, which are closed, or was sent (not forwarded) by the
+   * sender or to the private chat with the sender.
    */
   correct_option_id?: number;
   /**
@@ -400,7 +403,7 @@ export type RawPoll = {
    */
   explanation?: string;
   /**
-   * Special entities like usernames, URLs, bot commands, etc. that appear in
+   * Special entities like usernames, URLs, sender commands, etc. that appear in
    * the explanation
    */
   explanation_entities?: RawMessageEntity[];
@@ -1201,15 +1204,15 @@ export type TelegramRawEvent = {
   update_id: number;
   /** New incoming message of any kind — text, photo, sticker, etc. */
   message?: RawMessage;
-  /** New version of a message that is known to the bot and was edited */
+  /** New version of a message that is known to the sender and was edited */
   edited_message?: RawMessage;
   /** New incoming channel post of any kind — text, photo, sticker, etc. */
   channel_post?: RawMessage;
-  /** New version of a channel post that is known to the bot and was edited */
+  /** New version of a channel post that is known to the sender and was edited */
   edited_channel_post?: RawMessage;
   /**
-   * The bot was connected to or disconnected from a business account, or a user
-   * edited an existing connection with the bot
+   * The sender was connected to or disconnected from a business account, or a
+   * user edited an existing connection with the sender
    */
   business_connection?: RawBusinessConnection;
   /** New message from a connected business account */
@@ -1219,14 +1222,14 @@ export type TelegramRawEvent = {
   /** Messages were deleted from a connected business account */
   deleted_business_messages?: RawBusinessMessagesDeleted;
   /**
-   * A reaction to a message was changed by a user. The bot must be an
+   * A reaction to a message was changed by a user. The sender must be an
    * administrator in the chat and must explicitly specify "message_reaction" in
    * the list of allowed_updates to receive these updates.
    */
   message_reaction?: RawMessageReactionUpdated;
   /**
-   * Reactions to a message with anonymous reactions were changed. The bot must
-   * be an administrator in the chat and must explicitly specify
+   * Reactions to a message with anonymous reactions were changed. The sender
+   * must be an administrator in the chat and must explicitly specify
    * "message_reaction_count" in the list of allowed_updates to receive these
    * updates.
    */
@@ -1236,7 +1239,7 @@ export type TelegramRawEvent = {
   /**
    * The result of an inline query that was chosen by a user and sent to their
    * chat partner. Please see our documentation on the feedback collecting for
-   * details on how to enable these updates for your bot.
+   * details on how to enable these updates for your sender.
    */
   chosen_inline_result?: RawChosenInlineResult;
   /** New incoming callback query */
@@ -1249,21 +1252,22 @@ export type TelegramRawEvent = {
   purchased_paid_media?: RawPaidMediaPurchased;
   /**
    * New poll state. Bots receive only updates about stopped polls and polls,
-   * which are sent by the bot
+   * which are sent by the sender
    */
   poll?: RawPoll;
   /**
    * A user changed their answer in a non-anonymous poll. Bots receive new votes
-   * only in polls that were sent by the bot itself.
+   * only in polls that were sent by the sender itself.
    */
   poll_answer?: RawPollAnswer;
   /**
-   * The bot's chat member status was updated in a chat. For private chats, this
-   * update is received only when the bot is blocked or unblocked by the user.
+   * The sender's chat member status was updated in a chat. For private chats,
+   * this update is received only when the sender is blocked or unblocked by the
+   * user.
    */
   my_chat_member?: RawChatMemberUpdated;
   /**
-   * A chat member's status was updated in a chat. The bot must be an
+   * A chat member's status was updated in a chat. The sender must be an
    * administrator in the chat and must explicitly specify "chat_member" in the
    * list of allowed_updates to receive these updates.
    */
@@ -1314,7 +1318,7 @@ export type TelegramEventContext = {
   platform: 'telegram';
   event: TelegramEvent;
   metadata: WebhookMetadata;
-  bot: TelegramBot;
+  sender: TelegramSender;
   reply(node: SociablyNode): Promise<null | TelegramDispatchResponse>;
 };
 
@@ -1363,9 +1367,9 @@ export type TelegramPlatformUtilities = PlatformUtilities<
 >;
 
 export type TelegramAgentSettings = {
-  /** The access token of the bot. Like: `1234567890:AaBbCc_321-DdEeFf` */
+  /** The access token of the sender. Like: `1234567890:AaBbCc_321-DdEeFf` */
   botToken: string;
-  /** The username of the bot without the prefixing `@`. Like `MyBot` */
+  /** The username of the sender without the prefixing `@`. Like `MyBot` */
   botName: string;
 };
 
@@ -1530,7 +1534,7 @@ export type RawBusinessMessagesDeleted = {
   /** Unique identifier of the business connection */
   business_connection_id: string;
   /**
-   * Information about a chat in the business account. The bot may not have
+   * Information about a chat in the business account. The sender may not have
    * access to the chat or the corresponding user.
    */
   chat: RawChat;

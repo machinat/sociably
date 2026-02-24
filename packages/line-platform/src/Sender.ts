@@ -1,6 +1,6 @@
 import type {
   SociablyNode,
-  SociablyBot,
+  SociablySender,
   InitScopeFn,
   DispatchWrapper,
 } from '@sociably/core';
@@ -31,7 +31,7 @@ import type {
   MessagingApiResult,
 } from './types.js';
 
-type LineBotOptions = {
+type LineSenderOptions = {
   agentSettingsAccessor: AgentSettingsAccessorI;
   maxRequestConnections?: number;
   initScope?: InitScopeFn;
@@ -52,7 +52,9 @@ type ApiCallOptions = {
 };
 
 /** @category Provider */
-export class LineBot implements SociablyBot<LineChat, LineJob, LineResult> {
+export class LineSender
+  implements SociablySender<LineChat, LineJob, LineResult>
+{
   maxRequestConnections: number;
   engine: Engine<
     LineChannel | LineChat,
@@ -69,7 +71,7 @@ export class LineBot implements SociablyBot<LineChat, LineJob, LineResult> {
     maxRequestConnections = 100,
     initScope,
     dispatchWrapper,
-  }: LineBotOptions) {
+  }: LineSenderOptions) {
     this.maxRequestConnections = maxRequestConnections;
 
     const queue = new Queue<LineJob, LineResult>();
@@ -146,7 +148,7 @@ export class LineBot implements SociablyBot<LineChat, LineJob, LineResult> {
   }
 }
 
-const BotP = serviceProviderClass({
+const SenderP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [
     ConfigsI,
@@ -160,14 +162,14 @@ const BotP = serviceProviderClass({
     moduleUtils,
     platformUtils,
   ) =>
-    new LineBot({
+    new LineSender({
       agentSettingsAccessor,
       maxRequestConnections,
       initScope: moduleUtils?.initScope,
       dispatchWrapper: platformUtils?.dispatchWrapper,
     }),
-})(LineBot);
+})(LineSender);
 
-type BotP = LineBot;
+type SenderP = LineSender;
 
-export default BotP;
+export default SenderP;

@@ -1,16 +1,16 @@
 import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
-import BaseBot from '@sociably/core/base/Bot.js';
+import BaseSender from '@sociably/core/base/Sender.js';
 import BaseMarshaler from '@sociably/core/base/Marshaler.js';
 import Http from '@sociably/http';
 import WebSocketConnection from '../Connection.js';
 import { WebSocketServer } from '../Server.js';
 import { WebSocketReceiver } from '../Receiver.js';
-import { WebSocketBot } from '../Bot.js';
+import { WebSocketSender } from '../Sender.js';
 import WebSocket from '../module.js';
 
 it('export interfaces', () => {
-  expect(WebSocket.Bot).toBe(WebSocketBot);
+  expect(WebSocket.Sender).toBe(WebSocketSender);
   expect(WebSocket.Receiver).toBe(WebSocketReceiver);
   expect(WebSocket.Server).toBe(WebSocketServer);
   expect(WebSocket.Configs).toMatchInlineSnapshot(`
@@ -91,15 +91,16 @@ describe('initModule()', () => {
     });
     await app.start();
 
-    const [bot, receiver, server, configs, upgradeRoutings] = app.useServices([
-      WebSocket.Bot,
-      WebSocket.Receiver,
-      WebSocket.Server,
-      WebSocket.Configs,
-      Http.UpgradeRouteList,
-    ]);
+    const [sender, receiver, server, configs, upgradeRoutings] =
+      app.useServices([
+        WebSocket.Sender,
+        WebSocket.Receiver,
+        WebSocket.Server,
+        WebSocket.Configs,
+        Http.UpgradeRouteList,
+      ]);
 
-    expect(bot).toBeInstanceOf(WebSocketBot);
+    expect(sender).toBeInstanceOf(WebSocketSender);
     expect(receiver).toBeInstanceOf(WebSocketReceiver);
     expect(server).toBeInstanceOf(WebSocketServer);
     expect(configs).toEqual({
@@ -136,37 +137,37 @@ describe('initModule()', () => {
     await app.start();
 
     const [bots, marshalTypes] = app.useServices([
-      BaseBot.PlatformMap,
+      BaseSender.PlatformMap,
       BaseMarshaler.TypeList,
     ]);
 
-    expect(bots.get('websocket')).toBeInstanceOf(WebSocketBot);
+    expect(bots.get('websocket')).toBeInstanceOf(WebSocketSender);
     expect(marshalTypes).toEqual(expect.arrayContaining([WebSocketConnection]));
   });
 
-  test('startHook() calls bot.start()', async () => {
-    const fakeBot = moxy({ start: async () => {} });
+  test('startHook() calls sender.start()', async () => {
+    const fakeSender = moxy({ start: async () => {} });
 
     const app = Sociably.createApp({
       platforms: [WebSocket.initModule()],
-      services: [{ provide: WebSocket.Bot, withValue: fakeBot }],
+      services: [{ provide: WebSocket.Sender, withValue: fakeSender }],
     });
     await app.start();
 
-    expect(fakeBot.start).toHaveBeenCalledTimes(1);
+    expect(fakeSender.start).toHaveBeenCalledTimes(1);
   });
 
-  test('stopHook() calls bot.stop()', async () => {
-    const fakeBot = moxy({ start: async () => {}, stop: async () => {} });
+  test('stopHook() calls sender.stop()', async () => {
+    const fakeSender = moxy({ start: async () => {}, stop: async () => {} });
 
     const app = Sociably.createApp({
       platforms: [WebSocket.initModule()],
-      services: [{ provide: WebSocket.Bot, withValue: fakeBot }],
+      services: [{ provide: WebSocket.Sender, withValue: fakeSender }],
     });
     await app.start();
-    expect(fakeBot.stop).not.toHaveBeenCalled();
+    expect(fakeSender.stop).not.toHaveBeenCalled();
 
     await app.stop();
-    expect(fakeBot.stop).toHaveBeenCalledTimes(1);
+    expect(fakeSender.stop).toHaveBeenCalledTimes(1);
   });
 });

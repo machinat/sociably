@@ -1,7 +1,7 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { AuthHttpOperator } from '@sociably/auth';
 import moxy from '@moxyjs/moxy';
-import type { LineBot } from '../../Bot.js';
+import type { LineSender } from '../../Sender.js';
 import LineChannel from '../../Channel.js';
 import LineChat from '../../Chat.js';
 import LineUser from '../../User.js';
@@ -23,7 +23,7 @@ const minProfileData = {
 };
 const botChannel = new LineChannel(botChannelId);
 
-const bot = moxy<LineBot>({
+const sender = moxy<LineSender>({
   requestApi: async ({ url }) =>
     url === `oauth2/v2.1/verify?access_token=${accessToken}`
       ? { scope: 'profile', client_id: loginChannelId, expires_in: 2591659 }
@@ -71,20 +71,26 @@ const agentSettingsAccessor = moxy({
 
 beforeEach(() => {
   agentSettingsAccessor.mock.reset();
-  bot.mock.reset();
+  sender.mock.reset();
   httpOperator.mock.reset();
 });
 
 describe('.constructor(options)', () => {
   it('ok', () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
     expect(authenticator.platform).toBe('line');
   });
 });
 
 describe('.getLiffUrl(channel, path, chat)', () => {
   test('return LIFF URL', async () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
     await expect(
       authenticator.getLiffUrl(botChannel),
     ).resolves.toMatchInlineSnapshot(
@@ -134,7 +140,10 @@ describe('.getLiffUrl(channel, path, chat)', () => {
   });
 
   it('throw if messaging channel settings not found', async () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
 
     agentSettingsAccessor.getAgentSettings.mock.fakeResolvedValue(null);
     await expect(
@@ -159,7 +168,7 @@ describe('.getLiffUrl(channel, path, chat)', () => {
 });
 
 test('.delegateAuthRequest() respond 403', async () => {
-  const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+  const authenticator = new ServerAuthenticator(sender, agentSettingsAccessor);
   const req = {
     url: '/my_app/auth/line',
     type: 'GET',
@@ -186,7 +195,10 @@ describe('.verifyCredential(credential)', () => {
   };
 
   it('verify access token and user ID through LINE API', async () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
 
     await expect(authenticator.verifyCredential(credential)).resolves.toEqual({
       ok: true,
@@ -200,12 +212,12 @@ describe('.verifyCredential(credential)', () => {
       },
     });
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(2);
-    expect(bot.requestApi).toHaveBeenCalledWith({
+    expect(sender.requestApi).toHaveBeenCalledTimes(2);
+    expect(sender.requestApi).toHaveBeenCalledWith({
       method: 'GET',
       url: `oauth2/v2.1/verify?access_token=${credential.accessToken}`,
     });
-    expect(bot.requestApi).toHaveBeenCalledWith({
+    expect(sender.requestApi).toHaveBeenCalledWith({
       accessToken: credential.accessToken,
       method: 'GET',
       url: `v2/profile`,
@@ -213,7 +225,10 @@ describe('.verifyCredential(credential)', () => {
   });
 
   it("verify user and messaging channel when it's available", async () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
 
     await expect(
       authenticator.verifyCredential({
@@ -234,8 +249,8 @@ describe('.verifyCredential(credential)', () => {
       },
     });
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(3);
-    expect(bot.requestApi).toHaveBeenCalledWith({
+    expect(sender.requestApi).toHaveBeenCalledTimes(3);
+    expect(sender.requestApi).toHaveBeenCalledWith({
       agent: botChannel,
       method: 'GET',
       url: `v2/bot/profile/${userId}`,
@@ -252,7 +267,10 @@ describe('.verifyCredential(credential)', () => {
       linkedChatChannelId: botChannelId,
     });
 
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
 
     await expect(
       authenticator.verifyCredential({
@@ -272,8 +290,8 @@ describe('.verifyCredential(credential)', () => {
       },
     });
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(2);
-    expect(bot.requestApi).toHaveBeenCalledWith({
+    expect(sender.requestApi).toHaveBeenCalledTimes(2);
+    expect(sender.requestApi).toHaveBeenCalledWith({
       accessToken: credential.accessToken,
       method: 'GET',
       url: `v2/profile`,
@@ -281,7 +299,10 @@ describe('.verifyCredential(credential)', () => {
   });
 
   it('verify group member', async () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
 
     await expect(
       authenticator.verifyCredential({
@@ -304,8 +325,8 @@ describe('.verifyCredential(credential)', () => {
       },
     });
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(3);
-    expect(bot.requestApi).toHaveBeenCalledWith({
+    expect(sender.requestApi).toHaveBeenCalledTimes(3);
+    expect(sender.requestApi).toHaveBeenCalledWith({
       agent: botChannel,
       method: 'GET',
       url: `v2/bot/group/${groupId}/member/${userId}`,
@@ -313,7 +334,10 @@ describe('.verifyCredential(credential)', () => {
   });
 
   it('verify room member', async () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
 
     await expect(
       authenticator.verifyCredential({
@@ -336,8 +360,8 @@ describe('.verifyCredential(credential)', () => {
       },
     });
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(3);
-    expect(bot.requestApi).toHaveBeenCalledWith({
+    expect(sender.requestApi).toHaveBeenCalledTimes(3);
+    expect(sender.requestApi).toHaveBeenCalledWith({
       agent: botChannel,
       method: 'GET',
       url: `v2/bot/room/${roomId}/member/${userId}`,
@@ -345,7 +369,10 @@ describe('.verifyCredential(credential)', () => {
   });
 
   it('fail if accessToken is absent', async () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
     await expect(authenticator.verifyCredential({} as never)).resolves
       .toMatchInlineSnapshot(`
       {
@@ -357,9 +384,12 @@ describe('.verifyCredential(credential)', () => {
   });
 
   it('fail if token verify api respond error', async () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
 
-    bot.requestApi.mock.wrap((originalImpl) => async (options) => {
+    sender.requestApi.mock.wrap((originalImpl) => async (options) => {
       if (options.url.startsWith('oauth2/v2.1/verify')) {
         throw new LineApiError({
           code: 400,
@@ -384,7 +414,10 @@ describe('.verifyCredential(credential)', () => {
   });
 
   it('fail if login channel not registered', async () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
 
     agentSettingsAccessor.getLineLoginChannelSettings.mock.fakeResolvedValue(
       null,
@@ -401,7 +434,10 @@ describe('.verifyCredential(credential)', () => {
   });
 
   it('fail if messaging channel id not match', async () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
 
     await expect(
       authenticator.verifyCredential({
@@ -418,7 +454,10 @@ describe('.verifyCredential(credential)', () => {
   });
 
   it('fail if user id not match', async () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
 
     await expect(
       authenticator.verifyCredential({
@@ -435,9 +474,12 @@ describe('.verifyCredential(credential)', () => {
   });
 
   it('fail when chat user not found', async () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
 
-    bot.requestApi.mock.wrap((originalImpl) => async (options) => {
+    sender.requestApi.mock.wrap((originalImpl) => async (options) => {
       if (options.url.startsWith('v2/bot/profile')) {
         throw new LineApiError({
           code: 404,
@@ -462,9 +504,12 @@ describe('.verifyCredential(credential)', () => {
   });
 
   test('fail if group member not found', async () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
 
-    bot.requestApi.mock.wrap((originalImpl) => async (options) => {
+    sender.requestApi.mock.wrap((originalImpl) => async (options) => {
       if (options.url.startsWith('v2/bot/group')) {
         throw new LineApiError({
           code: 404,
@@ -490,9 +535,12 @@ describe('.verifyCredential(credential)', () => {
   });
 
   it('fail if room member not found', async () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
 
-    bot.requestApi.mock.wrap((originalImpl) => async (options) => {
+    sender.requestApi.mock.wrap((originalImpl) => async (options) => {
       if (options.url.startsWith('v2/bot/room')) {
         throw new LineApiError({
           code: 404,
@@ -518,7 +566,10 @@ describe('.verifyCredential(credential)', () => {
   });
 
   it('fail if chat type not match', async () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
     const expectedResult = {
       ok: false,
       code: 400,
@@ -551,9 +602,12 @@ describe('.verifyCredential(credential)', () => {
   });
 
   it('throw if unknown error happen', async () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
 
-    bot.requestApi.mock.fake(async () => {
+    sender.requestApi.mock.fake(async () => {
       throw new Error('connection error');
     });
 
@@ -574,18 +628,24 @@ describe('.verifyRefreshment()', () => {
   };
 
   it('return original data if ok', async () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
 
     await expect(authenticator.verifyRefreshment(authData)).resolves.toEqual({
       ok: true,
       data: authData,
     });
 
-    expect(bot.requestApi).not.toHaveBeenCalled();
+    expect(sender.requestApi).not.toHaveBeenCalled();
   });
 
   test('with messaging channel', async () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
 
     const authDataWithMessagingChannel = {
       ...authData,
@@ -599,8 +659,8 @@ describe('.verifyRefreshment()', () => {
       data: authDataWithMessagingChannel,
     });
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(1);
-    expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+    expect(sender.requestApi).toHaveBeenCalledTimes(1);
+    expect(sender.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       {
         "agent": LineChannel {
           "$$typeofAgent": true,
@@ -614,7 +674,10 @@ describe('.verifyRefreshment()', () => {
   });
 
   test('with group chat', async () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
 
     const authDataWithGroup = {
       ...authData,
@@ -629,8 +692,8 @@ describe('.verifyRefreshment()', () => {
       data: authDataWithGroup,
     });
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(1);
-    expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+    expect(sender.requestApi).toHaveBeenCalledTimes(1);
+    expect(sender.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       {
         "agent": LineChannel {
           "$$typeofAgent": true,
@@ -644,7 +707,10 @@ describe('.verifyRefreshment()', () => {
   });
 
   test('with room chat', async () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
 
     const authDataWithRoom = {
       ...authData,
@@ -659,8 +725,8 @@ describe('.verifyRefreshment()', () => {
       data: authDataWithRoom,
     });
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(1);
-    expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+    expect(sender.requestApi).toHaveBeenCalledTimes(1);
+    expect(sender.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       {
         "agent": LineChannel {
           "$$typeofAgent": true,
@@ -674,7 +740,10 @@ describe('.verifyRefreshment()', () => {
   });
 
   it('fail if provider id not match', async () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
 
     await expect(
       authenticator.verifyRefreshment({
@@ -691,7 +760,10 @@ describe('.verifyRefreshment()', () => {
   });
 
   it('fail if user id not match', async () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
 
     await expect(
       authenticator.verifyRefreshment({
@@ -714,7 +786,10 @@ describe('.verifyRefreshment()', () => {
   });
 
   it('fail if messaging channel id not match', async () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
 
     await expect(
       authenticator.verifyRefreshment({ ...authData, chan: '_WORNG_CHANNEL_' }),
@@ -728,7 +803,10 @@ describe('.verifyRefreshment()', () => {
   });
 
   it('fail if login channel not registered', async () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
 
     agentSettingsAccessor.getLineLoginChannelSettings.mock.fakeResolvedValue(
       null,
@@ -749,7 +827,10 @@ describe('.verifyRefreshment()', () => {
   });
 
   it('fail if chat type not match', async () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
     const expectedResult = {
       ok: false,
       code: 400,
@@ -782,8 +863,11 @@ describe('.verifyRefreshment()', () => {
   });
 
   it('fail when user not found', async () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
-    bot.requestApi.mock.fakeRejectedValue(
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
+    sender.requestApi.mock.fakeRejectedValue(
       new LineApiError({
         code: 404,
         headers: {},
@@ -806,8 +890,11 @@ describe('.verifyRefreshment()', () => {
   });
 
   test('with group chat', async () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
-    bot.requestApi.mock.fakeRejectedValue(
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
+    sender.requestApi.mock.fakeRejectedValue(
       new LineApiError({
         code: 404,
         headers: {},
@@ -831,8 +918,11 @@ describe('.verifyRefreshment()', () => {
   });
 
   test('with room chat', async () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
-    bot.requestApi.mock.fakeRejectedValue(
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
+    sender.requestApi.mock.fakeRejectedValue(
       new LineApiError({
         code: 404,
         headers: {},
@@ -854,8 +944,8 @@ describe('.verifyRefreshment()', () => {
       reason: 'room member not found',
     });
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(1);
-    expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+    expect(sender.requestApi).toHaveBeenCalledTimes(1);
+    expect(sender.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       {
         "agent": LineChannel {
           "$$typeofAgent": true,
@@ -881,7 +971,10 @@ describe('.checkAuthData(data)', () => {
   };
 
   test('with no messaging channel', () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
 
     expect(authenticator.checkAuthData(authData)).toEqual({
       ok: true,
@@ -899,7 +992,10 @@ describe('.checkAuthData(data)', () => {
   });
 
   test('with private chat', () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
 
     expect(
       authenticator.checkAuthData({
@@ -925,7 +1021,10 @@ describe('.checkAuthData(data)', () => {
   });
 
   test('with group chat', () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
 
     expect(
       authenticator.checkAuthData({
@@ -952,7 +1051,10 @@ describe('.checkAuthData(data)', () => {
   });
 
   test('with room chat', () => {
-    const authenticator = new ServerAuthenticator(bot, agentSettingsAccessor);
+    const authenticator = new ServerAuthenticator(
+      sender,
+      agentSettingsAccessor,
+    );
 
     expect(
       authenticator.checkAuthData({

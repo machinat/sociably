@@ -3,7 +3,7 @@ import {
   serviceContainer,
   serviceProviderFactory,
 } from '@sociably/core/service';
-import BaseBot from '@sociably/core/base/Bot.js';
+import BaseSender from '@sociably/core/base/Sender.js';
 import BaseMarshaler from '@sociably/core/base/Marshaler.js';
 import Http from '@sociably/http';
 import type { UpgradeRoute } from '@sociably/http';
@@ -18,7 +18,7 @@ import {
   LoginVerifierI,
   ConfigsI,
 } from './interface.js';
-import { BotP } from './Bot.js';
+import { SenderP } from './Sender.js';
 import { ServerP } from './Server.js';
 import { ReceiverP } from './Receiver.js';
 import LocalOnlyBrokerP from './broker/LocalOnlyBroker.js';
@@ -49,8 +49,8 @@ const upgradeRouteFactory = serviceProviderFactory({
 
 /** @category Root */
 namespace WebSocket {
-  export const Bot = BotP;
-  export type Bot = BotP;
+  export const Sender = SenderP;
+  export type Sender = SenderP;
 
   export const Receiver = ReceiverP;
   export type Receiver<User extends null | SociablyUser, Auth> = ReceiverP<
@@ -99,10 +99,10 @@ namespace WebSocket {
       { provide: ConfigsI, withValue: configs },
       { provide: WsServerI, withProvider: wsServerFactory },
 
-      BotP,
+      SenderP,
       {
-        provide: BaseBot.PlatformMap,
-        withProvider: BotP,
+        provide: BaseSender.PlatformMap,
+        withProvider: SenderP,
         platform: WEBSOCKET,
       },
 
@@ -118,11 +118,11 @@ namespace WebSocket {
       { provide: BaseMarshaler.TypeList, withValue: WebSocketConnection },
     ],
 
-    startHook: serviceContainer({ deps: [BotP] })(async (bot) => {
-      await bot.start();
+    startHook: serviceContainer({ deps: [SenderP] })(async (sender) => {
+      await sender.start();
     }),
-    stopHook: serviceContainer({ deps: [BotP] })(async (bot) => {
-      await bot.stop();
+    stopHook: serviceContainer({ deps: [SenderP] })(async (sender) => {
+      await sender.stop();
     }),
   });
 }

@@ -1,5 +1,5 @@
 export { default } from './module.js';
-export { LineBot } from './Bot.js';
+export { LineSender } from './Sender.js';
 export { LineReceiver } from './Receiver.js';
 export { default as LineChannel } from './Channel.js';
 export { default as LineChat } from './Chat.js';

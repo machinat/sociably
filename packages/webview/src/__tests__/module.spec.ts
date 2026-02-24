@@ -1,7 +1,7 @@
 import moxy, { Moxy } from '@moxyjs/moxy';
 import NextJs from 'next';
 import Sociably from '@sociably/core';
-import BaseBot from '@sociably/core/base/Bot.js';
+import BaseSender from '@sociably/core/base/Sender.js';
 import BaseMarshaler from '@sociably/core/base/Marshaler.js';
 import Auth from '@sociably/auth';
 import BasicAuthenticator from '@sociably/auth/basicAuth';
@@ -10,7 +10,7 @@ import Next from '@sociably/next';
 import WebSocket from '@sociably/websocket';
 import { InMemoryState } from '@sociably/dev-tools';
 import { WebviewReceiver } from '../Receiver.js';
-import { WebviewBot } from '../Bot.js';
+import { WebviewSender } from '../Sender.js';
 import WebviewConnection from '../Connection.js';
 import NoneAuthenticator from '../authenticators/none/index.js';
 import { MemoCacheTarget } from '../authenticators/memo/index.js';
@@ -32,7 +32,7 @@ it('export interfaces', () => {
     }
   `);
 
-  expect(Webview.Bot).toBe(WebviewBot);
+  expect(Webview.Sender).toBe(WebviewSender);
   expect(Webview.Receiver).toBe(WebviewReceiver);
   expect(Webview.SocketServer).toBe(WebSocket.Server);
   expect(Webview.SocketBroker).toBe(WebSocket.Broker);
@@ -93,7 +93,7 @@ test('service provisions', async () => {
 
   const [
     configs,
-    bot,
+    sender,
     receiver,
     server,
     authController,
@@ -105,7 +105,7 @@ test('service provisions', async () => {
     basicAuthenticator,
   ] = app.useServices([
     Webview.Configs,
-    Webview.Bot,
+    Webview.Sender,
     Webview.Receiver,
     Webview.SocketServer,
     Webview.AuthController,
@@ -118,7 +118,7 @@ test('service provisions', async () => {
   ]);
 
   expect(configs).toEqual(configsInput);
-  expect(bot).toBeInstanceOf(WebviewBot);
+  expect(sender).toBeInstanceOf(WebviewSender);
   expect(receiver).toBeInstanceOf(WebviewReceiver);
   expect(server).toBeInstanceOf(WebSocket.Server);
 
@@ -193,7 +193,7 @@ test('with noNextServer option', async () => {
   const [, , , , , , nextReceiver, nextServer, requestRoutes] = app.useServices(
     [
       Webview.Configs,
-      Webview.Bot,
+      Webview.Sender,
       Webview.Receiver,
       Webview.SocketServer,
       Webview.AuthController,
@@ -270,11 +270,11 @@ test('provide base interfaces', async () => {
   await app.start();
 
   const [bots, marshalTypes] = app.useServices([
-    BaseBot.PlatformMap,
+    BaseSender.PlatformMap,
     BaseMarshaler.TypeList,
   ]);
 
-  expect(bots.get('webview')).toBeInstanceOf(WebviewBot);
+  expect(bots.get('webview')).toBeInstanceOf(WebviewSender);
   expect(marshalTypes).toEqual(
     expect.arrayContaining([WebviewConnection, MemoCacheTarget]),
   );
@@ -360,7 +360,7 @@ test('register hmr route when dev', async () => {
 });
 
 test('startHook & stopHook', async () => {
-  const fakeBot = moxy({ start: async () => {}, stop: async () => {} });
+  const fakeSender = moxy({ start: async () => {}, stop: async () => {} });
 
   const app = Sociably.createApp({
     modules: [
@@ -374,19 +374,19 @@ test('startHook & stopHook', async () => {
       }),
     ],
     services: [
-      { provide: Webview.Bot, withValue: fakeBot },
+      { provide: Webview.Sender, withValue: fakeSender },
       { provide: Webview.AuthenticatorList, withProvider: NoneAuthenticator },
     ],
   });
   await app.start();
-  expect(fakeBot.start).toHaveBeenCalledTimes(1);
-  expect(fakeBot.stop).not.toHaveBeenCalled();
+  expect(fakeSender.start).toHaveBeenCalledTimes(1);
+  expect(fakeSender.stop).not.toHaveBeenCalled();
 
   const nextServer = createNextServer.mock.calls[0].result;
   expect(nextServer.close).not.toHaveBeenCalled();
   expect(nextServer.prepare).toHaveBeenCalledTimes(1);
 
   await app.stop();
-  expect(fakeBot.stop).toHaveBeenCalledTimes(1);
+  expect(fakeSender.stop).toHaveBeenCalledTimes(1);
   expect(nextServer.close).toHaveBeenCalledTimes(1);
 });

@@ -176,7 +176,7 @@ export default class TelegramWorker
       new TelegramUser(agentId, true),
     );
     if (!agentSettings) {
-      throw new Error(`Agent bot "${agentId}" not registered`);
+      throw new Error(`Agent sender "${agentId}" not registered`);
     }
 
     const result = await requestBotApi(

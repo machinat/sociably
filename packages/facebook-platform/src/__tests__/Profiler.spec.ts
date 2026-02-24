@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import { MetaApiError } from '@sociably/meta-api';
-import type { FacebookBot } from '../Bot.js';
+import type { FacebookSender } from '../Sender.js';
 import FacebookPage from '../Page.js';
 import FacebookUser from '../User.js';
 import UserProfile from '../UserProfile.js';
@@ -15,7 +15,7 @@ const rawProfileData = {
     'https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xpf1/v/t1.0-1/p200x200/13055603_10105219398495383_8237637584159975445_n.jpg?oh=1d241d4b6d4dac50eaf9bb73288ea192&oe=57AF5C03&__gda__=1470213755_ab17c8c8e3a0a447fed3f272fa2179ce',
 };
 
-const bot = moxy<FacebookBot>({
+const sender = moxy<FacebookSender>({
   requestApi: async () => rawProfileData,
 } as never);
 
@@ -23,11 +23,11 @@ const page = new FacebookPage('1234567890');
 const user = new FacebookUser('1234567890', '_USER_ID_');
 
 beforeEach(() => {
-  bot.mock.reset();
+  sender.mock.reset();
 });
 
 test('fetch profile from api', async () => {
-  const profiler = new FacebookProfiler(bot);
+  const profiler = new FacebookProfiler(sender);
   const profile = await profiler.getUserProfile(page, user);
 
   expect(profile?.id).toBe('xxxxxxxxx');
@@ -42,8 +42,8 @@ test('fetch profile from api', async () => {
   expect(profile?.gender).toBe(undefined);
   expect(profile?.data).toEqual(rawProfileData);
 
-  expect(bot.requestApi).toHaveReturnedTimes(1);
-  expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+  expect(sender.requestApi).toHaveReturnedTimes(1);
+  expect(sender.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
     {
       "agent": FacebookPage {
         "$$typeofAgent": true,
@@ -85,9 +85,9 @@ it('query additional optionalProfileFields if given', async () => {
     timezone: -7,
     gender: 'male',
   };
-  bot.requestApi.mock.fake(async () => profileWithMoreFields);
+  sender.requestApi.mock.fake(async () => profileWithMoreFields);
 
-  const profiler = new FacebookProfiler(bot, {
+  const profiler = new FacebookProfiler(sender, {
     optionalProfileFields: ['locale', 'timezone', 'gender'],
   });
   const profile = await profiler.getUserProfile(page, user);
@@ -97,8 +97,8 @@ it('query additional optionalProfileFields if given', async () => {
   expect(profile?.gender).toBe('male');
   expect(profile?.data).toEqual(profileWithMoreFields);
 
-  expect(bot.requestApi).toHaveReturnedTimes(1);
-  expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+  expect(sender.requestApi).toHaveReturnedTimes(1);
+  expect(sender.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
     {
       "agent": FacebookPage {
         "$$typeofAgent": true,
@@ -132,9 +132,9 @@ it('query additional optionalProfileFields if given', async () => {
 });
 
 it('return null if phone number user error met', async () => {
-  const profiler = new FacebookProfiler(bot);
+  const profiler = new FacebookProfiler(sender);
 
-  bot.requestApi.mock.fake(async () => {
+  sender.requestApi.mock.fake(async () => {
     throw new MetaApiError({
       error: {
         message: '(#100) No profile available for this user.',
@@ -147,5 +147,5 @@ it('return null if phone number user error met', async () => {
   });
 
   expect(profiler.getUserProfile(page, user)).resolves.toBe(null);
-  expect(bot.requestApi).toHaveReturnedTimes(1);
+  expect(sender.requestApi).toHaveReturnedTimes(1);
 });

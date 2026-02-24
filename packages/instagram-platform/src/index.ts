@@ -3,7 +3,7 @@ export { default as InstagramAgent } from './Agent.js';
 export { default as InstagramChat } from './Chat.js';
 export { default as InstagramUser } from './User.js';
 export { default as InstagramUserProfile } from './UserProfile.js';
-export { InstagramBot } from './Bot.js';
+export { InstagramSender } from './Sender.js';
 export { InstagramReceiver } from './Receiver.js';
 export { InstagramProfiler } from './Profiler.js';
 export {

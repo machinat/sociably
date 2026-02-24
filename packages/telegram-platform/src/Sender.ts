@@ -2,7 +2,7 @@ import { Readable } from 'stream';
 import fetch from 'node-fetch';
 import type {
   SociablyNode,
-  SociablyBot,
+  SociablySender,
   InitScopeFn,
   DispatchWrapper,
 } from '@sociably/core';
@@ -34,7 +34,7 @@ import type {
   UploadingFileInfo,
 } from './types.js';
 
-type TelegramBotOptions = {
+type TelegramSenderOptions = {
   agentSettingsAccessor: AgentSettingsAccessorI;
   maxRequestConnections?: number;
   initScope?: InitScopeFn;
@@ -46,7 +46,7 @@ type TelegramBotOptions = {
 };
 
 type ApiCallOptions = {
-  /** The bot user id/username/instance to make the API call with */
+  /** The sender user id/username/instance to make the API call with */
   agent: number | TelegramUser;
   /** Bot API method */
   method: string;
@@ -57,8 +57,8 @@ type ApiCallOptions = {
 };
 
 /** @category Provider */
-export class TelegramBot
-  implements SociablyBot<TelegramChat, TelegramJob, TelegramResult>
+export class TelegramSender
+  implements SociablySender<TelegramChat, TelegramJob, TelegramResult>
 {
   agentSettingsAccessor: AgentSettingsAccessorI;
   engine: Engine<
@@ -76,7 +76,7 @@ export class TelegramBot
     maxRequestConnections = 100,
     initScope,
     dispatchWrapper,
-  }: TelegramBotOptions) {
+  }: TelegramSenderOptions) {
     const queue = new Queue<TelegramJob, TelegramResult>();
     const worker = new TelegramWorker(
       agentSettingsAccessor,
@@ -125,7 +125,7 @@ export class TelegramBot
   }
 
   async fetchFile(
-    /** The ID or username or instance of the bot user */
+    /** The ID or username or instance of the sender user */
     agentIdOrInstance: number | TelegramUser,
     fileId: string,
   ): Promise<null | {
@@ -205,7 +205,7 @@ export class TelegramBot
   }
 }
 
-const BotP = serviceProviderClass({
+const SenderP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [
     ConfigsI,
@@ -219,13 +219,13 @@ const BotP = serviceProviderClass({
     moduleUtils,
     platformUtils,
   ) =>
-    new TelegramBot({
+    new TelegramSender({
       agentSettingsAccessor,
       maxRequestConnections,
       initScope: moduleUtils?.initScope,
       dispatchWrapper: platformUtils?.dispatchWrapper,
     }),
-})(TelegramBot);
+})(TelegramSender);
 
-type BotP = TelegramBot;
-export default BotP;
+type SenderP = TelegramSender;
+export default SenderP;

@@ -6,7 +6,7 @@ import _Renderer from '@sociably/core/renderer';
 import _Worker from '../Worker.js';
 import WebSocketConnection from '../Connection.js';
 import { Event } from '../component.js';
-import { WebSocketBot } from '../Bot.js';
+import { WebSocketSender } from '../Sender.js';
 import type { WebSocketServer } from '../Server.js';
 
 const Engine = _Engine as Moxy<typeof _Engine>;
@@ -43,15 +43,15 @@ beforeEach(() => {
 
 describe('#constructor(options)', () => {
   it('pass server to worker', () => {
-    (() => new WebSocketBot(server, initScope, dispatchWrapper))();
+    (() => new WebSocketSender(server, initScope, dispatchWrapper))();
 
     expect(Worker).toHaveBeenCalledWith(server);
   });
 
   it('assemble core modules', () => {
-    const bot = new WebSocketBot(server, initScope, dispatchWrapper);
+    const sender = new WebSocketSender(server, initScope, dispatchWrapper);
 
-    expect(bot.engine).toBeInstanceOf(Engine);
+    expect(sender.engine).toBeInstanceOf(Engine);
 
     expect(Renderer).toHaveBeenCalledTimes(1);
     expect(Renderer).toHaveBeenCalledWith('websocket', expect.any(Function));
@@ -69,8 +69,8 @@ describe('#constructor(options)', () => {
 });
 
 test('#start() start engine and server', async () => {
-  const bot = new WebSocketBot(server);
-  await bot.start();
+  const sender = new WebSocketSender(server);
+  await sender.start();
 
   expect(server.start).toHaveBeenCalledTimes(1);
 
@@ -79,8 +79,8 @@ test('#start() start engine and server', async () => {
 });
 
 test('#stop() stop engine and server', async () => {
-  const bot = new WebSocketBot(server);
-  await bot.stop();
+  const sender = new WebSocketSender(server);
+  await sender.stop();
 
   expect(server.stop).toHaveBeenCalledTimes(1);
 
@@ -106,8 +106,8 @@ describe('#render(thread, message)', () => {
   ];
 
   it('send to connection thread', async () => {
-    const bot = new WebSocketBot(server);
-    await bot.start();
+    const sender = new WebSocketSender(server);
+    await sender.start();
 
     const thread = new WebSocketConnection('#server', `#conn`);
     server.dispatch.mock.fakeReturnValue([thread]);
@@ -117,7 +117,7 @@ describe('#render(thread, message)', () => {
       values: expectedEventValues,
     };
 
-    await expect(bot.render(thread, message)).resolves.toEqual({
+    await expect(sender.render(thread, message)).resolves.toEqual({
       jobs: [expectedJob],
       results: [{ connections: [thread] }],
       tasks: [{ type: 'dispatch', payload: [expectedJob] }],
@@ -129,13 +129,13 @@ describe('#render(thread, message)', () => {
 });
 
 test('#send()', async () => {
-  const bot = new WebSocketBot(server);
-  await bot.start();
+  const sender = new WebSocketSender(server);
+  await sender.start();
 
   const connection = new WebSocketConnection('#server', `#conn`);
   server.dispatch.mock.fake(async () => [connection]);
 
-  await expect(bot.send(connection, { type: 'foo' })).resolves.toEqual({
+  await expect(sender.send(connection, { type: 'foo' })).resolves.toEqual({
     connections: [connection],
   });
 
@@ -144,7 +144,7 @@ test('#send()', async () => {
     { type: 'baz', payload: '🍻' },
   ];
 
-  await expect(bot.send(connection, eventValues)).resolves.toEqual({
+  await expect(sender.send(connection, eventValues)).resolves.toEqual({
     connections: [connection],
   });
 
@@ -160,8 +160,8 @@ test('#send()', async () => {
 });
 
 test('#sendTopic()', async () => {
-  const bot = new WebSocketBot(server);
-  await bot.start();
+  const sender = new WebSocketSender(server);
+  await sender.start();
 
   const connections = [
     new WebSocketConnection('#server1', '#conn2'),
@@ -171,7 +171,7 @@ test('#sendTopic()', async () => {
 
   const topicKey = 'hello_world';
 
-  await expect(bot.sendTopic(topicKey, { type: 'foo' })).resolves.toEqual({
+  await expect(sender.sendTopic(topicKey, { type: 'foo' })).resolves.toEqual({
     connections,
   });
 
@@ -180,7 +180,7 @@ test('#sendTopic()', async () => {
     { type: 'baz', payload: '🍻' },
   ];
 
-  await expect(bot.sendTopic(topicKey, eventValues)).resolves.toEqual({
+  await expect(sender.sendTopic(topicKey, eventValues)).resolves.toEqual({
     connections,
   });
 
@@ -196,45 +196,45 @@ test('#sendTopic()', async () => {
 });
 
 test('#disconnect(thread, socketId, reason)', async () => {
-  const bot = new WebSocketBot(server);
+  const sender = new WebSocketSender(server);
   const connection = new WebSocketConnection('#server', '#conn');
 
   server.disconnect.mock.fake(async () => false);
 
-  await expect(bot.disconnect(connection, 'bye')).resolves.toBe(false);
+  await expect(sender.disconnect(connection, 'bye')).resolves.toBe(false);
 
   server.disconnect.mock.fake(async () => true);
-  await expect(bot.disconnect(connection, 'bye')).resolves.toBe(true);
+  await expect(sender.disconnect(connection, 'bye')).resolves.toBe(true);
 
   expect(server.disconnect).toHaveBeenCalledTimes(2);
   expect(server.disconnect).toHaveBeenCalledWith(connection, 'bye');
 });
 
 test('#subscribeTopic(thread, socketId, reason)', async () => {
-  const bot = new WebSocketBot(server);
+  const sender = new WebSocketSender(server);
   const connection = new WebSocketConnection('#server', '#conn');
 
   server.subscribeTopic.mock.fake(async () => false);
 
-  await expect(bot.subscribeTopic(connection, 'foo')).resolves.toBe(false);
+  await expect(sender.subscribeTopic(connection, 'foo')).resolves.toBe(false);
 
   server.subscribeTopic.mock.fake(async () => true);
-  await expect(bot.subscribeTopic(connection, 'foo')).resolves.toBe(true);
+  await expect(sender.subscribeTopic(connection, 'foo')).resolves.toBe(true);
 
   expect(server.subscribeTopic).toHaveBeenCalledTimes(2);
   expect(server.subscribeTopic).toHaveBeenCalledWith(connection, 'foo');
 });
 
 test('#unsubscribeTopic(thread, socketId, reason)', async () => {
-  const bot = new WebSocketBot(server);
+  const sender = new WebSocketSender(server);
   const connection = new WebSocketConnection('#server', '#conn');
 
   server.unsubscribeTopic.mock.fake(async () => false);
 
-  await expect(bot.unsubscribeTopic(connection, 'foo')).resolves.toBe(false);
+  await expect(sender.unsubscribeTopic(connection, 'foo')).resolves.toBe(false);
 
   server.unsubscribeTopic.mock.fake(async () => true);
-  await expect(bot.unsubscribeTopic(connection, 'foo')).resolves.toBe(true);
+  await expect(sender.unsubscribeTopic(connection, 'foo')).resolves.toBe(true);
 
   expect(server.unsubscribeTopic).toHaveBeenCalledTimes(2);
   expect(server.unsubscribeTopic).toHaveBeenCalledWith(connection, 'foo');

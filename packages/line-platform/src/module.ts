@@ -4,7 +4,7 @@ import {
   serviceProviderFactory,
   ServiceProvision,
 } from '@sociably/core/service';
-import BaseBot from '@sociably/core/base/Bot.js';
+import BaseSender from '@sociably/core/base/Sender.js';
 import BaseProfiler from '@sociably/core/base/Profiler.js';
 import BaseMarshaler from '@sociably/core/base/Marshaler.js';
 import Http, { RequestRoute } from '@sociably/http';
@@ -16,7 +16,7 @@ import {
 import { default as LineAssetsManager } from './asset/index.js';
 import { LINE } from './constant.js';
 import ReceiverP from './Receiver.js';
-import BotP from './Bot.js';
+import SenderP from './Sender.js';
 import LineUserProfile from './UserProfile.js';
 import LineGroupProfile from './GroupProfile.js';
 import ProfilerP from './Profiler.js';
@@ -47,8 +47,8 @@ const webhookRouteFactory = serviceProviderFactory({
 
 /** @category Root */
 namespace Line {
-  export const Bot = BotP;
-  export type Bot = BotP;
+  export const Sender = SenderP;
+  export type Sender = SenderP;
 
   export const Receiver = ReceiverP;
   export type Receiver = ReceiverP;
@@ -75,10 +75,10 @@ namespace Line {
     LineResult
   > => {
     const provisions: ServiceProvision<unknown>[] = [
-      BotP,
+      SenderP,
       {
-        provide: BaseBot.PlatformMap,
-        withProvider: BotP,
+        provide: BaseSender.PlatformMap,
+        withProvider: SenderP,
         platform: LINE,
       },
 
@@ -140,8 +140,12 @@ namespace Line {
       eventMiddlewares: configs.eventMiddlewares,
       dispatchMiddlewares: configs.dispatchMiddlewares,
 
-      startHook: serviceContainer({ deps: [BotP] })((bot) => bot.start()),
-      stopHook: serviceContainer({ deps: [BotP] })((bot) => bot.stop()),
+      startHook: serviceContainer({ deps: [SenderP] })((sender) =>
+        sender.start(),
+      ),
+      stopHook: serviceContainer({ deps: [SenderP] })((sender) =>
+        sender.stop(),
+      ),
     };
   };
 }

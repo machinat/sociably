@@ -2,7 +2,7 @@ import moxy from '@moxyjs/moxy';
 import nock from 'nock';
 import type StateRepositoryI from '@sociably/core/base/StateRepository.js';
 import LineChannel from '../../Channel.js';
-import type { LineBot } from '../../Bot.js';
+import type { LineSender } from '../../Sender.js';
 import { LineAssetsManager } from '../AssetsManager.js';
 
 const state = moxy({
@@ -20,7 +20,7 @@ const stateRepository = moxy<StateRepositoryI>({
   },
 } as never);
 
-const bot = moxy<LineBot>({
+const sender = moxy<LineSender>({
   channelId: '_CHANNEL_ID_',
   requestApi: () => ({}),
 } as never);
@@ -43,13 +43,13 @@ const channel = new LineChannel('1234567');
 beforeEach(() => {
   stateRepository.mock.reset();
   state.mock.reset();
-  bot.mock.reset();
+  sender.mock.reset();
   agentSettingsAccessor.mock.reset();
 });
 
 const manager = new LineAssetsManager(
   stateRepository,
-  bot,
+  sender,
   agentSettingsAccessor,
 );
 
@@ -200,7 +200,7 @@ describe('.createRichMenu()', () => {
   const richMenuId = '_RICH_MENU_ID_';
 
   it('create menu and upload menu content', async () => {
-    bot.requestApi.mock.fake(async () => ({ richMenuId }));
+    sender.requestApi.mock.fake(async () => ({ richMenuId }));
     const uploadApiCall = nock('https://api-data.line.me', {
       reqheaders: {
         authorization: 'Bearer __ACCESS_TOKEN__',
@@ -225,8 +225,8 @@ describe('.createRichMenu()', () => {
       channel,
     );
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(1);
-    expect(bot.requestApi).toHaveBeenCalledWith({
+    expect(sender.requestApi).toHaveBeenCalledTimes(1);
+    expect(sender.requestApi).toHaveBeenCalledWith({
       agent: channel,
       accessToken: '__ACCESS_TOKEN__',
       method: 'POST',
@@ -238,7 +238,7 @@ describe('.createRichMenu()', () => {
   });
 
   test('with asDefault & accessToken option', async () => {
-    bot.requestApi.mock.fake(async () => ({ richMenuId }));
+    sender.requestApi.mock.fake(async () => ({ richMenuId }));
     const uploadApiCall = nock('https://api-data.line.me', {
       reqheaders: {
         authorization: 'Bearer _MY_ACCESS_TOKEN_',
@@ -262,15 +262,15 @@ describe('.createRichMenu()', () => {
       ),
     ).resolves.toEqual({ richMenuId });
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(2);
-    expect(bot.requestApi).toHaveBeenNthCalledWith(1, {
+    expect(sender.requestApi).toHaveBeenCalledTimes(2);
+    expect(sender.requestApi).toHaveBeenNthCalledWith(1, {
       agent: channel,
       accessToken: '_MY_ACCESS_TOKEN_',
       method: 'POST',
       url: 'v2/bot/richmenu',
       params: richMenuBody,
     });
-    expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
+    expect(sender.requestApi).toHaveBeenNthCalledWith(2, {
       agent: channel,
       accessToken: '_MY_ACCESS_TOKEN_',
       method: 'POST',
@@ -281,7 +281,7 @@ describe('.createRichMenu()', () => {
   });
 
   it('throw if upload API call fail', async () => {
-    bot.requestApi.mock.fake(async () => ({ richMenuId }));
+    sender.requestApi.mock.fake(async () => ({ richMenuId }));
     const uploadCall = nock('https://api-data.line.me', {
       reqheaders: {
         authorization: 'Bearer __ACCESS_TOKEN__',
@@ -331,7 +331,7 @@ describe('.createRichMenu()', () => {
 });
 
 test('.deleteRichMenu()', async () => {
-  bot.requestApi.mock.fake(async () => ({}));
+  sender.requestApi.mock.fake(async () => ({}));
 
   await expect(manager.deleteRichMenu(channel, 'my_rich_menu')).resolves.toBe(
     false,
@@ -342,8 +342,8 @@ test('.deleteRichMenu()', async () => {
     true,
   );
 
-  expect(bot.requestApi).toHaveBeenCalledTimes(1);
-  expect(bot.requestApi).toHaveBeenCalledWith({
+  expect(sender.requestApi).toHaveBeenCalledTimes(1);
+  expect(sender.requestApi).toHaveBeenCalledWith({
     agent: channel,
     method: 'DELETE',
     url: 'v2/bot/richmenu/_RICH_MENU_ID_',
@@ -355,7 +355,7 @@ test('.deleteRichMenu()', async () => {
 
 describe('.setChannelWebhook', () => {
   it('call v2/bot/channel/webhook/endpoint API', async () => {
-    bot.requestApi.mock.fake(async () => ({}));
+    sender.requestApi.mock.fake(async () => ({}));
 
     await expect(
       manager.setChannelWebhook(channel, {
@@ -363,8 +363,8 @@ describe('.setChannelWebhook', () => {
       }),
     ).resolves.toBe(undefined);
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(1);
-    expect(bot.requestApi).toHaveBeenCalledWith({
+    expect(sender.requestApi).toHaveBeenCalledTimes(1);
+    expect(sender.requestApi).toHaveBeenCalledWith({
       agent: channel,
       method: 'PUT',
       url: 'v2/bot/channel/webhook/endpoint',
@@ -378,8 +378,8 @@ describe('.setChannelWebhook', () => {
       }),
     ).resolves.toBe(undefined);
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(2);
-    expect(bot.requestApi).toHaveBeenCalledWith({
+    expect(sender.requestApi).toHaveBeenCalledTimes(2);
+    expect(sender.requestApi).toHaveBeenCalledWith({
       agent: channel,
       accessToken: '_ACCESS_TOKEN_',
       method: 'PUT',
@@ -389,11 +389,11 @@ describe('.setChannelWebhook', () => {
   });
 
   test('with default webhookUrl', async () => {
-    bot.requestApi.mock.fake(async () => ({}));
+    sender.requestApi.mock.fake(async () => ({}));
 
     const managerWithDefaultWebhookUrl = new LineAssetsManager(
       stateRepository,
-      bot,
+      sender,
       agentSettingsAccessor,
       { webhookUrl: 'https://example.com/baz' },
     );
@@ -407,14 +407,14 @@ describe('.setChannelWebhook', () => {
       }),
     ).resolves.toBe(undefined);
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(2);
-    expect(bot.requestApi).toHaveBeenNthCalledWith(1, {
+    expect(sender.requestApi).toHaveBeenCalledTimes(2);
+    expect(sender.requestApi).toHaveBeenNthCalledWith(1, {
       agent: channel,
       method: 'PUT',
       url: 'v2/bot/channel/webhook/endpoint',
       params: { endpoint: 'https://example.com/baz' },
     });
-    expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
+    expect(sender.requestApi).toHaveBeenNthCalledWith(2, {
       agent: channel,
       method: 'PUT',
       url: 'v2/bot/channel/webhook/endpoint',

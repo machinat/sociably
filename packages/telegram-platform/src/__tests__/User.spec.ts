@@ -30,21 +30,21 @@ test('user with id only', () => {
   `);
 });
 
-test('bot user', () => {
-  const bot = new TelegramUser(12345, true);
+test('sender user', () => {
+  const sender = new TelegramUser(12345, true);
 
-  expect(bot.platform).toBe('telegram');
-  expect(bot.id).toBe(12345);
-  expect(bot.data).toBe(null);
-  expect(bot.avatarUrl).toBe(undefined);
-  expect(bot.profile).toBe(null);
-  expect(bot.type).toBe('user');
-  expect(bot.isBot).toBe(true);
+  expect(sender.platform).toBe('telegram');
+  expect(sender.id).toBe(12345);
+  expect(sender.data).toBe(null);
+  expect(sender.avatarUrl).toBe(undefined);
+  expect(sender.profile).toBe(null);
+  expect(sender.type).toBe('user');
+  expect(sender.isBot).toBe(true);
 
-  expect(bot.uid).toMatchInlineSnapshot(`"telegram.12345"`);
+  expect(sender.uid).toMatchInlineSnapshot(`"telegram.12345"`);
 
-  expect(bot.typeName()).toBe('TelegramUser');
-  expect(bot.toJSONValue()).toMatchInlineSnapshot(`
+  expect(sender.typeName()).toBe('TelegramUser');
+  expect(sender.toJSONValue()).toMatchInlineSnapshot(`
     {
       "id": 12345,
       "isBot": true,

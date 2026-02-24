@@ -12,13 +12,13 @@ type WebviewButtonProps = {
   /** New text of the button in forwarded messages. */
   forwardText?: string;
   /**
-   * Username of a bot, which will be used for user authorization. If not
-   * specified, the current bot's username will be assumed. The url's domain
-   * must be the same as the domain linked with the bot.
+   * Username of a sender, which will be used for user authorization. If not
+   * specified, the current sender's username will be assumed. The url's domain
+   * must be the same as the domain linked with the sender.
    */
   botUserName?: string;
   /**
-   * Pass True to request the permission for your bot to send messages to the
+   * Pass True to request the permission for your sender to send messages to the
    * user.
    */
   requestWriteAccess?: boolean;

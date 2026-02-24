@@ -5,7 +5,7 @@ import type { PopEventWrapper } from '@sociably/core';
 import { WebhookReceiver, WebhookHandler } from '@sociably/http/webhook';
 
 import eventFactory from './event/factory.js';
-import BotP from './Bot.js';
+import SenderP from './Sender.js';
 import { LINE } from './constant.js';
 import {
   ConfigsI,
@@ -19,13 +19,13 @@ import type {
 } from './types.js';
 
 type LineReceiverOptions = {
-  bot: BotP;
+  sender: SenderP;
   agentSettingsAccessor: AgentSettingsAccessorI;
   shouldVerifyRequest?: boolean;
   popEventWrapper: PopEventWrapper<LineEventContext, null>;
 };
 
-const replyClosure = (bot: BotP, event: LineEvent) => {
+const replyClosure = (sender: SenderP, event: LineEvent) => {
   let isReplyTokenUsed = false;
 
   return (message: SociablyNode) => {
@@ -36,14 +36,14 @@ const replyClosure = (bot: BotP, event: LineEvent) => {
     const shouldUseReplyToken = 'replyToken' in event && !isReplyTokenUsed;
     isReplyTokenUsed = true;
 
-    return bot.render(event.thread, message, {
+    return sender.render(event.thread, message, {
       replyToken: shouldUseReplyToken ? event.replyToken : undefined,
     });
   };
 };
 
 const handleWebhook = ({
-  bot,
+  sender,
   agentSettingsAccessor,
   popEventWrapper,
   shouldVerifyRequest,
@@ -102,10 +102,10 @@ const handleWebhook = ({
       issuingEvents.push(
         popEvent({
           platform: LINE,
-          bot,
+          sender,
           event,
           metadata,
-          reply: replyClosure(bot, event),
+          reply: replyClosure(sender, event),
         }),
       );
     }
@@ -118,14 +118,14 @@ const handleWebhook = ({
 /** @category Provider */
 export class LineReceiver extends WebhookReceiver {
   constructor({
-    bot,
+    sender,
     agentSettingsAccessor,
     popEventWrapper,
     shouldVerifyRequest = true,
   }: LineReceiverOptions) {
     super(
       handleWebhook({
-        bot,
+        sender,
         agentSettingsAccessor,
         popEventWrapper,
         shouldVerifyRequest,
@@ -136,15 +136,15 @@ export class LineReceiver extends WebhookReceiver {
 
 const ReceiverP = serviceProviderClass({
   lifetime: 'singleton',
-  deps: [ConfigsI, BotP, AgentSettingsAccessorI, PlatformUtilitiesI],
+  deps: [ConfigsI, SenderP, AgentSettingsAccessorI, PlatformUtilitiesI],
   factory: (
     { shouldVerifyRequest },
-    bot,
+    sender,
     agentSettingsAccessor,
     { popEventWrapper },
   ) =>
     new LineReceiver({
-      bot,
+      sender,
       agentSettingsAccessor,
       popEventWrapper,
       shouldVerifyRequest,

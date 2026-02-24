@@ -8,7 +8,7 @@ import _Worker from '../Worker.js';
 import TwitterUser from '../User.js';
 import TiwtterChat from '../Chat.js';
 import TweetTarget from '../TweetTarget.js';
-import TwitterBot from '../Bot.js';
+import TwitterSender from '../Sender.js';
 import { DirectMessage } from '../components/DirectMessage.js';
 import { Photo } from '../components/Media.js';
 
@@ -60,11 +60,11 @@ beforeEach(() => {
   Worker.mock.clear();
 });
 
-describe('new TwitterBot(agentSettingsAccessor,options)', () => {
+describe('new TwitterSender(agentSettingsAccessor,options)', () => {
   it('throw if options.appKey is empty', () => {
     expect(
       () =>
-        new TwitterBot(agentSettingsAccessor, {
+        new TwitterSender(agentSettingsAccessor, {
           appSecret,
           bearerToken,
         } as never),
@@ -75,7 +75,7 @@ describe('new TwitterBot(agentSettingsAccessor,options)', () => {
   it('throw if options.appSecret is empty', () => {
     expect(
       () =>
-        new TwitterBot(agentSettingsAccessor, {
+        new TwitterSender(agentSettingsAccessor, {
           appKey,
           bearerToken,
         } as never),
@@ -86,7 +86,7 @@ describe('new TwitterBot(agentSettingsAccessor,options)', () => {
   it('throw if options.bearerToken is empty', () => {
     expect(
       () =>
-        new TwitterBot(agentSettingsAccessor, {
+        new TwitterSender(agentSettingsAccessor, {
           appKey,
           appSecret,
         } as never),
@@ -96,7 +96,7 @@ describe('new TwitterBot(agentSettingsAccessor,options)', () => {
   });
 
   it('construct engine', () => {
-    const bot = new TwitterBot(agentSettingsAccessor, {
+    const sender = new TwitterSender(agentSettingsAccessor, {
       appKey,
       appSecret,
       bearerToken,
@@ -105,7 +105,7 @@ describe('new TwitterBot(agentSettingsAccessor,options)', () => {
       maxRequestConnections: 999,
     });
 
-    expect(bot.engine).toBeInstanceOf(Engine);
+    expect(sender.engine).toBeInstanceOf(Engine);
 
     expect(Renderer).toHaveBeenCalledTimes(1);
     expect(Renderer).toHaveBeenCalledWith('twitter', expect.any(Function));
@@ -130,7 +130,7 @@ describe('new TwitterBot(agentSettingsAccessor,options)', () => {
   });
 
   test('default maxConnections', () => {
-    expect(new TwitterBot(agentSettingsAccessor, basicOptions));
+    expect(new TwitterSender(agentSettingsAccessor, basicOptions));
 
     expect(Worker).toHaveBeenCalledTimes(1);
     expect(Worker.mock.calls[0].args[1]).toMatchInlineSnapshot(`
@@ -145,26 +145,26 @@ describe('new TwitterBot(agentSettingsAccessor,options)', () => {
 });
 
 test('.start() and .stop() start/stop the engine', () => {
-  const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
+  const sender = new TwitterSender(agentSettingsAccessor, basicOptions);
 
-  bot.start();
-  expect(bot.engine.start).toHaveBeenCalledTimes(1);
+  sender.start();
+  expect(sender.engine.start).toHaveBeenCalledTimes(1);
 
-  bot.stop();
-  expect(bot.engine.stop).toHaveBeenCalledTimes(1);
+  sender.stop();
+  expect(sender.engine.stop).toHaveBeenCalledTimes(1);
 });
 
 describe('.render(thread, content)', () => {
   test('post a tweet', async () => {
-    const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
-    bot.start();
+    const sender = new TwitterSender(agentSettingsAccessor, basicOptions);
+    sender.start();
 
     const createTweetCall = twitterApi
       .post('/2/tweets', bodySpy)
       .times(2)
       .reply(200, { data: { id: '1234567890', text: 'Hello World' } });
 
-    const response = await bot.render(
+    const response = await sender.render(
       new TweetTarget('1234567890'),
       <>
         <p>Hello World</p>
@@ -188,15 +188,15 @@ describe('.render(thread, content)', () => {
   });
 
   test('reply to a tweet', async () => {
-    const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
-    bot.start();
+    const sender = new TwitterSender(agentSettingsAccessor, basicOptions);
+    sender.start();
 
     const createTweetCall = twitterApi
       .post('/2/tweets', bodySpy)
       .times(2)
       .reply(200, { data: { id: '2222222222222', text: 'Hello World' } });
 
-    const response = await bot.render(
+    const response = await sender.render(
       new TweetTarget('1234567890', '1111111111111'),
       <>
         <p>Hello World</p>
@@ -221,15 +221,15 @@ describe('.render(thread, content)', () => {
   });
 
   test('send direct message', async () => {
-    const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
-    bot.start();
+    const sender = new TwitterSender(agentSettingsAccessor, basicOptions);
+    sender.start();
 
     const createTweetCall = twitterApi
       .post('/1.1/direct_messages/events/new.json', bodySpy)
       .times(2)
       .reply(200, { event: {} });
 
-    const response = await bot.render(
+    const response = await sender.render(
       new TiwtterChat('1234567890', '9876543210'),
       <>
         <p>Hello World</p>
@@ -261,8 +261,8 @@ describe('.render(thread, content)', () => {
   });
 
   test('tweet thread behavior', async () => {
-    const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
-    bot.start();
+    const sender = new TwitterSender(agentSettingsAccessor, basicOptions);
+    sender.start();
 
     const createTweetCall = twitterApi
       .post('/2/tweets', bodySpy)
@@ -271,8 +271,8 @@ describe('.render(thread, content)', () => {
 
     const replyToTweet = new TweetTarget('1234567890', '1111111111111');
     const [response1, response2] = await Promise.all([
-      bot.render(replyToTweet, [<p>Foo 1</p>, <p>Bar 2</p>]),
-      bot.render(replyToTweet, <p>Baz 3</p>),
+      sender.render(replyToTweet, [<p>Foo 1</p>, <p>Bar 2</p>]),
+      sender.render(replyToTweet, <p>Baz 3</p>),
     ]);
 
     expect(bodySpy).toHaveBeenNthCalledWith(1, {
@@ -295,8 +295,8 @@ describe('.render(thread, content)', () => {
   });
 
   test('chat thread behavior', async () => {
-    const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
-    bot.start();
+    const sender = new TwitterSender(agentSettingsAccessor, basicOptions);
+    sender.start();
 
     const createTweetCall = twitterApi
       .post('/1.1/direct_messages/events/new.json', bodySpy)
@@ -305,8 +305,8 @@ describe('.render(thread, content)', () => {
 
     const chat = new TiwtterChat('1234567890', '9876543210');
     const [response1, response2] = await Promise.all([
-      bot.render(chat, [<p>Foo 1</p>, <p>Bar 2</p>]),
-      bot.render(chat, <p>Baz 3</p>),
+      sender.render(chat, [<p>Foo 1</p>, <p>Bar 2</p>]),
+      sender.render(chat, <p>Baz 3</p>),
     ]);
 
     ['Foo 1', 'Bar 2', 'Baz 3'].forEach((text, i) => {
@@ -330,15 +330,15 @@ describe('.render(thread, content)', () => {
 
 describe('.requestApi(method, uri, params)', () => {
   test('GET request', async () => {
-    const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
-    bot.start();
+    const sender = new TwitterSender(agentSettingsAccessor, basicOptions);
+    sender.start();
 
     const apiCall = twitterApi
       .get('/2/foo?a=0&b=1')
       .reply(200, { data: { id: '11111' } });
 
     await expect(
-      bot.requestApi({
+      sender.requestApi({
         agent,
         method: 'GET',
         url: '2/foo',
@@ -350,15 +350,15 @@ describe('.requestApi(method, uri, params)', () => {
   });
 
   test('POST request', async () => {
-    const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
-    bot.start();
+    const sender = new TwitterSender(agentSettingsAccessor, basicOptions);
+    sender.start();
 
     const apiCall = twitterApi
       .post('/2/foo', { a: 0, b: 1 })
       .reply(200, { data: { id: '11111' } });
 
     await expect(
-      bot.requestApi({
+      sender.requestApi({
         agent,
         method: 'POST',
         url: '2/foo',
@@ -370,8 +370,8 @@ describe('.requestApi(method, uri, params)', () => {
   });
 
   test('with asApplication option', async () => {
-    const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
-    bot.start();
+    const sender = new TwitterSender(agentSettingsAccessor, basicOptions);
+    sender.start();
 
     const apiCall = twitterApi
       .post(
@@ -382,7 +382,7 @@ describe('.requestApi(method, uri, params)', () => {
       .reply(200, { data: { id: '11111' } });
 
     await expect(
-      bot.requestApi({
+      sender.requestApi({
         agent,
         method: 'POST',
         url: '2/foo',
@@ -420,10 +420,10 @@ describe('.uploadMedia(media)', () => {
         'content-length': '34',
       });
 
-    const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
+    const sender = new TwitterSender(agentSettingsAccessor, basicOptions);
 
     await expect(
-      bot.uploadMedia(
+      sender.uploadMedia(
         agent,
         <>
           <Photo shared url="https://sociably.io/img/foo.jpg" />
@@ -494,32 +494,32 @@ describe('.uploadMedia(media)', () => {
   });
 
   it('throw if the non media content received', async () => {
-    const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
+    const sender = new TwitterSender(agentSettingsAccessor, basicOptions);
 
     await expect(
-      bot.uploadMedia(agent, 'foo'),
+      sender.uploadMedia(agent, 'foo'),
     ).rejects.toThrowErrorMatchingInlineSnapshot(`""foo" is not media"`);
     await expect(
-      bot.uploadMedia(agent, <Sociably.Pause />),
+      sender.uploadMedia(agent, <Sociably.Pause />),
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"<Pause /> is not media"`);
     await expect(
-      bot.uploadMedia(agent, <DirectMessage>foo</DirectMessage>),
+      sender.uploadMedia(agent, <DirectMessage>foo</DirectMessage>),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"<DirectMessage /> is not media"`,
     );
   });
 
   it('return null if the node is empty', async () => {
-    const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
+    const sender = new TwitterSender(agentSettingsAccessor, basicOptions);
 
-    await expect(bot.uploadMedia(agent, <>{null}</>)).resolves.toBe(null);
+    await expect(sender.uploadMedia(agent, <>{null}</>)).resolves.toBe(null);
   });
 });
 
 describe('.createWelcomeMessage(name, message)', () => {
   test('create welcome message', async () => {
-    const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
-    bot.start();
+    const sender = new TwitterSender(agentSettingsAccessor, basicOptions);
+    sender.start();
 
     const createWelcomeCall = twitterApi
       .post('/1.1/direct_messages/welcome_messages/new.json', bodySpy)
@@ -533,7 +533,7 @@ describe('.createWelcomeMessage(name, message)', () => {
       });
 
     await expect(
-      bot.createWelcomeMessage(
+      sender.createWelcomeMessage(
         agent,
         'foo_welcome',
         <DirectMessage>Foo!</DirectMessage>,
@@ -562,11 +562,11 @@ describe('.createWelcomeMessage(name, message)', () => {
   });
 
   test('return null if content is empty', async () => {
-    const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
-    bot.start();
+    const sender = new TwitterSender(agentSettingsAccessor, basicOptions);
+    sender.start();
 
     await expect(
-      bot.createWelcomeMessage(agent, 'foo_welcome', null),
+      sender.createWelcomeMessage(agent, 'foo_welcome', null),
     ).resolves.toBe(null);
   });
 });
@@ -585,9 +585,9 @@ test('.fetchMediaFile(url) fetch file with twitter oauth', async () => {
       'content-length': '17',
     });
 
-  const bot = new TwitterBot(agentSettingsAccessor, basicOptions);
+  const sender = new TwitterSender(agentSettingsAccessor, basicOptions);
 
-  const response = await bot.fetchMediaFile(
+  const response = await sender.fetchMediaFile(
     agent,
     'https://ton.twitter.com/1.1/ton/data/dm/1034828552951160836/1034828533812486145/oP5p359h.jpg',
   );

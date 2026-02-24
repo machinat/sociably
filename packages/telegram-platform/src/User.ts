@@ -20,7 +20,7 @@ class TelegramUser
     return new TelegramUser(id, isBot);
   }
 
-  /** Id of the user or bot */
+  /** Id of the user or sender */
   id: number;
   data: null | RawUser;
   avatarUrl: undefined | string;

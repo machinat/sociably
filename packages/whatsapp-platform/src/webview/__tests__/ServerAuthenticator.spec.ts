@@ -4,7 +4,7 @@ import BasicAuthenticator, {
 } from '@sociably/auth/basicAuth';
 import WhatsAppUser from '../../User.js';
 import WhatsAppChat from '../../Chat.js';
-import WhatsAppBot from '../../Bot.js';
+import WhatsAppSender from '../../Sender.js';
 import ServerAuthenticator from '../ServerAuthenticator.js';
 import WhatsAppAgent from '../../Agent.js';
 import { WhatsAppAuthCrendential, WhatsAppAuthData } from '../types.js';
@@ -15,7 +15,10 @@ type WhatsAppDelegatorOption = AuthDelegatorOptions<
   WhatsAppChat
 >;
 
-const bot = moxy<WhatsAppBot>({ platform: 'whatsapp', a: 'bot' } as never);
+const sender = moxy<WhatsAppSender>({
+  platform: 'whatsapp',
+  a: 'sender',
+} as never);
 
 const requestDelegator = moxy(async () => {});
 const loginUrl = `https://sociably.io/foo/auth/whatsapp?login=__LOGIN_TOKEN__`;
@@ -48,7 +51,7 @@ beforeEach(() => {
 describe('.delegateAuthRequest(req, res, routing)', () => {
   it('proxy to basic delegator handler', async () => {
     const authenticator = new ServerAuthenticator(
-      bot,
+      sender,
       basicAuthenticator,
       agentSettingsAccessor,
     );
@@ -73,7 +76,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
 
   test('delegation options', async () => {
     // eslint-disable-next-line no-new
-    new ServerAuthenticator(bot, basicAuthenticator, agentSettingsAccessor);
+    new ServerAuthenticator(sender, basicAuthenticator, agentSettingsAccessor);
 
     const delegatorOptions: AuthDelegatorOptions<
       WhatsAppAuthCrendential,
@@ -82,16 +85,16 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
     > = basicAuthenticator.createRequestDelegator.mock.calls[0].args[0];
     expect(delegatorOptions).toMatchInlineSnapshot(`
       {
-        "bot": {
-          "a": "bot",
-          "platform": "whatsapp",
-        },
         "checkAuthData": [Function],
         "checkCurrentAuthUsability": [Function],
         "platform": "whatsapp",
         "platformColor": "#31BA45",
         "platformImageUrl": "https://sociably.js.org/img/icon/whatsapp.png",
         "platformName": "WhatsApp",
+        "sender": {
+          "a": "sender",
+          "platform": "whatsapp",
+        },
         "verifyCredential": [Function],
       }
     `);
@@ -112,7 +115,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
 
   test('options.checkCurrentAuthUsability', () => {
     // eslint-disable-next-line no-new
-    new ServerAuthenticator(bot, basicAuthenticator, agentSettingsAccessor);
+    new ServerAuthenticator(sender, basicAuthenticator, agentSettingsAccessor);
     const { checkCurrentAuthUsability }: WhatsAppDelegatorOption =
       basicAuthenticator.createRequestDelegator.mock.calls[0].args[0];
 
@@ -147,7 +150,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
 
   test('options.verifyCrecential', async () => {
     // eslint-disable-next-line no-new
-    new ServerAuthenticator(bot, basicAuthenticator, agentSettingsAccessor);
+    new ServerAuthenticator(sender, basicAuthenticator, agentSettingsAccessor);
     const { verifyCredential }: WhatsAppDelegatorOption =
       basicAuthenticator.createRequestDelegator.mock.calls[0].args[0];
 
@@ -176,7 +179,7 @@ describe('.delegateAuthRequest(req, res, routing)', () => {
 
 test('.getAuthUrlPostfix(id, path)', () => {
   const authenticator = new ServerAuthenticator(
-    bot,
+    sender,
     basicAuthenticator,
     agentSettingsAccessor,
   );
@@ -212,7 +215,7 @@ test('.getAuthUrlPostfix(id, path)', () => {
 
 test('.verifyCredential() fails anyway', async () => {
   const authenticator = new ServerAuthenticator(
-    bot,
+    sender,
     basicAuthenticator,
     agentSettingsAccessor,
   );
@@ -228,7 +231,7 @@ test('.verifyCredential() fails anyway', async () => {
 
 test('.verifyRefreshment(data)', async () => {
   const authenticator = new ServerAuthenticator(
-    bot,
+    sender,
     basicAuthenticator,
     agentSettingsAccessor,
   );
@@ -262,7 +265,7 @@ test('.verifyRefreshment(data)', async () => {
 
 test('.checkAuthData(data)', () => {
   const authenticator = new ServerAuthenticator(
-    bot,
+    sender,
     basicAuthenticator,
     agentSettingsAccessor,
   );

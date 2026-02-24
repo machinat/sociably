@@ -10,7 +10,7 @@ import _Worker from '../Worker.js';
 import TelegramChat from '../Chat.js';
 import TelegramUser from '../User.js';
 import TelegramApiError from '../Error.js';
-import { TelegramBot } from '../Bot.js';
+import { TelegramSender } from '../Sender.js';
 import {
   Photo,
   Expression,
@@ -73,14 +73,14 @@ beforeEach(() => {
 
 describe('.constructor(options)', () => {
   it('assemble core modules', () => {
-    const bot = new TelegramBot({
+    const sender = new TelegramSender({
       initScope,
       dispatchWrapper,
       agentSettingsAccessor,
       maxRequestConnections: 999,
     });
 
-    expect(bot.engine).toBeInstanceOf(Engine);
+    expect(sender.engine).toBeInstanceOf(Engine);
 
     expect(Renderer).toHaveBeenCalledTimes(1);
     expect(Renderer).toHaveBeenCalledWith('telegram', expect.any(Function));
@@ -101,7 +101,7 @@ describe('.constructor(options)', () => {
 
   test('default maxRequestConnections', () => {
     expect(
-      new TelegramBot({
+      new TelegramSender({
         initScope,
         dispatchWrapper,
         agentSettingsAccessor,
@@ -122,28 +122,28 @@ describe('.constructor(options)', () => {
 });
 
 test('.start() and .stop() start/stop engine', () => {
-  const bot = new TelegramBot({
+  const sender = new TelegramSender({
     initScope,
     dispatchWrapper,
     agentSettingsAccessor,
   });
 
-  bot.start();
-  expect(bot.engine.start).toHaveBeenCalledTimes(1);
+  sender.start();
+  expect(sender.engine.start).toHaveBeenCalledTimes(1);
 
-  bot.stop();
-  expect(bot.engine.stop).toHaveBeenCalledTimes(1);
+  sender.stop();
+  expect(sender.engine.stop).toHaveBeenCalledTimes(1);
 });
 
 describe('.render(thread, message, options)', () => {
-  const bot = new TelegramBot({ agentSettingsAccessor });
+  const sender = new TelegramSender({ agentSettingsAccessor });
 
   beforeAll(() => {
-    bot.start();
+    sender.start();
   });
 
   afterAll(() => {
-    bot.stop();
+    sender.stop();
   });
 
   it('resolves null if message is empty', async () => {
@@ -151,7 +151,7 @@ describe('.render(thread, message, options)', () => {
     for (const empty of empties) {
       // eslint-disable-next-line no-await-in-loop
       await expect(
-        bot.render(new TelegramChat(12345, 67890), empty),
+        sender.render(new TelegramChat(12345, 67890), empty),
       ).resolves.toBe(null);
     }
   });
@@ -164,7 +164,10 @@ describe('.render(thread, message, options)', () => {
       .post('/bot12345:_BOT_TOKEN_/sendPhoto', bodySpy)
       .reply(200, { ok: true, result: { id: 2 } });
 
-    const response = await bot.render(new TelegramChat(12345, 67890), message);
+    const response = await sender.render(
+      new TelegramChat(12345, 67890),
+      message,
+    );
     expect(response).toMatchSnapshot();
 
     expect(response!.results).toEqual([
@@ -203,7 +206,7 @@ describe('.render(thread, message, options)', () => {
       .post('/bot12345:_BOT_TOKEN_/editMessageMedia', bodySpy)
       .reply(200, { ok: true, result: { id: '2' } });
 
-    const response = await bot.render(
+    const response = await sender.render(
       new TelegramUser(12345, true),
       <>
         <EditText inlineMessageId="1">
@@ -248,20 +251,20 @@ describe('.render(thread, message, options)', () => {
     for (const empty of empties) {
       // eslint-disable-next-line no-await-in-loop
       await expect(
-        bot.render(new TelegramUser(12345, true), empty),
+        sender.render(new TelegramUser(12345, true), empty),
       ).resolves.toBe(null);
     }
   });
 });
 
 describe('.requestApi()', () => {
-  test('call telegram bot api', async () => {
-    const bot = new TelegramBot({
+  test('call telegram sender api', async () => {
+    const sender = new TelegramSender({
       initScope,
       dispatchWrapper,
       agentSettingsAccessor,
     });
-    bot.start();
+    sender.start();
 
     const fooCall = telegramApi
       .post('/bot12345:_BOT_TOKEN_/foo', bodySpy)
@@ -271,7 +274,7 @@ describe('.requestApi()', () => {
       });
 
     await expect(
-      bot.requestApi({
+      sender.requestApi({
         agent: botUser,
         method: 'foo',
         params: { bar: 'baz' },
@@ -287,12 +290,12 @@ describe('.requestApi()', () => {
   });
 
   it('throw TelegramAPIError when fail', async () => {
-    const bot = new TelegramBot({
+    const sender = new TelegramSender({
       initScope,
       dispatchWrapper,
       agentSettingsAccessor,
     });
-    bot.start();
+    sender.start();
 
     const failBody = {
       ok: false,
@@ -305,7 +308,7 @@ describe('.requestApi()', () => {
       .reply(200, failBody);
 
     try {
-      await bot.requestApi({
+      await sender.requestApi({
         agent: botUser,
         method: 'foo',
         params: { bar: 'baz' },
@@ -324,12 +327,12 @@ describe('.requestApi()', () => {
 });
 
 test('.fetchFile()', async () => {
-  const bot = new TelegramBot({
+  const sender = new TelegramSender({
     initScope,
     dispatchWrapper,
     agentSettingsAccessor,
   });
-  bot.start();
+  sender.start();
 
   const fileId = '_FILE_ID_';
 
@@ -351,7 +354,7 @@ test('.fetchFile()', async () => {
       'Content-Length': '777',
     });
 
-  const response = await bot.fetchFile(botUser, fileId);
+  const response = await sender.fetchFile(botUser, fileId);
 
   expect(bodySpy).toHaveBeenCalledTimes(2);
   expect(bodySpy).toHaveBeenNthCalledWith(1, { file_id: fileId });

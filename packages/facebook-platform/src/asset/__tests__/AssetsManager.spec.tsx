@@ -1,7 +1,7 @@
 import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import type StateRepositoryI from '@sociably/core/base/StateRepository.js';
-import type { FacebookBot } from '../../Bot.js';
+import type { FacebookSender } from '../../Sender.js';
 import FacebookPage from '../../Page.js';
 import { FacebookAssetsManager } from '../AssetsManager.js';
 
@@ -22,7 +22,7 @@ const stateRepository = moxy<StateRepositoryI>({
   },
 } as never);
 
-const bot = moxy<FacebookBot>({
+const sender = moxy<FacebookSender>({
   uploadChatAttachment() {
     return {};
   },
@@ -32,13 +32,13 @@ const bot = moxy<FacebookBot>({
 beforeEach(() => {
   stateRepository.mock.reset();
   state.mock.reset();
-  bot.mock.reset();
+  sender.mock.reset();
 });
 
 describe('subscription management', () => {
   describe('.setAppSubscription(options)', () => {
     it('call subscription API as application', async () => {
-      const manager = new FacebookAssetsManager(stateRepository, bot);
+      const manager = new FacebookAssetsManager(stateRepository, sender);
 
       await expect(
         manager.setAppSubscription({
@@ -50,8 +50,8 @@ describe('subscription management', () => {
         }),
       ).resolves.toBe(undefined);
 
-      expect(bot.requestApi).toHaveBeenCalledTimes(1);
-      expect(bot.requestApi).toHaveBeenCalledWith({
+      expect(sender.requestApi).toHaveBeenCalledTimes(1);
+      expect(sender.requestApi).toHaveBeenCalledWith({
         asApp: true,
         method: 'POST',
         url: '_APP_ID_/subscriptions',
@@ -66,7 +66,7 @@ describe('subscription management', () => {
     });
 
     test('with constructor app settings options', async () => {
-      const manager = new FacebookAssetsManager(stateRepository, bot, {
+      const manager = new FacebookAssetsManager(stateRepository, sender, {
         appId: '_APP_ID_',
         webhookVerifyToken: '_VERIFY_TOKEN_',
         webhookUrl: 'https://foo.bar/baz/',
@@ -75,8 +75,8 @@ describe('subscription management', () => {
 
       await expect(manager.setAppSubscription({})).resolves.toBe(undefined);
 
-      expect(bot.requestApi).toHaveBeenCalledTimes(1);
-      expect(bot.requestApi).toHaveBeenCalledWith({
+      expect(sender.requestApi).toHaveBeenCalledTimes(1);
+      expect(sender.requestApi).toHaveBeenCalledWith({
         asApp: true,
         method: 'POST',
         url: '_APP_ID_/subscriptions',
@@ -91,7 +91,7 @@ describe('subscription management', () => {
     });
 
     test('default subscription fields', async () => {
-      const manager = new FacebookAssetsManager(stateRepository, bot, {
+      const manager = new FacebookAssetsManager(stateRepository, sender, {
         appId: '_APP_ID_',
         webhookVerifyToken: '_VERIFY_TOKEN_',
       });
@@ -100,8 +100,8 @@ describe('subscription management', () => {
         manager.setAppSubscription({ webhookUrl: 'https://foo.bar/baz/' }),
       ).resolves.toBe(undefined);
 
-      expect(bot.requestApi).toHaveBeenCalledTimes(1);
-      expect(bot.requestApi.mock.calls[0].args[0].params.fields)
+      expect(sender.requestApi).toHaveBeenCalledTimes(1);
+      expect(sender.requestApi.mock.calls[0].args[0].params.fields)
         .toMatchInlineSnapshot(`
         [
           "messages",
@@ -117,7 +117,7 @@ describe('subscription management', () => {
     });
 
     it('throw if no appId available', async () => {
-      const manager = new FacebookAssetsManager(stateRepository, bot);
+      const manager = new FacebookAssetsManager(stateRepository, sender);
       await expect(
         manager.setAppSubscription({
           webhookUrl: 'https://foo.bar/baz/',
@@ -126,11 +126,11 @@ describe('subscription management', () => {
       ).rejects.toThrowErrorMatchingInlineSnapshot(
         `"appId, webhookUrl, webhookVerifyToken or fields is empty"`,
       );
-      expect(bot.requestApi).not.toHaveBeenCalled();
+      expect(sender.requestApi).not.toHaveBeenCalled();
     });
 
     it('throw if no webhookUrl available', async () => {
-      const manager = new FacebookAssetsManager(stateRepository, bot);
+      const manager = new FacebookAssetsManager(stateRepository, sender);
       await expect(
         manager.setAppSubscription({
           appId: '_APP_ID_',
@@ -139,11 +139,11 @@ describe('subscription management', () => {
       ).rejects.toThrowErrorMatchingInlineSnapshot(
         `"appId, webhookUrl, webhookVerifyToken or fields is empty"`,
       );
-      expect(bot.requestApi).not.toHaveBeenCalled();
+      expect(sender.requestApi).not.toHaveBeenCalled();
     });
 
     it('throw if no webhookVerifyToken available', async () => {
-      const manager = new FacebookAssetsManager(stateRepository, bot);
+      const manager = new FacebookAssetsManager(stateRepository, sender);
       await expect(
         manager.setAppSubscription({
           webhookUrl: 'https://foo.bar/baz/',
@@ -152,20 +152,20 @@ describe('subscription management', () => {
       ).rejects.toThrowErrorMatchingInlineSnapshot(
         `"appId, webhookUrl, webhookVerifyToken or fields is empty"`,
       );
-      expect(bot.requestApi).not.toHaveBeenCalled();
+      expect(sender.requestApi).not.toHaveBeenCalled();
     });
   });
 
   describe('.deleteAppSubscription(options)', () => {
     it('call subscription API as application', async () => {
-      const manager = new FacebookAssetsManager(stateRepository, bot, {
+      const manager = new FacebookAssetsManager(stateRepository, sender, {
         appId: '_APP_ID_',
       });
 
       await expect(manager.deleteAppSubscription()).resolves.toBe(undefined);
 
-      expect(bot.requestApi).toHaveBeenCalledTimes(1);
-      expect(bot.requestApi).toHaveBeenCalledWith({
+      expect(sender.requestApi).toHaveBeenCalledTimes(1);
+      expect(sender.requestApi).toHaveBeenCalledWith({
         asApp: true,
         method: 'DELETE',
         url: '_APP_ID_/subscriptions',
@@ -180,8 +180,8 @@ describe('subscription management', () => {
         }),
       ).resolves.toBe(undefined);
 
-      expect(bot.requestApi).toHaveBeenCalledTimes(2);
-      expect(bot.requestApi).toHaveBeenCalledWith({
+      expect(sender.requestApi).toHaveBeenCalledTimes(2);
+      expect(sender.requestApi).toHaveBeenCalledWith({
         asApp: true,
         method: 'DELETE',
         url: '_ANOTHER_APP_ID_/subscriptions',
@@ -193,19 +193,19 @@ describe('subscription management', () => {
     });
 
     it('throw if no appId available', async () => {
-      const manager = new FacebookAssetsManager(stateRepository, bot);
+      const manager = new FacebookAssetsManager(stateRepository, sender);
 
       await expect(
         manager.deleteAppSubscription(),
       ).rejects.toThrowErrorMatchingInlineSnapshot(`"appId is empty"`);
 
-      expect(bot.requestApi).not.toHaveBeenCalled();
+      expect(sender.requestApi).not.toHaveBeenCalled();
     });
   });
 
   describe('.setSubscribedApp(options)', () => {
     it('call subscribed_apps API as page', async () => {
-      const manager = new FacebookAssetsManager(stateRepository, bot);
+      const manager = new FacebookAssetsManager(stateRepository, sender);
 
       await expect(
         manager.setSubscribedApp(page, {
@@ -214,8 +214,8 @@ describe('subscription management', () => {
         }),
       ).resolves.toBe(undefined);
 
-      expect(bot.requestApi).toHaveBeenCalledTimes(1);
-      expect(bot.requestApi).toHaveBeenCalledWith({
+      expect(sender.requestApi).toHaveBeenCalledTimes(1);
+      expect(sender.requestApi).toHaveBeenCalledWith({
         agent: page,
         accessToken: '_ACCESS_TOKEN_',
         method: 'POST',
@@ -227,7 +227,7 @@ describe('subscription management', () => {
     });
 
     test('with constructor app settings options', async () => {
-      const manager = new FacebookAssetsManager(stateRepository, bot, {
+      const manager = new FacebookAssetsManager(stateRepository, sender, {
         subscriptionFields: [
           'messages',
           'messaging_postbacks',
@@ -237,8 +237,8 @@ describe('subscription management', () => {
 
       await expect(manager.setSubscribedApp(page)).resolves.toBe(undefined);
 
-      expect(bot.requestApi).toHaveBeenCalledTimes(1);
-      expect(bot.requestApi).toHaveBeenCalledWith({
+      expect(sender.requestApi).toHaveBeenCalledTimes(1);
+      expect(sender.requestApi).toHaveBeenCalledWith({
         agent: page,
         method: 'POST',
         url: 'me/subscribed_apps',
@@ -253,11 +253,11 @@ describe('subscription management', () => {
     });
 
     test('default subscribed fields', async () => {
-      const manager = new FacebookAssetsManager(stateRepository, bot);
+      const manager = new FacebookAssetsManager(stateRepository, sender);
       await expect(manager.setSubscribedApp(page)).resolves.toBe(undefined);
 
-      expect(bot.requestApi).toHaveBeenCalledTimes(1);
-      expect(bot.requestApi.mock.calls[0].args[0].params.subscribed_fields)
+      expect(sender.requestApi).toHaveBeenCalledTimes(1);
+      expect(sender.requestApi.mock.calls[0].args[0].params.subscribed_fields)
         .toMatchInlineSnapshot(`
         [
           "messages",
@@ -275,12 +275,12 @@ describe('subscription management', () => {
 
   describe('.deleteSubscribedApp(options)', () => {
     it('call subscribed_apps API as page', async () => {
-      const manager = new FacebookAssetsManager(stateRepository, bot);
+      const manager = new FacebookAssetsManager(stateRepository, sender);
 
       await expect(manager.deleteSubscribedApp(page)).resolves.toBe(undefined);
 
-      expect(bot.requestApi).toHaveBeenCalledTimes(1);
-      expect(bot.requestApi).toHaveBeenCalledWith({
+      expect(sender.requestApi).toHaveBeenCalledTimes(1);
+      expect(sender.requestApi).toHaveBeenCalledWith({
         agent: page,
         method: 'DELETE',
         url: 'me/subscribed_apps',
@@ -290,8 +290,8 @@ describe('subscription management', () => {
 
   describe('.setMessengerProfile(page, settings)', () => {
     it('call subscribed_apps API as page', async () => {
-      const manager = new FacebookAssetsManager(stateRepository, bot);
-      bot.requestApi.mock.fake(async ({ method }) =>
+      const manager = new FacebookAssetsManager(stateRepository, sender);
+      sender.requestApi.mock.fake(async ({ method }) =>
         method === 'GET' ? { data: [] } : {},
       );
 
@@ -304,8 +304,8 @@ describe('subscription management', () => {
         }),
       ).resolves.toBe(undefined);
 
-      expect(bot.requestApi).toHaveBeenCalledTimes(2);
-      expect(bot.requestApi).toHaveBeenNthCalledWith(1, {
+      expect(sender.requestApi).toHaveBeenCalledTimes(2);
+      expect(sender.requestApi).toHaveBeenNthCalledWith(1, {
         agent: page,
         method: 'GET',
         url: 'me/messenger_profile',
@@ -321,7 +321,7 @@ describe('subscription management', () => {
         },
         accessToken: '_ACCESS_TOKEN_',
       });
-      expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
+      expect(sender.requestApi).toHaveBeenNthCalledWith(2, {
         agent: page,
         method: 'POST',
         url: 'me/messenger_profile',
@@ -335,8 +335,8 @@ describe('subscription management', () => {
     });
 
     it('remove current fields if not exist on new settings', async () => {
-      const manager = new FacebookAssetsManager(stateRepository, bot);
-      bot.requestApi.mock.fake(async ({ method }) =>
+      const manager = new FacebookAssetsManager(stateRepository, sender);
+      sender.requestApi.mock.fake(async ({ method }) =>
         method === 'GET'
           ? {
               data: [
@@ -365,8 +365,8 @@ describe('subscription management', () => {
         }),
       ).resolves.toBe(undefined);
 
-      expect(bot.requestApi).toHaveBeenCalledTimes(3);
-      expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
+      expect(sender.requestApi).toHaveBeenCalledTimes(3);
+      expect(sender.requestApi).toHaveBeenNthCalledWith(2, {
         agent: page,
         method: 'DELETE',
         url: 'me/messenger_profile',
@@ -374,7 +374,7 @@ describe('subscription management', () => {
           fields: ['get_started', 'ice_breakers'],
         },
       });
-      expect(bot.requestApi).toHaveBeenNthCalledWith(3, {
+      expect(sender.requestApi).toHaveBeenNthCalledWith(3, {
         agent: page,
         method: 'POST',
         url: 'me/messenger_profile',
@@ -388,8 +388,8 @@ describe('subscription management', () => {
     });
 
     it('set fields if value has change', async () => {
-      const manager = new FacebookAssetsManager(stateRepository, bot);
-      bot.requestApi.mock.fake(async ({ method }) =>
+      const manager = new FacebookAssetsManager(stateRepository, sender);
+      sender.requestApi.mock.fake(async ({ method }) =>
         method === 'GET'
           ? {
               data: [
@@ -430,8 +430,8 @@ describe('subscription management', () => {
         }),
       ).resolves.toBe(undefined);
 
-      expect(bot.requestApi).toHaveBeenCalledTimes(2);
-      expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
+      expect(sender.requestApi).toHaveBeenCalledTimes(2);
+      expect(sender.requestApi).toHaveBeenNthCalledWith(2, {
         agent: page,
         method: 'POST',
         url: 'me/messenger_profile',
@@ -456,7 +456,7 @@ describe('subscription management', () => {
 
 describe('assets management', () => {
   test('get asset id', async () => {
-    const manager = new FacebookAssetsManager(stateRepository, bot);
+    const manager = new FacebookAssetsManager(stateRepository, sender);
 
     await expect(manager.getAssetId(page, 'foo', 'bar')).resolves.toBe(
       undefined,
@@ -501,7 +501,7 @@ describe('assets management', () => {
   });
 
   test('set asset id', async () => {
-    const manager = new FacebookAssetsManager(stateRepository, bot);
+    const manager = new FacebookAssetsManager(stateRepository, sender);
 
     await expect(manager.saveAssetId(page, 'foo', 'bar', 'baz')).resolves.toBe(
       false,
@@ -546,7 +546,7 @@ describe('assets management', () => {
   });
 
   test('get all assets', async () => {
-    const manager = new FacebookAssetsManager(stateRepository, bot);
+    const manager = new FacebookAssetsManager(stateRepository, sender);
 
     await expect(manager.getAllAssets(page, 'foo')).resolves.toBe(null);
     await expect(manager.getAllAttachments(page)).resolves.toBe(null);
@@ -576,7 +576,7 @@ describe('assets management', () => {
   });
 
   test('remove asset id', async () => {
-    const manager = new FacebookAssetsManager(stateRepository, bot);
+    const manager = new FacebookAssetsManager(stateRepository, sender);
 
     await expect(manager.unsaveAssetId(page, 'foo', 'bar')).resolves.toBe(true);
     await expect(manager.unsaveAttachment(page, 'my_attachment')).resolves.toBe(
@@ -613,8 +613,8 @@ describe('assets management', () => {
   });
 
   test('.uploadChatAttachment()', async () => {
-    const manager = new FacebookAssetsManager(stateRepository, bot);
-    bot.uploadChatAttachment.mock.fake(async () => ({
+    const manager = new FacebookAssetsManager(stateRepository, sender);
+    sender.uploadChatAttachment.mock.fake(async () => ({
       attachmentId: '1857777774821032',
     }));
 
@@ -626,8 +626,8 @@ describe('assets management', () => {
       ),
     ).resolves.toBe('1857777774821032');
 
-    expect(bot.uploadChatAttachment).toHaveBeenCalledTimes(1);
-    expect(bot.uploadChatAttachment).toHaveBeenCalledWith(
+    expect(sender.uploadChatAttachment).toHaveBeenCalledTimes(1);
+    expect(sender.uploadChatAttachment).toHaveBeenCalledWith(
       page,
       <img src="http://foo.bar/avatar" />,
     );
@@ -637,8 +637,8 @@ describe('assets management', () => {
   });
 
   test('.createPersona()', async () => {
-    const manager = new FacebookAssetsManager(stateRepository, bot);
-    bot.requestApi.mock.fake(() => ({ id: '_PERSONA_ID_' }));
+    const manager = new FacebookAssetsManager(stateRepository, sender);
+    sender.requestApi.mock.fake(() => ({ id: '_PERSONA_ID_' }));
 
     await expect(
       manager.createPersona(page, 'cute_persona', {
@@ -647,8 +647,8 @@ describe('assets management', () => {
       }),
     ).resolves.toBe('_PERSONA_ID_');
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(1);
-    expect(bot.requestApi).toHaveBeenCalledWith({
+    expect(sender.requestApi).toHaveBeenCalledTimes(1);
+    expect(sender.requestApi).toHaveBeenCalledWith({
       agent: page,
       method: 'POST',
       url: 'me/personas',
@@ -658,7 +658,7 @@ describe('assets management', () => {
     expect(state.set).toHaveBeenCalledTimes(1);
     expect(state.set).toHaveBeenCalledWith('cute_persona', '_PERSONA_ID_');
 
-    bot.requestApi.mock.fake(() => ({ id: '_PERSONA_ID_2_' }));
+    sender.requestApi.mock.fake(() => ({ id: '_PERSONA_ID_2_' }));
     await expect(
       manager.createPersona(page, 'mean_persona', {
         name: 'Boba Fett',
@@ -667,8 +667,8 @@ describe('assets management', () => {
       }),
     ).resolves.toBe('_PERSONA_ID_2_');
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(2);
-    expect(bot.requestApi).toHaveBeenCalledWith({
+    expect(sender.requestApi).toHaveBeenCalledTimes(2);
+    expect(sender.requestApi).toHaveBeenCalledWith({
       agent: page,
       accessToken: '_MY_ACCESS_TOKEN_',
       method: 'POST',
@@ -681,15 +681,15 @@ describe('assets management', () => {
   });
 
   test('.deletePersona()', async () => {
-    const manager = new FacebookAssetsManager(stateRepository, bot);
-    bot.requestApi.mock.fake(() => ({
+    const manager = new FacebookAssetsManager(stateRepository, sender);
+    sender.requestApi.mock.fake(() => ({
       id: '_PERSONA_ID_',
     }));
 
     await expect(manager.deletePersona(page, 'my_persona')).resolves.toBe(
       false,
     );
-    expect(bot.requestApi).not.toHaveBeenCalled();
+    expect(sender.requestApi).not.toHaveBeenCalled();
 
     state.get.mock.fake(async () => '_PERSONA_ID_');
     await expect(
@@ -698,8 +698,8 @@ describe('assets management', () => {
       }),
     ).resolves.toBe(true);
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(1);
-    expect(bot.requestApi).toHaveBeenCalledWith({
+    expect(sender.requestApi).toHaveBeenCalledTimes(1);
+    expect(sender.requestApi).toHaveBeenCalledWith({
       agent: page,
       accessToken: '_ACCESS_TOKEN_',
       method: 'DELETE',

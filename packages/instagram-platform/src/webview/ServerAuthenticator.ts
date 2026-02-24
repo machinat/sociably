@@ -7,7 +7,7 @@ import {
 import BasicAuthenticator from '@sociably/auth/basicAuth';
 import { MetaApiError } from '@sociably/meta-api';
 import { attachWebviewParamsOnUrl } from '@sociably/webview/client';
-import BotP from '../Bot.js';
+import SenderP from '../Sender.js';
 import ProfilerP from '../Profiler.js';
 import InstagramAgent from '../Agent.js';
 import InstagramChat from '../Chat.js';
@@ -34,7 +34,7 @@ export class InstagramServerAuthenticator
   platform = INSTAGRAM;
 
   constructor(
-    bot: BotP,
+    sender: SenderP,
     profiler: ProfilerP,
     basicAuthenticator: BasicAuthenticator,
     settingsAccessor: AgentSettingsAccessorI,
@@ -47,7 +47,7 @@ export class InstagramServerAuthenticator
       InstagramAuthData,
       InstagramChat
     >({
-      bot,
+      sender,
       platform: INSTAGRAM,
       platformName: 'Instagram',
       platformColor: '#4B69FF',
@@ -178,7 +178,7 @@ export class InstagramServerAuthenticator
 
 const ServerAuthenticatorP = serviceProviderClass({
   lifetime: 'singleton',
-  deps: [BotP, ProfilerP, BasicAuthenticator, AgentSettingsAccessorI],
+  deps: [SenderP, ProfilerP, BasicAuthenticator, AgentSettingsAccessorI],
 })(InstagramServerAuthenticator);
 
 type ServerAuthenticatorP = InstagramServerAuthenticator;

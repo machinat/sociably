@@ -5,7 +5,7 @@ import {
   serviceProviderFactory,
   serviceInterface,
 } from '../service/index.js';
-import BaseBotP from '../base/Bot.js';
+import BaseSenderP from '../base/Sender.js';
 import BaseProfilerP from '../base/Profiler.js';
 import BaseMarshalerP from '../base/Marshaler.js';
 import ModuleUtilitiesI from '../base/ModuleUtilities.js';
@@ -722,7 +722,7 @@ describe('dispatchWrapper', () => {
   const dispatchFrame = {
     platform: 'test',
     thread: { a: 'new hope' },
-    bot: { droid: 'r2d2' },
+    sender: { droid: 'r2d2' },
     tasks: [{ type: 'dispatch', payload: [{ find: 'Obi-Wan Kenobi' }] }],
   };
 
@@ -986,13 +986,13 @@ describe('#useServices(requirements)', () => {
     const app = new App({});
     await app.start();
 
-    const [bot, profiler, marshaler] = app.useServices([
-      BaseBotP,
+    const [sender, profiler, marshaler] = app.useServices([
+      BaseSenderP,
       BaseProfilerP,
       BaseMarshalerP,
     ]);
 
-    expect(bot).toBeInstanceOf(BaseBotP);
+    expect(sender).toBeInstanceOf(BaseSenderP);
     expect(profiler).toBeInstanceOf(BaseProfilerP);
     expect(marshaler).toBeInstanceOf(BaseMarshalerP);
   });

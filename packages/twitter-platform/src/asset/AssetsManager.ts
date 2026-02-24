@@ -1,7 +1,7 @@
 import { SociablyNode } from '@sociably/core';
 import { serviceProviderClass } from '@sociably/core/service';
 import StateRepositoryI from '@sociably/core/base/StateRepository.js';
-import BotP from '../Bot.js';
+import SenderP from '../Sender.js';
 import TwitterUser from '../User.js';
 import { TWITTER } from '../constant.js';
 import { RenderMediaResponse } from '../types.js';
@@ -32,13 +32,10 @@ const makeResourceToken = (agentId: string, resource: string): string =>
  * @category Provider
  */
 export class TwitterAssetsManager {
-  private _bot: BotP;
-  private _stateRepository: StateRepositoryI;
-
-  constructor(bot: BotP, stateManager: StateRepositoryI) {
-    this._stateRepository = stateManager;
-    this._bot = bot;
-  }
+  constructor(
+    private _sender: SenderP,
+    private _stateRepository: StateRepositoryI,
+  ) {}
 
   async getAssetId(
     agent: string | TwitterUser,
@@ -119,7 +116,7 @@ export class TwitterAssetsManager {
     assetTag: string,
     media: SociablyNode,
   ): Promise<RenderMediaResponse> {
-    const results = await this._bot.uploadMedia(agent, media);
+    const results = await this._sender.uploadMedia(agent, media);
     if (!results) {
       throw new Error('media content is empty');
     }
@@ -164,7 +161,7 @@ export class TwitterAssetsManager {
     assetTag: string,
     message: SociablyNode,
   ): Promise<undefined | string> {
-    const result = await this._bot.createWelcomeMessage(
+    const result = await this._sender.createWelcomeMessage(
       agent,
       assetTag,
       message,
@@ -187,7 +184,7 @@ export class TwitterAssetsManager {
       throw new Error(`welcome message [${assetTag}] doesn't exist`);
     }
 
-    await this._bot.requestApi({
+    await this._sender.requestApi({
       agent,
       method: 'DELETE',
       url: `1.1/direct_messages/welcome_messages/destroy.json`,
@@ -234,7 +231,7 @@ export class TwitterAssetsManager {
   ): Promise<string> {
     const {
       custom_profile: { id: customProfileId },
-    } = await this._bot.requestApi<CreateCustomProfileResult>({
+    } = await this._sender.requestApi<CreateCustomProfileResult>({
       agent,
       method: 'POST',
       url: `1.1/custom_profiles/new.json`,
@@ -259,7 +256,7 @@ export class TwitterAssetsManager {
       throw new Error(`custom profile [${assetTag}] doesn't exist`);
     }
 
-    await this._bot.requestApi({
+    await this._sender.requestApi({
       agent,
       method: 'DELETE',
       url: `1.1/custom_profiles/destroy.json`,
@@ -272,9 +269,9 @@ export class TwitterAssetsManager {
 
 const AssetsManagerP = serviceProviderClass({
   lifetime: 'scoped',
-  deps: [BotP, StateRepositoryI],
-  factory: (bot, stateRepository) =>
-    new TwitterAssetsManager(bot, stateRepository),
+  deps: [SenderP, StateRepositoryI],
+  factory: (sender, stateRepository) =>
+    new TwitterAssetsManager(sender, stateRepository),
 })(TwitterAssetsManager);
 
 type AssetsManagerP = TwitterAssetsManager;

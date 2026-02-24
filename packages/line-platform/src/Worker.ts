@@ -3,7 +3,7 @@ import fetch from 'node-fetch';
 import { SociablyWorker } from '@sociably/core/engine';
 import Queue, { JobResponse } from '@sociably/core/queue';
 import { AgentSettingsAccessorI } from './interface.js';
-import { LineJob, LineResult } from './types.js';
+import { LineJob, LineResult, MessagingApiResult } from './types.js';
 import LineChannel from './Channel.js';
 import LineApiError from './error.js';
 
@@ -38,13 +38,13 @@ const request = async (
     body: params && !isNoBodyMethod ? JSON.stringify(params) : undefined,
   });
 
-  let resBody;
+  let resBody: MessagingApiResult;
   // catch parsing error, body can be empty string in some api
   try {
-    resBody = await response.json();
+    resBody = (await response.json()) as MessagingApiResult;
   } catch (e) {
     // catch some line api respond empty string
-    if (e.message.indexOf('Unexpected end of JSON input') === -1) {
+    if ((e as Error).message.indexOf('Unexpected end of JSON input') === -1) {
       throw e;
     }
     resBody = {};
@@ -67,17 +67,15 @@ class LineWorker implements SociablyWorker<LineJob, LineResult> {
   connectionCount: number;
   maxConnections: number;
 
-  private _settingsAccessor: AgentSettingsAccessorI;
   private _started: boolean;
   private _lockedKeys: Set<string>;
 
   constructor(
-    settingsAccessor: AgentSettingsAccessorI,
+    private _settingsAccessor: AgentSettingsAccessorI,
     maxConnections: number,
   ) {
     this.connectionCount = 0;
     this.maxConnections = maxConnections;
-    this._settingsAccessor = settingsAccessor;
     this._lockedKeys = new Set();
     this._started = false;
   }

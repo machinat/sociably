@@ -5,9 +5,9 @@ import WhatsAppAgent from '../Agent.js';
 import WhatsAppChat from '../Chat.js';
 import WhatsAppUser from '../User.js';
 import { WhatsAppReceiver } from '../Receiver.js';
-import type { WhatsAppBot } from '../Bot.js';
+import type { WhatsAppSender } from '../Sender.js';
 
-const bot = moxy<WhatsAppBot>({
+const sender = moxy<WhatsAppSender>({
   render: () => ({ jobs: [], results: [], tasks: [] }),
 } as never);
 
@@ -61,7 +61,7 @@ beforeEach(() => {
 describe('handling POST', () => {
   it('respond 404 if "object" field is not "whatsapp_business_account"', async () => {
     const receiver = new WhatsAppReceiver({
-      bot,
+      sender,
       popEventWrapper,
       shouldHandleChallenge: false,
       webhookVerifyToken: '',
@@ -85,7 +85,7 @@ describe('handling POST', () => {
 
   it('respond 200 and popEvents', async () => {
     const receiver = new WhatsAppReceiver({
-      bot,
+      sender,
       popEventWrapper,
       shouldHandleChallenge: false,
       webhookVerifyToken: '',
@@ -151,7 +151,7 @@ describe('handling POST', () => {
       args: [context],
     } of popEventMock.calls) {
       expect(context.platform).toBe('whatsapp');
-      expect(context.bot).toBe(bot);
+      expect(context.sender).toBe(sender);
 
       expect(context.event.agent).toEqual(new WhatsAppAgent('1234567890'));
       expect(context.event.user).toEqual(
@@ -180,7 +180,7 @@ describe('handling POST', () => {
 
   test('context.reply(message)', async () => {
     const receiver = new WhatsAppReceiver({
-      bot,
+      sender,
       popEventWrapper,
       shouldHandleChallenge: false,
       webhookVerifyToken: '',
@@ -207,7 +207,7 @@ describe('handling POST', () => {
       }
     `);
 
-    expect(bot.render).toHaveBeenCalledTimes(1);
-    expect(bot.render).toHaveBeenCalledWith(event.thread, 'hello world');
+    expect(sender.render).toHaveBeenCalledTimes(1);
+    expect(sender.render).toHaveBeenCalledWith(event.thread, 'hello world');
   });
 });

@@ -5,7 +5,7 @@ import { MetaAssetsManager, MetaApiAgent } from '@sociably/meta-api';
 import snakecaseKeys from 'snakecase-keys';
 import { MESSENGER_PAGE_SUBSCRIPTION_FIELDS } from '../constant.js';
 import {
-  MessengerBot,
+  MessengerSender,
   SetSubscribedAppOptions,
   SetMessengerProfileOptions,
 } from '../types.js';
@@ -35,7 +35,7 @@ const MESSENGER_PROFILE_FIELDS_COMPARATERS: Record<string, (a, b) => boolean> =
  */
 export class MessengerAssetsManager<
   Agent extends MetaApiAgent,
-> extends MetaAssetsManager<Agent, MessengerBot<Agent>> {
+> extends MetaAssetsManager<Agent, MessengerSender<Agent>> {
   /**
    * Set app subscription of a page. Check
    * https://developers.facebook.com/docs/graph-api/reference/page/subscribed_apps
@@ -48,7 +48,7 @@ export class MessengerAssetsManager<
       accessToken,
     }: SetSubscribedAppOptions,
   ): Promise<void> {
-    await this.bot.requestApi({
+    await this.sender.requestApi({
       agent,
       accessToken,
       method: 'POST',
@@ -68,7 +68,7 @@ export class MessengerAssetsManager<
     agent: string | Agent,
     { accessToken }: { accessToken?: string } = {},
   ): Promise<void> {
-    await this.bot.requestApi({
+    await this.sender.requestApi({
       agent,
       accessToken,
       method: 'DELETE',
@@ -89,7 +89,7 @@ export class MessengerAssetsManager<
 
     const {
       data: [currentSettings = {}],
-    } = await this.bot.requestApi({
+    } = await this.sender.requestApi({
       agent,
       accessToken,
       method: 'GET',
@@ -117,7 +117,7 @@ export class MessengerAssetsManager<
     }
 
     if (deletedKeys.length > 0) {
-      await this.bot.requestApi({
+      await this.sender.requestApi({
         agent,
         accessToken,
         method: 'DELETE',
@@ -130,7 +130,7 @@ export class MessengerAssetsManager<
     }
 
     if (Object.keys(changedSettings).length > 0) {
-      await this.bot.requestApi({
+      await this.sender.requestApi({
         agent,
         accessToken,
         method: 'POST',
@@ -174,7 +174,7 @@ export class MessengerAssetsManager<
     assetTag: string,
     node: SociablyNode,
   ): Promise<string> {
-    const result = await this.bot.uploadChatAttachment(agent, node);
+    const result = await this.sender.uploadChatAttachment(agent, node);
     if (result === null) {
       throw new Error(`message ${formatNode(node)} render to empty`);
     }

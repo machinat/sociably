@@ -10,7 +10,7 @@ import {
   SetSubscribedAppOptions,
   SetMessengerProfileOptions,
 } from '@sociably/meta-messenger-platform-base';
-import BotP from '../Bot.js';
+import SenderP from '../Sender.js';
 import InstagramAgent from '../Agent.js';
 import { INSTAGRAM } from '../constant.js';
 import { ConfigsI, AgentSettingsAccessorI } from '../interface.js';
@@ -42,11 +42,11 @@ export class InstagramAssetsManager extends MessengerAssetsManager<InstagramAgen
 
   constructor(
     stateManager: StateRepositoryI,
-    bot: BotP,
+    sender: SenderP,
     agentSettingsAccessor: AgentSettingsAccessorI,
     defaultSettings: DefaultSettings = {},
   ) {
-    super(stateManager, bot, INSTAGRAM);
+    super(stateManager, sender, INSTAGRAM);
     this.defaultSettings = defaultSettings;
     this.agentSettingsAccessor = agentSettingsAccessor;
   }
@@ -166,19 +166,19 @@ const AssetsManagerP = serviceProviderClass({
   lifetime: 'scoped',
   deps: [
     StateRepositoryI,
-    BotP,
+    SenderP,
     Http.Connector,
     AgentSettingsAccessorI,
     ConfigsI,
   ],
   factory: (
     stateRepository,
-    bot,
+    sender,
     connector,
     agentSettingsAccessor,
     { appId, webhookVerifyToken, webhookPath, subscriptionFields },
   ) =>
-    new InstagramAssetsManager(stateRepository, bot, agentSettingsAccessor, {
+    new InstagramAssetsManager(stateRepository, sender, agentSettingsAccessor, {
       appId,
       webhookVerifyToken,
       subscriptionFields,

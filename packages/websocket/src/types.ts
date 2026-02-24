@@ -10,7 +10,7 @@ import type { DispatchFrame, DispatchResponse } from '@sociably/core/engine';
 import type { MaybeContainer } from '@sociably/core/service';
 import type { UnitSegment } from '@sociably/core/renderer';
 import type { HttpRequestInfo } from '@sociably/http';
-import type { WebSocketBot } from './Bot.js';
+import type { WebSocketSender } from './Sender.js';
 import type WebSocketConnection from './Connection.js';
 
 export type { WebSocketServer as WsServer } from 'ws';
@@ -112,7 +112,7 @@ export type WebSocketEventContext<
   platform: 'websocket';
   event: WebSocketEvent<Value, User>;
   metadata: WebSocketMetadata<AuthContext>;
-  bot: WebSocketBot;
+  sender: WebSocketSender;
   reply(message: SociablyNode): Promise<null | WebSocketDispatchResponse>;
 };
 

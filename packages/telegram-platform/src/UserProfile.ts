@@ -27,33 +27,33 @@ class TelegramUserProfile
     this.data = rawUser;
   }
 
-  /** Id of the user or bot */
+  /** Id of the user or sender */
   get id(): number {
     return this.data.id;
   }
 
-  /** Display name of the user or bot */
+  /** Display name of the user or sender */
   get name(): string {
     const { first_name: firstName, last_name: lastName } = this.data;
     return lastName ? `${firstName} ${lastName}` : firstName;
   }
 
-  /** User's or bot's first name */
+  /** User's or sender's first name */
   get firstName(): undefined | string {
     return this.data.first_name;
   }
 
-  /** User's or bot's last name */
+  /** User's or sender's last name */
   get lastName(): undefined | string {
     return this.data.last_name;
   }
 
-  /** User's or bot's username */
+  /** User's or sender's username */
   get username(): undefined | string {
     return this.data.username;
   }
 
-  /** If this user is a bot */
+  /** If this user is a sender */
   get isBot(): boolean {
     return this.data.is_bot;
   }

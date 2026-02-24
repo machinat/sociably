@@ -7,7 +7,7 @@ import {
 import BasicAuthenticator from '@sociably/auth/basicAuth';
 import { attachWebviewParamsOnUrl } from '@sociably/webview/client';
 import TwitterApiError from '../Error.js';
-import BotP from '../Bot.js';
+import SenderP from '../Sender.js';
 import ProfilerP from '../Profiler.js';
 import { TWITTER } from '../constant.js';
 import TwitterChat from '../Chat.js';
@@ -34,7 +34,7 @@ export class TwitterServerAuthenticator
   platform = TWITTER;
 
   constructor(
-    bot: BotP,
+    sender: SenderP,
     profiler: ProfilerP,
     basicAuthenticator: BasicAuthenticator,
   ) {
@@ -45,7 +45,7 @@ export class TwitterServerAuthenticator
       TwitterAuthData,
       TwitterChat
     >({
-      bot,
+      sender,
       platform: TWITTER,
       platformName: 'Twitter',
       platformColor: '#1D9BF0',
@@ -141,7 +141,7 @@ export class TwitterServerAuthenticator
 
 const ServerAuthenticatorP = serviceProviderClass({
   lifetime: 'singleton',
-  deps: [BotP, BasicAuthenticator],
+  deps: [SenderP, BasicAuthenticator],
 })(TwitterServerAuthenticator);
 
 type ServerAuthenticatorP = TwitterServerAuthenticator;

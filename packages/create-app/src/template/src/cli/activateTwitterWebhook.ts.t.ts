@@ -12,12 +12,12 @@ const { TWITTER_WEBHOOK_ENV } = process.env;
 
 const app = createApp({ noServer: true });
 app.start().then(async () => {
-  const [twitterBot, twitterAssetManager] = app.useServices([
-    Twitter.Bot,
+  const [twitterSender, twitterAssetManager] = app.useServices([
+    Twitter.Sender,
     Twitter.AssetManager,
   ]);
   const webhookId = await twitterAssetManager.getWebhook('default');
-  await twitterBot.requestApi(
+  await twitterSender.requestApi(
     'PUT',
     \`1.1/account_activity/all/\${TWITTER_WEBHOOK_ENV}/webhooks/\${webhookId}.json\`
   );

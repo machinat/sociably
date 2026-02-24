@@ -3,7 +3,7 @@ import { serviceProviderClass, StateRepository } from '@sociably/core';
 import Http from '@sociably/http';
 import fetch from 'node-fetch';
 import LineChannel from '../Channel.js';
-import BotP from '../Bot.js';
+import SenderP from '../Sender.js';
 import { AgentSettingsAccessorI, ConfigsI } from '../interface.js';
 import { PATH_RICHMENU, LINE } from '../constant.js';
 import LineApiError from '../error.js';
@@ -19,22 +19,12 @@ type DefaultSettings = {
 
 /** @category Provider */
 export class LineAssetsManager {
-  private _stateRepository: StateRepository;
-  private _settingsAccessor: AgentSettingsAccessorI;
-  private _bot: BotP;
-  defaultSettings: DefaultSettings;
-
   constructor(
-    stateManger: StateRepository,
-    bot: BotP,
-    settingsAccessor: AgentSettingsAccessorI,
-    defaultSettings: DefaultSettings = {},
-  ) {
-    this._stateRepository = stateManger;
-    this._settingsAccessor = settingsAccessor;
-    this._bot = bot;
-    this.defaultSettings = defaultSettings;
-  }
+    private _stateRepository: StateRepository,
+    private _sender: SenderP,
+    private _settingsAccessor: AgentSettingsAccessorI,
+    public defaultSettings: DefaultSettings = {},
+  ) {}
 
   async getAssetId(
     channel: string | LineChannel,
@@ -141,7 +131,9 @@ export class LineAssetsManager {
     }
 
     // create rich menu
-    const { richMenuId } = await this._bot.requestApi<{ richMenuId: string }>({
+    const { richMenuId } = await this._sender.requestApi<{
+      richMenuId: string;
+    }>({
       agent: channel,
       method: 'POST',
       accessToken,
@@ -172,7 +164,7 @@ export class LineAssetsManager {
 
     // set to default rich menu if asDefault
     if (options?.asDefault) {
-      await this._bot.requestApi({
+      await this._sender.requestApi({
         agent: channel,
         accessToken,
         method: 'POST',
@@ -194,7 +186,7 @@ export class LineAssetsManager {
       return false;
     }
 
-    await this._bot.requestApi({
+    await this._sender.requestApi({
       agent: channel,
       method: 'DELETE',
       accessToken: options?.accessToken,
@@ -217,7 +209,7 @@ export class LineAssetsManager {
       throw new Error('webhookUrl is required');
     }
 
-    await this._bot.requestApi({
+    await this._sender.requestApi({
       agent: channel,
       accessToken,
       method: 'PUT',
@@ -233,19 +225,19 @@ const AssetsManagerP = serviceProviderClass({
   lifetime: 'scoped',
   deps: [
     StateRepository,
-    BotP,
+    SenderP,
     AgentSettingsAccessorI,
     Http.Connector,
     ConfigsI,
   ],
   factory: (
     stateRepository,
-    bot,
+    sender,
     agentSettingsAccessor,
     connector,
     { webhookPath },
   ) =>
-    new LineAssetsManager(stateRepository, bot, agentSettingsAccessor, {
+    new LineAssetsManager(stateRepository, sender, agentSettingsAccessor, {
       webhookUrl: connector.getServerUrl(webhookPath),
     }),
 })(LineAssetsManager);

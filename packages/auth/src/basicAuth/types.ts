@@ -2,7 +2,7 @@ import {
   SociablyThread,
   FunctionalComponent,
   ContainerComponent,
-  SociablyBot,
+  SociablySender,
 } from '@sociably/core';
 
 export type VerifyCodeRequestBody = {
@@ -92,7 +92,7 @@ export type AuthDelegatorOptions<
   Thread extends SociablyThread,
 > = {
   platform: string;
-  bot: SociablyBot<Thread, unknown, unknown>;
+  sender: SociablySender<Thread, unknown, unknown>;
   platformName: string;
   platformImageUrl: string;
   platformColor: string;

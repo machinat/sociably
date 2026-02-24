@@ -1,7 +1,7 @@
 import { serviceProviderClass } from '@sociably/core/service';
 import type { UserProfiler } from '@sociably/core/base/Profiler.js';
 import { MetaApiError } from '@sociably/meta-api';
-import BotP from './Bot.js';
+import SenderP from './Sender.js';
 import type FacebookPage from './Page.js';
 import type FacebookUser from './User.js';
 import type { RawUserProfile } from './types.js';
@@ -30,11 +30,14 @@ export class FacebookProfiler
   implements UserProfiler<FacebookPage, FacebookUser>
 {
   private profileFieldsStr: string;
-  private bot: BotP;
+  private sender: SenderP;
   platform = FACEBOOK;
 
-  constructor(bot: BotP, { optionalProfileFields = [] }: ProfilerOptions = {}) {
-    this.bot = bot;
+  constructor(
+    sender: SenderP,
+    { optionalProfileFields = [] }: ProfilerOptions = {},
+  ) {
+    this.sender = sender;
     this.profileFieldsStr = [
       ...optionalProfileFields,
       ...DEFAULT_PROFILE_FIELDS,
@@ -49,7 +52,7 @@ export class FacebookProfiler
     let rawProfile: RawUserProfile;
 
     try {
-      rawProfile = await this.bot.requestApi({
+      rawProfile = await this.sender.requestApi({
         agent: page,
         method: 'GET',
         url: `${userId}`,
@@ -73,7 +76,7 @@ export class FacebookProfiler
 
 const ProfilerP = serviceProviderClass({
   lifetime: 'scoped',
-  deps: [BotP, ConfigsI],
+  deps: [SenderP, ConfigsI],
 })(FacebookProfiler);
 
 type ProfilerP = FacebookProfiler;

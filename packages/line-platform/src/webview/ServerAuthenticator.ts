@@ -6,7 +6,7 @@ import { attachWebviewParamsOnUrl } from '@sociably/webview/client';
 import { AgentSettingsAccessorI } from '../interface.js';
 import LineChannel from '../Channel.js';
 import LineChat from '../Chat.js';
-import BotP from '../Bot.js';
+import SenderP from '../Sender.js';
 import { LINE } from '../constant.js';
 import LineApiError from '../error.js';
 import { LineRawUserProfile, LiffAppChoiceSetting } from '../types.js';
@@ -46,12 +46,12 @@ export class LineServerAuthenticator
   implements
     ServerAuthenticator<LineAuthCredential, LineAuthData, LineAuthContext>
 {
-  bot: BotP;
+  sender: SenderP;
   agentSettingsAccessor: AgentSettingsAccessorI;
   platform = LINE;
 
-  constructor(bot: BotP, agentSettingsAccessor: AgentSettingsAccessorI) {
-    this.bot = bot;
+  constructor(sender: SenderP, agentSettingsAccessor: AgentSettingsAccessorI) {
+    this.sender = sender;
     this.agentSettingsAccessor = agentSettingsAccessor;
   }
 
@@ -248,19 +248,19 @@ export class LineServerAuthenticator
 
     try {
       if (chat.type === 'user') {
-        await this.bot.requestApi({
+        await this.sender.requestApi({
           agent: chat.channel,
           method: 'GET',
           url: `v2/bot/profile/${chat.id}`,
         });
       } else if (chat.type === 'group') {
-        await this.bot.requestApi({
+        await this.sender.requestApi({
           agent: chat.channel,
           method: 'GET',
           url: `v2/bot/group/${chat.id}/member/${userId}`,
         });
       } else if (chat.type === 'room') {
-        await this.bot.requestApi({
+        await this.sender.requestApi({
           agent: chat.channel,
           method: 'GET',
           url: `v2/bot/room/${chat.id}/member/${userId}`,
@@ -281,7 +281,7 @@ export class LineServerAuthenticator
 
   private async verifyUser(loginToken: string, userId: string) {
     try {
-      const profile = await this.bot.requestApi<LineRawUserProfile>({
+      const profile = await this.sender.requestApi<LineRawUserProfile>({
         accessToken: loginToken,
         method: 'GET',
         url: `v2/profile`,
@@ -312,7 +312,7 @@ export class LineServerAuthenticator
 
   private async verifyAccessToken(accessToken: string) {
     try {
-      const tokenInfo = await this.bot.requestApi<VerifyTokenResult>({
+      const tokenInfo = await this.sender.requestApi<VerifyTokenResult>({
         method: 'GET',
         url: `oauth2/v2.1/verify?access_token=${accessToken}`,
       });
@@ -365,7 +365,7 @@ export class LineServerAuthenticator
 
 const ServerAuthenticatorP = serviceProviderClass({
   lifetime: 'transient',
-  deps: [BotP, AgentSettingsAccessorI],
+  deps: [SenderP, AgentSettingsAccessorI],
 })(LineServerAuthenticator);
 
 type ServerAuthenticatorP = LineServerAuthenticator;

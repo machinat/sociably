@@ -2,7 +2,7 @@ import moxy from '@moxyjs/moxy';
 import nock from 'nock';
 import Sociably from '@sociably/core';
 import type StateRepositoryI from '@sociably/core/base/StateRepository.js';
-import type { WhatsAppBot } from '../../Bot.js';
+import type { WhatsAppSender } from '../../Sender.js';
 import WhatsAppAgent from '../../Agent.js';
 import { Image } from '../../components/Media.js';
 import { WhatsAppAssetsManager } from '../AssetsManager.js';
@@ -24,7 +24,7 @@ const stateRepository = moxy<StateRepositoryI>({
   },
 } as never);
 
-const bot = moxy<WhatsAppBot>({
+const sender = moxy<WhatsAppSender>({
   graphApiVersion: 'v17.0',
   accessToken: '_ROOT_ACCESS_TOKEN_',
   uploadMedia() {
@@ -36,13 +36,13 @@ const bot = moxy<WhatsAppBot>({
 beforeEach(() => {
   stateRepository.mock.reset();
   state.mock.reset();
-  bot.mock.reset();
+  sender.mock.reset();
 });
 
 describe('subscription management', () => {
   describe('.setAppSubscription(options)', () => {
     it('call subscription API as application', async () => {
-      const manager = new WhatsAppAssetsManager(stateRepository, bot);
+      const manager = new WhatsAppAssetsManager(stateRepository, sender);
 
       await expect(
         manager.setAppSubscription({
@@ -54,8 +54,8 @@ describe('subscription management', () => {
         }),
       ).resolves.toBe(undefined);
 
-      expect(bot.requestApi).toHaveBeenCalledTimes(1);
-      expect(bot.requestApi).toHaveBeenCalledWith({
+      expect(sender.requestApi).toHaveBeenCalledTimes(1);
+      expect(sender.requestApi).toHaveBeenCalledWith({
         asApp: true,
         method: 'POST',
         url: '_APP_ID_/subscriptions',
@@ -70,7 +70,7 @@ describe('subscription management', () => {
     });
 
     test('with constructor app settings options', async () => {
-      const manager = new WhatsAppAssetsManager(stateRepository, bot, {
+      const manager = new WhatsAppAssetsManager(stateRepository, sender, {
         appId: '_APP_ID_',
         webhookVerifyToken: '_VERIFY_TOKEN_',
         webhookUrl: 'https://foo.bar/baz/',
@@ -79,8 +79,8 @@ describe('subscription management', () => {
 
       await expect(manager.setAppSubscription({})).resolves.toBe(undefined);
 
-      expect(bot.requestApi).toHaveBeenCalledTimes(1);
-      expect(bot.requestApi).toHaveBeenCalledWith({
+      expect(sender.requestApi).toHaveBeenCalledTimes(1);
+      expect(sender.requestApi).toHaveBeenCalledWith({
         asApp: true,
         method: 'POST',
         url: '_APP_ID_/subscriptions',
@@ -95,7 +95,7 @@ describe('subscription management', () => {
     });
 
     test('default subscription fields', async () => {
-      const manager = new WhatsAppAssetsManager(stateRepository, bot, {
+      const manager = new WhatsAppAssetsManager(stateRepository, sender, {
         appId: '_APP_ID_',
         webhookVerifyToken: '_VERIFY_TOKEN_',
       });
@@ -104,8 +104,8 @@ describe('subscription management', () => {
         manager.setAppSubscription({ webhookUrl: 'https://foo.bar/baz/' }),
       ).resolves.toBe(undefined);
 
-      expect(bot.requestApi).toHaveBeenCalledTimes(1);
-      expect(bot.requestApi.mock.calls[0].args[0].params.fields)
+      expect(sender.requestApi).toHaveBeenCalledTimes(1);
+      expect(sender.requestApi.mock.calls[0].args[0].params.fields)
         .toMatchInlineSnapshot(`
         [
           "messages",
@@ -114,7 +114,7 @@ describe('subscription management', () => {
     });
 
     it('throw if no appId available', async () => {
-      const manager = new WhatsAppAssetsManager(stateRepository, bot);
+      const manager = new WhatsAppAssetsManager(stateRepository, sender);
       await expect(
         manager.setAppSubscription({
           webhookUrl: 'https://foo.bar/baz/',
@@ -123,11 +123,11 @@ describe('subscription management', () => {
       ).rejects.toThrowErrorMatchingInlineSnapshot(
         `"appId, webhookUrl, webhookVerifyToken or fields is empty"`,
       );
-      expect(bot.requestApi).not.toHaveBeenCalled();
+      expect(sender.requestApi).not.toHaveBeenCalled();
     });
 
     it('throw if no webhookUrl available', async () => {
-      const manager = new WhatsAppAssetsManager(stateRepository, bot);
+      const manager = new WhatsAppAssetsManager(stateRepository, sender);
       await expect(
         manager.setAppSubscription({
           appId: '_APP_ID_',
@@ -136,11 +136,11 @@ describe('subscription management', () => {
       ).rejects.toThrowErrorMatchingInlineSnapshot(
         `"appId, webhookUrl, webhookVerifyToken or fields is empty"`,
       );
-      expect(bot.requestApi).not.toHaveBeenCalled();
+      expect(sender.requestApi).not.toHaveBeenCalled();
     });
 
     it('throw if no webhookVerifyToken available', async () => {
-      const manager = new WhatsAppAssetsManager(stateRepository, bot);
+      const manager = new WhatsAppAssetsManager(stateRepository, sender);
       await expect(
         manager.setAppSubscription({
           webhookUrl: 'https://foo.bar/baz/',
@@ -149,20 +149,20 @@ describe('subscription management', () => {
       ).rejects.toThrowErrorMatchingInlineSnapshot(
         `"appId, webhookUrl, webhookVerifyToken or fields is empty"`,
       );
-      expect(bot.requestApi).not.toHaveBeenCalled();
+      expect(sender.requestApi).not.toHaveBeenCalled();
     });
   });
 
   describe('.deleteAppSubscription(options)', () => {
     it('call subscription API as application', async () => {
-      const manager = new WhatsAppAssetsManager(stateRepository, bot, {
+      const manager = new WhatsAppAssetsManager(stateRepository, sender, {
         appId: '_APP_ID_',
       });
 
       await expect(manager.deleteAppSubscription()).resolves.toBe(undefined);
 
-      expect(bot.requestApi).toHaveBeenCalledTimes(1);
-      expect(bot.requestApi).toHaveBeenCalledWith({
+      expect(sender.requestApi).toHaveBeenCalledTimes(1);
+      expect(sender.requestApi).toHaveBeenCalledWith({
         asApp: true,
         method: 'DELETE',
         url: '_APP_ID_/subscriptions',
@@ -177,8 +177,8 @@ describe('subscription management', () => {
         }),
       ).resolves.toBe(undefined);
 
-      expect(bot.requestApi).toHaveBeenCalledTimes(2);
-      expect(bot.requestApi).toHaveBeenCalledWith({
+      expect(sender.requestApi).toHaveBeenCalledTimes(2);
+      expect(sender.requestApi).toHaveBeenCalledWith({
         asApp: true,
         method: 'DELETE',
         url: '_ANOTHER_APP_ID_/subscriptions',
@@ -190,20 +190,20 @@ describe('subscription management', () => {
     });
 
     it('throw if no appId available', async () => {
-      const manager = new WhatsAppAssetsManager(stateRepository, bot);
+      const manager = new WhatsAppAssetsManager(stateRepository, sender);
 
       await expect(
         manager.deleteAppSubscription(),
       ).rejects.toThrowErrorMatchingInlineSnapshot(`"appId is empty"`);
 
-      expect(bot.requestApi).not.toHaveBeenCalled();
+      expect(sender.requestApi).not.toHaveBeenCalled();
     });
   });
 });
 
 describe('assets management', () => {
   test('get asset id', async () => {
-    const manager = new WhatsAppAssetsManager(stateRepository, bot);
+    const manager = new WhatsAppAssetsManager(stateRepository, sender);
 
     await expect(manager.getAssetId(agent, 'foo', 'bar')).resolves.toBe(
       undefined,
@@ -236,7 +236,7 @@ describe('assets management', () => {
   });
 
   test('set asset id', async () => {
-    const manager = new WhatsAppAssetsManager(stateRepository, bot);
+    const manager = new WhatsAppAssetsManager(stateRepository, sender);
 
     await expect(manager.saveAssetId(agent, 'foo', 'bar', 'baz')).resolves.toBe(
       false,
@@ -269,7 +269,7 @@ describe('assets management', () => {
   });
 
   test('get all assets', async () => {
-    const manager = new WhatsAppAssetsManager(stateRepository, bot);
+    const manager = new WhatsAppAssetsManager(stateRepository, sender);
 
     await expect(manager.getAllAssets(agent, 'foo')).resolves.toBe(null);
     await expect(manager.getAllMedias(agent)).resolves.toBe(null);
@@ -298,7 +298,7 @@ describe('assets management', () => {
   });
 
   test('remove asset id', async () => {
-    const manager = new WhatsAppAssetsManager(stateRepository, bot);
+    const manager = new WhatsAppAssetsManager(stateRepository, sender);
 
     await expect(manager.unsaveAssetId(agent, 'foo', 'bar')).resolves.toBe(
       true,
@@ -327,8 +327,8 @@ describe('assets management', () => {
   });
 
   test('.uploadMedia()', async () => {
-    const manager = new WhatsAppAssetsManager(stateRepository, bot);
-    bot.uploadMedia.mock.fake(async () => ({ id: '1857777774821032' }));
+    const manager = new WhatsAppAssetsManager(stateRepository, sender);
+    sender.uploadMedia.mock.fake(async () => ({ id: '1857777774821032' }));
 
     await expect(
       manager.uploadMedia(
@@ -338,8 +338,8 @@ describe('assets management', () => {
       ),
     ).resolves.toBe('1857777774821032');
 
-    expect(bot.uploadMedia).toHaveBeenCalledTimes(1);
-    expect(bot.uploadMedia).toHaveBeenCalledWith(
+    expect(sender.uploadMedia).toHaveBeenCalledTimes(1);
+    expect(sender.uploadMedia).toHaveBeenCalledWith(
       agent,
       <Image file={{ data: Buffer.from(''), contentType: 'image/png' }} />,
     );
@@ -351,8 +351,8 @@ describe('assets management', () => {
 
 describe('.createPredefinedTemplate(businessAccountId, options)', () => {
   it('make POST /message_templates API call', async () => {
-    const manager = new WhatsAppAssetsManager(stateRepository, bot);
-    bot.requestApi.mock.fake(async () => ({ id: '_TEMPLATE_ID_1_' }));
+    const manager = new WhatsAppAssetsManager(stateRepository, sender);
+    sender.requestApi.mock.fake(async () => ({ id: '_TEMPLATE_ID_1_' }));
 
     await expect(
       manager.createPredefinedTemplate('_BUSINESS_ACCOUNT_ID_', {
@@ -385,8 +385,8 @@ describe('.createPredefinedTemplate(businessAccountId, options)', () => {
       }),
     ).resolves.toEqual({ id: '_TEMPLATE_ID_1_' });
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(1);
-    expect(bot.requestApi).toHaveBeenCalledWith({
+    expect(sender.requestApi).toHaveBeenCalledTimes(1);
+    expect(sender.requestApi).toHaveBeenCalledWith({
       method: 'POST',
       url: '_BUSINESS_ACCOUNT_ID_/message_templates',
       params: {
@@ -430,14 +430,14 @@ describe('.createPredefinedTemplate(businessAccountId, options)', () => {
   });
 
   test('with media header', async () => {
-    const manager = new WhatsAppAssetsManager(stateRepository, bot, {
+    const manager = new WhatsAppAssetsManager(stateRepository, sender, {
       appId: '_APP_ID_',
     });
-    bot.requestApi.mock.fake(async () => ({ id: '_TEMPLATE_ID_2_' }));
+    sender.requestApi.mock.fake(async () => ({ id: '_TEMPLATE_ID_2_' }));
     // mock uploading api
-    bot.requestApi.mock.fakeOnce(async () => ({ id: '_UPLOAD_ID_' }));
+    sender.requestApi.mock.fakeOnce(async () => ({ id: '_UPLOAD_ID_' }));
     const uploadApiCall = nock(`https://graph.facebook.com`)
-      .post(`/${bot.graphApiVersion}/_UPLOAD_ID_`, 'foo', {
+      .post(`/${sender.graphApiVersion}/_UPLOAD_ID_`, 'foo', {
         reqheaders: {
           Authorization: 'OAuth _ROOT_ACCESS_TOKEN_',
           'Content-Type': 'image/png',
@@ -479,8 +479,8 @@ describe('.createPredefinedTemplate(businessAccountId, options)', () => {
       }),
     ).resolves.toEqual({ id: '_TEMPLATE_ID_2_' });
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(2);
-    expect(bot.requestApi).toHaveBeenNthCalledWith(1, {
+    expect(sender.requestApi).toHaveBeenCalledTimes(2);
+    expect(sender.requestApi).toHaveBeenNthCalledWith(1, {
       method: 'POST',
       url: '_APP_ID_/uploads',
       params: {
@@ -489,7 +489,7 @@ describe('.createPredefinedTemplate(businessAccountId, options)', () => {
         file_name: 'baz.png',
       },
     });
-    expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
+    expect(sender.requestApi).toHaveBeenNthCalledWith(2, {
       method: 'POST',
       url: '_BUSINESS_ACCOUNT_ID_/message_templates',
       params: {
@@ -534,8 +534,8 @@ describe('.createPredefinedTemplate(businessAccountId, options)', () => {
 
 describe('.deletePredefinedTemplate(businessAccountId, options)', () => {
   it('make calls to graph API', async () => {
-    const manager = new WhatsAppAssetsManager(stateRepository, bot);
-    bot.requestApi.mock.fake(async () => ({}));
+    const manager = new WhatsAppAssetsManager(stateRepository, sender);
+    sender.requestApi.mock.fake(async () => ({}));
 
     await expect(
       manager.deletePredefinedTemplate('_BUSINESS_ACCOUNT_ID_', {
@@ -549,13 +549,13 @@ describe('.deletePredefinedTemplate(businessAccountId, options)', () => {
       }),
     ).resolves.toBe(undefined);
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(2);
-    expect(bot.requestApi).toHaveBeenNthCalledWith(1, {
+    expect(sender.requestApi).toHaveBeenCalledTimes(2);
+    expect(sender.requestApi).toHaveBeenNthCalledWith(1, {
       method: 'DELETE',
       url: '_BUSINESS_ACCOUNT_ID_/message_templates',
       params: { name: 'MyVeryGoodTemplate' },
     });
-    expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
+    expect(sender.requestApi).toHaveBeenNthCalledWith(2, {
       method: 'DELETE',
       url: '_BUSINESS_ACCOUNT_ID_/message_templates',
       params: { name: 'MyGoooooodTemplate', hsm_id: '_TEMPLATE_ID_' },

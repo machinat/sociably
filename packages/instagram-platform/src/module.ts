@@ -4,7 +4,7 @@ import {
   serviceProviderFactory,
   ServiceProvision,
 } from '@sociably/core/service';
-import BaseBot from '@sociably/core/base/Bot.js';
+import BaseSender from '@sociably/core/base/Sender.js';
 import BaseProfiler from '@sociably/core/base/Profiler.js';
 import BaseMarshaler from '@sociably/core/base/Marshaler.js';
 import Http from '@sociably/http';
@@ -20,7 +20,7 @@ import {
   saveReusableAttachments,
 } from './asset/index.js';
 import { INSTAGRAM } from './constant.js';
-import BotP from './Bot.js';
+import SenderP from './Sender.js';
 import ReceiverP from './Receiver.js';
 import InstagramUserProfile from './UserProfile.js';
 import ProfilerP from './Profiler.js';
@@ -47,8 +47,8 @@ const webhookRouteFactory = serviceProviderFactory({
 
 /** @category Root */
 namespace Instagram {
-  export const Bot = BotP;
-  export type Bot = BotP;
+  export const Sender = SenderP;
+  export type Sender = SenderP;
 
   export const Receiver = ReceiverP;
   export type Receiver = ReceiverP;
@@ -77,10 +77,10 @@ namespace Instagram {
     const provisions: ServiceProvision<unknown>[] = [
       { provide: ConfigsI, withValue: configs },
 
-      BotP,
+      SenderP,
       {
-        provide: BaseBot.PlatformMap,
-        withProvider: BotP,
+        provide: BaseSender.PlatformMap,
+        withProvider: SenderP,
         platform: INSTAGRAM,
       },
 
@@ -143,8 +143,12 @@ namespace Instagram {
         saveReusableAttachments,
       ],
 
-      startHook: serviceContainer({ deps: [BotP] })(async (bot) => bot.start()),
-      stopHook: serviceContainer({ deps: [BotP] })(async (bot) => bot.stop()),
+      startHook: serviceContainer({ deps: [SenderP] })(async (sender) =>
+        sender.start(),
+      ),
+      stopHook: serviceContainer({ deps: [SenderP] })(async (sender) =>
+        sender.stop(),
+      ),
     };
   };
 }

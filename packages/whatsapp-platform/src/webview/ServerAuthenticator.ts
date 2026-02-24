@@ -6,7 +6,7 @@ import {
 } from '@sociably/auth';
 import BasicAuthenticator from '@sociably/auth/basicAuth';
 import { attachWebviewParamsOnUrl } from '@sociably/webview/client';
-import BotP from '../Bot.js';
+import SenderP from '../Sender.js';
 import { WHATSAPP } from '../constant.js';
 import { AgentSettingsAccessorI } from '../interface.js';
 import WhatsAppChat from '../Chat.js';
@@ -22,7 +22,7 @@ import type {
 export class WhatsAppServerAuthenticator
   implements ServerAuthenticator<never, WhatsAppAuthData, WhatsAppAuthContext>
 {
-  bot: BotP;
+  sender: SenderP;
   basicAuthenticator: BasicAuthenticator;
   numberSettingsAccessor: AgentSettingsAccessorI;
 
@@ -35,11 +35,11 @@ export class WhatsAppServerAuthenticator
   platform = WHATSAPP;
 
   constructor(
-    bot: BotP,
+    sender: SenderP,
     basicAuthenticator: BasicAuthenticator,
     numberSettingsAccessor: AgentSettingsAccessorI,
   ) {
-    this.bot = bot;
+    this.sender = sender;
     this.basicAuthenticator = basicAuthenticator;
     this.numberSettingsAccessor = numberSettingsAccessor;
     this.delegateAuthRequest = this.basicAuthenticator.createRequestDelegator<
@@ -47,7 +47,7 @@ export class WhatsAppServerAuthenticator
       WhatsAppAuthData,
       WhatsAppChat
     >({
-      bot,
+      sender,
       platform: WHATSAPP,
       platformName: 'WhatsApp',
       platformColor: '#31BA45',
@@ -151,7 +151,7 @@ export class WhatsAppServerAuthenticator
 
 const ServerAuthenticatorP = serviceProviderClass({
   lifetime: 'singleton',
-  deps: [BotP, BasicAuthenticator, AgentSettingsAccessorI],
+  deps: [SenderP, BasicAuthenticator, AgentSettingsAccessorI],
 })(WhatsAppServerAuthenticator);
 
 type ServerAuthenticatorP = WhatsAppServerAuthenticator;

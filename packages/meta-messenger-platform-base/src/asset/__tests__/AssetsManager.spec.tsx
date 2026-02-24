@@ -3,7 +3,7 @@ import Sociably from '@sociably/core';
 import type StateRepositoryI from '@sociably/core/base/StateRepository.js';
 import { MetaApiAgent } from '@sociably/meta-api';
 import { MessengerAssetsManager } from '../AssetsManager.js';
-import { MessengerBot } from '../../types.js';
+import { MessengerSender } from '../../types.js';
 
 const state = moxy({
   get: async () => null,
@@ -20,7 +20,7 @@ const stateRepository = moxy<StateRepositoryI>({
   },
 } as never);
 
-const bot = moxy<MessengerBot<MetaApiAgent>>({
+const sender = moxy<MessengerSender<MetaApiAgent>>({
   uploadChatAttachment() {
     return {};
   },
@@ -30,7 +30,7 @@ const bot = moxy<MessengerBot<MetaApiAgent>>({
 beforeEach(() => {
   stateRepository.mock.reset();
   state.mock.reset();
-  bot.mock.reset();
+  sender.mock.reset();
 });
 
 const agentId = '12345';
@@ -42,7 +42,11 @@ const agent = {
 describe('page/app management', () => {
   describe('.setSubscribedApp(options)', () => {
     it('call subscribed_apps API as page', async () => {
-      const manager = new MessengerAssetsManager(stateRepository, bot, 'test');
+      const manager = new MessengerAssetsManager(
+        stateRepository,
+        sender,
+        'test',
+      );
 
       await expect(
         manager.setSubscribedApp(agent, {
@@ -51,8 +55,8 @@ describe('page/app management', () => {
         }),
       ).resolves.toBe(undefined);
 
-      expect(bot.requestApi).toHaveBeenCalledTimes(1);
-      expect(bot.requestApi).toHaveBeenCalledWith({
+      expect(sender.requestApi).toHaveBeenCalledTimes(1);
+      expect(sender.requestApi).toHaveBeenCalledWith({
         agent,
         accessToken: '_ACCESS_TOKEN_',
         method: 'POST',
@@ -66,11 +70,15 @@ describe('page/app management', () => {
 
   describe('.deleteSubscribedApp(options)', () => {
     it('call subscribed_apps API as page', async () => {
-      const manager = new MessengerAssetsManager(stateRepository, bot, 'test');
+      const manager = new MessengerAssetsManager(
+        stateRepository,
+        sender,
+        'test',
+      );
       await expect(manager.deleteSubscribedApp(agent)).resolves.toBe(undefined);
 
-      expect(bot.requestApi).toHaveBeenCalledTimes(1);
-      expect(bot.requestApi).toHaveBeenCalledWith({
+      expect(sender.requestApi).toHaveBeenCalledTimes(1);
+      expect(sender.requestApi).toHaveBeenCalledWith({
         agent,
         method: 'DELETE',
         url: 'me/subscribed_apps',
@@ -78,13 +86,17 @@ describe('page/app management', () => {
     });
 
     test('with specified accessToken', async () => {
-      const manager = new MessengerAssetsManager(stateRepository, bot, 'test');
+      const manager = new MessengerAssetsManager(
+        stateRepository,
+        sender,
+        'test',
+      );
       await expect(
         manager.deleteSubscribedApp(agent, { accessToken: '_ACCESS_TOKEN_' }),
       ).resolves.toBe(undefined);
 
-      expect(bot.requestApi).toHaveBeenCalledTimes(1);
-      expect(bot.requestApi).toHaveBeenCalledWith({
+      expect(sender.requestApi).toHaveBeenCalledTimes(1);
+      expect(sender.requestApi).toHaveBeenCalledWith({
         agent,
         accessToken: '_ACCESS_TOKEN_',
         method: 'DELETE',
@@ -104,8 +116,12 @@ describe('page/app management', () => {
     ];
 
     it('call subscribed_apps API as page', async () => {
-      const manager = new MessengerAssetsManager(stateRepository, bot, 'test');
-      bot.requestApi.mock.fake(async ({ method }) =>
+      const manager = new MessengerAssetsManager(
+        stateRepository,
+        sender,
+        'test',
+      );
+      sender.requestApi.mock.fake(async ({ method }) =>
         method === 'GET' ? { data: [] } : {},
       );
 
@@ -118,8 +134,8 @@ describe('page/app management', () => {
         }),
       ).resolves.toBe(undefined);
 
-      expect(bot.requestApi).toHaveBeenCalledTimes(2);
-      expect(bot.requestApi).toHaveBeenNthCalledWith(1, {
+      expect(sender.requestApi).toHaveBeenCalledTimes(2);
+      expect(sender.requestApi).toHaveBeenNthCalledWith(1, {
         agent,
         method: 'GET',
         url: 'me/messenger_profile',
@@ -128,7 +144,7 @@ describe('page/app management', () => {
         },
         accessToken: '_ACCESS_TOKEN_',
       });
-      expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
+      expect(sender.requestApi).toHaveBeenNthCalledWith(2, {
         agent,
         method: 'POST',
         url: 'me/messenger_profile',
@@ -142,8 +158,12 @@ describe('page/app management', () => {
     });
 
     it('remove current fields if not exist on new settings', async () => {
-      const manager = new MessengerAssetsManager(stateRepository, bot, 'test');
-      bot.requestApi.mock.fake(async ({ method }) =>
+      const manager = new MessengerAssetsManager(
+        stateRepository,
+        sender,
+        'test',
+      );
+      sender.requestApi.mock.fake(async ({ method }) =>
         method === 'GET'
           ? {
               data: [
@@ -172,8 +192,8 @@ describe('page/app management', () => {
         }),
       ).resolves.toBe(undefined);
 
-      expect(bot.requestApi).toHaveBeenCalledTimes(3);
-      expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
+      expect(sender.requestApi).toHaveBeenCalledTimes(3);
+      expect(sender.requestApi).toHaveBeenNthCalledWith(2, {
         agent,
         method: 'DELETE',
         url: 'me/messenger_profile',
@@ -181,7 +201,7 @@ describe('page/app management', () => {
           fields: ['get_started', 'ice_breakers'],
         },
       });
-      expect(bot.requestApi).toHaveBeenNthCalledWith(3, {
+      expect(sender.requestApi).toHaveBeenNthCalledWith(3, {
         agent,
         method: 'POST',
         url: 'me/messenger_profile',
@@ -195,8 +215,12 @@ describe('page/app management', () => {
     });
 
     it('set fields if value has change', async () => {
-      const manager = new MessengerAssetsManager(stateRepository, bot, 'test');
-      bot.requestApi.mock.fake(async ({ method }) =>
+      const manager = new MessengerAssetsManager(
+        stateRepository,
+        sender,
+        'test',
+      );
+      sender.requestApi.mock.fake(async ({ method }) =>
         method === 'GET'
           ? {
               data: [
@@ -237,8 +261,8 @@ describe('page/app management', () => {
         }),
       ).resolves.toBe(undefined);
 
-      expect(bot.requestApi).toHaveBeenCalledTimes(2);
-      expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
+      expect(sender.requestApi).toHaveBeenCalledTimes(2);
+      expect(sender.requestApi).toHaveBeenNthCalledWith(2, {
         agent,
         method: 'POST',
         url: 'me/messenger_profile',
@@ -260,8 +284,12 @@ describe('page/app management', () => {
     });
 
     test('platform option on method', async () => {
-      const manager = new MessengerAssetsManager(stateRepository, bot, 'test');
-      bot.requestApi.mock.fake(async ({ method }) =>
+      const manager = new MessengerAssetsManager(
+        stateRepository,
+        sender,
+        'test',
+      );
+      sender.requestApi.mock.fake(async ({ method }) =>
         method === 'GET'
           ? {
               data: [
@@ -292,8 +320,8 @@ describe('page/app management', () => {
         }),
       ).resolves.toBe(undefined);
 
-      expect(bot.requestApi).toHaveBeenCalledTimes(3);
-      expect(bot.requestApi).toHaveBeenNthCalledWith(1, {
+      expect(sender.requestApi).toHaveBeenCalledTimes(3);
+      expect(sender.requestApi).toHaveBeenNthCalledWith(1, {
         agent,
         method: 'GET',
         url: 'me/messenger_profile',
@@ -302,7 +330,7 @@ describe('page/app management', () => {
           fields: expect.arrayContaining(messengerProfileFields),
         },
       });
-      expect(bot.requestApi).toHaveBeenNthCalledWith(2, {
+      expect(sender.requestApi).toHaveBeenNthCalledWith(2, {
         agent,
         method: 'DELETE',
         url: 'me/messenger_profile',
@@ -311,7 +339,7 @@ describe('page/app management', () => {
           fields: ['ice_breakers'],
         },
       });
-      expect(bot.requestApi).toHaveBeenNthCalledWith(3, {
+      expect(sender.requestApi).toHaveBeenNthCalledWith(3, {
         agent,
         method: 'POST',
         url: 'me/messenger_profile',
@@ -333,7 +361,7 @@ describe('page/app management', () => {
 
 describe('assets management', () => {
   test('get asset id', async () => {
-    const manager = new MessengerAssetsManager(stateRepository, bot, 'test');
+    const manager = new MessengerAssetsManager(stateRepository, sender, 'test');
 
     await expect(manager.getAssetId(agent, 'foo', 'bar')).resolves.toBe(
       undefined,
@@ -370,7 +398,7 @@ describe('assets management', () => {
   });
 
   test('set asset id', async () => {
-    const manager = new MessengerAssetsManager(stateRepository, bot, 'test');
+    const manager = new MessengerAssetsManager(stateRepository, sender, 'test');
 
     await expect(manager.saveAssetId(agent, 'foo', 'bar', 'baz')).resolves.toBe(
       false,
@@ -407,7 +435,7 @@ describe('assets management', () => {
   });
 
   test('get all assets', async () => {
-    const manager = new MessengerAssetsManager(stateRepository, bot, 'test');
+    const manager = new MessengerAssetsManager(stateRepository, sender, 'test');
 
     await expect(manager.getAllAssets(agent, 'foo')).resolves.toBe(null);
     await expect(manager.getAllAttachments(agent)).resolves.toBe(null);
@@ -436,7 +464,7 @@ describe('assets management', () => {
   });
 
   test('remove asset id', async () => {
-    const manager = new MessengerAssetsManager(stateRepository, bot, 'test');
+    const manager = new MessengerAssetsManager(stateRepository, sender, 'test');
 
     await expect(manager.unsaveAssetId(agent, 'foo', 'bar')).resolves.toBe(
       true,
@@ -469,8 +497,8 @@ describe('assets management', () => {
   });
 
   test('.uploadChatAttachment()', async () => {
-    const manager = new MessengerAssetsManager(stateRepository, bot, 'test');
-    bot.uploadChatAttachment.mock.fake(async () => ({
+    const manager = new MessengerAssetsManager(stateRepository, sender, 'test');
+    sender.uploadChatAttachment.mock.fake(async () => ({
       attachmentId: '1857777774821032',
     }));
 
@@ -482,8 +510,8 @@ describe('assets management', () => {
       ),
     ).resolves.toBe('1857777774821032');
 
-    expect(bot.uploadChatAttachment).toHaveBeenCalledTimes(1);
-    expect(bot.uploadChatAttachment).toHaveBeenCalledWith(
+    expect(sender.uploadChatAttachment).toHaveBeenCalledTimes(1);
+    expect(sender.uploadChatAttachment).toHaveBeenCalledWith(
       agent,
       <img src="http://foo.bar/avatar" />,
     );

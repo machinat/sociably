@@ -12,8 +12,8 @@ const { INSTAGRAM_ACCESS_TOKEN } = process.env;
 
 const app = createApp({ noServer: true });
 app.start().then(async () => {
-  const [instagramBot] = app.useServices([Instagram.Bot]);
-  const data = await instagramBot.requestApi({
+  const [instagramSender] = app.useServices([Instagram.Sender]);
+  const data = await instagramSender.requestApi({
     accessToken: INSTAGRAM_ACCESS_TOKEN,
     method: 'GET',
     url: 'me',

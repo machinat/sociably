@@ -5,7 +5,7 @@ import {
   serviceProviderFactory,
   ServiceProvision,
 } from '@sociably/core/service';
-import BaseBot from '@sociably/core/base/Bot.js';
+import BaseSender from '@sociably/core/base/Sender.js';
 import BaseMarshaler from '@sociably/core/base/Marshaler.js';
 import Auth, { AnyServerAuthenticator } from '@sociably/auth';
 import BasicAuthenticator from '@sociably/auth/basicAuth';
@@ -41,7 +41,7 @@ import {
   PlatformUtilitiesI,
   ConfigsI,
 } from './interface.js';
-import { BotP } from './Bot.js';
+import { SenderP } from './Sender.js';
 import { ReceiverP } from './Receiver.js';
 import WebviewConnection from './Connection.js';
 import { MemoCacheTarget } from './authenticators/memo/index.js';
@@ -131,8 +131,8 @@ namespace Webview {
     Value extends EventValue = EventValue,
   > = WebviewConfigs<Authenticator, Value>;
 
-  export const Bot = BotP;
-  export type Bot = BotP;
+  export const Sender = SenderP;
+  export type Sender = SenderP;
 
   export const SocketServer = WebSocket.Server;
   export type SocketServer<Authenticator extends AnyServerAuthenticator> =
@@ -180,10 +180,10 @@ namespace Webview {
     const provisions: ServiceProvision<unknown>[] = [
       { provide: ConfigsI, withValue: configs },
 
-      BotP,
+      SenderP,
       {
-        provide: BaseBot.PlatformMap,
-        withProvider: BotP,
+        provide: BaseSender.PlatformMap,
+        withProvider: SenderP,
         platform: WEBVIEW,
       },
 
@@ -248,14 +248,14 @@ namespace Webview {
       provisions,
 
       startHook: serviceContainer({
-        deps: [BotP, { require: NextReceiverP, optional: true }],
-      })(async (bot, nextReceiver) => {
-        await Promise.all([bot.start(), nextReceiver?.prepare()]);
+        deps: [SenderP, { require: NextReceiverP, optional: true }],
+      })(async (sender, nextReceiver) => {
+        await Promise.all([sender.start(), nextReceiver?.prepare()]);
       }),
       stopHook: serviceContainer({
-        deps: [BotP, { require: NextReceiverP, optional: true }],
-      })(async (bot, nextReceiver) => {
-        await Promise.all([bot.stop(), nextReceiver?.close()]);
+        deps: [SenderP, { require: NextReceiverP, optional: true }],
+      })(async (sender, nextReceiver) => {
+        await Promise.all([sender.stop(), nextReceiver?.close()]);
       }),
     };
   };

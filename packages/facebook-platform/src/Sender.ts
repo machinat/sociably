@@ -6,7 +6,7 @@ import ModuleUtilitiesI from '@sociably/core/base/ModuleUtilities.js';
 import { serviceProviderClass } from '@sociably/core/service';
 import type {
   SociablyNode,
-  SociablyBot,
+  SociablySender,
   InitScopeFn,
   DispatchWrapper,
 } from '@sociably/core';
@@ -22,7 +22,7 @@ import {
   createChatJobs,
   createUploadChatAttachmentJobs,
   MessagingOptions,
-  MessengerBot,
+  MessengerSender,
 } from '@sociably/meta-messenger-platform-base';
 import { renderGeneralComponents } from '@sociably/meta-messenger-platform-base/components';
 import { FACEBOOK, PATH_FEED, PATH_PHOTOS } from './constant.js';
@@ -45,7 +45,7 @@ import type {
 
 type FacebookDispatchTarget = FacebookThread | FacebookPage;
 
-type FacebookBotOptions = {
+type FacebookSenderOptions = {
   appId: string;
   appSecret: string;
   graphApiVersion?: string;
@@ -81,14 +81,14 @@ type CommentResult = {
 };
 
 /**
- * FacebookBot render messages and make API call to Facebook platform.
+ * FacebookSender render messages and make API call to Facebook platform.
  *
  * @category Provider
  */
-export class FacebookBot
+export class FacebookSender
   implements
-    MessengerBot<FacebookPage>,
-    SociablyBot<FacebookThread, MetaApiJob, MetaApiResult>
+    MessengerSender<FacebookPage>,
+    SociablySender<FacebookThread, MetaApiJob, MetaApiResult>
 {
   graphApiVersion: string;
   worker: MetaApiWorker;
@@ -110,7 +110,7 @@ export class FacebookBot
     agentSettingsAccessor,
     initScope,
     dispatchWrapper,
-  }: FacebookBotOptions) {
+  }: FacebookSenderOptions) {
     this.graphApiVersion = graphApiVersion;
 
     const renderer = new Renderer<
@@ -293,7 +293,7 @@ export class FacebookBot
   }
 }
 
-const BotP = serviceProviderClass({
+const SenderP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [
     ConfigsI,
@@ -307,7 +307,7 @@ const BotP = serviceProviderClass({
     moduleUitils,
     platformUtils,
   ) =>
-    new FacebookBot({
+    new FacebookSender({
       agentSettingsAccessor,
       appId,
       appSecret,
@@ -315,7 +315,7 @@ const BotP = serviceProviderClass({
       initScope: moduleUitils?.initScope,
       dispatchWrapper: platformUtils?.dispatchWrapper,
     }),
-})(FacebookBot);
+})(FacebookSender);
 
-type BotP = FacebookBot;
-export default BotP;
+type SenderP = FacebookSender;
+export default SenderP;

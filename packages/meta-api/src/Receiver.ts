@@ -95,7 +95,7 @@ const handleWebhook = <Context extends MetaApiEventContext>({
 
     for (const {
       platform,
-      bot,
+      sender,
       objectType,
       makeEventsFromUpdate,
       popEvent,
@@ -111,12 +111,12 @@ const handleWebhook = <Context extends MetaApiEventContext>({
           issuingEvents.push(
             popEvent({
               platform,
-              bot,
+              sender,
               event,
               metadata,
               reply: async (message) =>
                 event.thread
-                  ? bot.render(event.thread, message)
+                  ? sender.render(event.thread, message)
                   : Promise.resolve(null),
             } as Context),
           );

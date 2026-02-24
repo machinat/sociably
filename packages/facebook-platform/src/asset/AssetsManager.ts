@@ -11,7 +11,7 @@ import {
   MESSENGER_PAGE_SUBSCRIPTION_FIELDS,
 } from '@sociably/meta-messenger-platform-base';
 import snakecaseKeys from 'snakecase-keys';
-import BotP from '../Bot.js';
+import SenderP from '../Sender.js';
 import FacebookPage from '../Page.js';
 import { PATH_PERSONAS, FACEBOOK } from '../constant.js';
 import { ConfigsI } from '../interface.js';
@@ -36,10 +36,10 @@ export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> 
 
   constructor(
     stateManager: StateRepositoryI,
-    bot: BotP,
+    sender: SenderP,
     defaultSettings: DefaultSettings = {},
   ) {
-    super(stateManager, bot, FACEBOOK);
+    super(stateManager, sender, FACEBOOK);
     this.defaultSettings = defaultSettings;
   }
 
@@ -148,7 +148,7 @@ export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> 
       accessToken?: string;
     },
   ): Promise<string> {
-    const { id: personaId } = await this.bot.requestApi<{ id: string }>({
+    const { id: personaId } = await this.sender.requestApi<{ id: string }>({
       agent: page,
       accessToken,
       method: 'POST',
@@ -171,7 +171,7 @@ export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> 
       return false;
     }
 
-    await this.bot.requestApi({
+    await this.sender.requestApi({
       agent: page,
       accessToken: options?.accessToken,
       method: 'DELETE',
@@ -184,14 +184,14 @@ export class FacebookAssetsManager extends MessengerAssetsManager<FacebookPage> 
 
 const AssetsManagerP = serviceProviderClass({
   lifetime: 'scoped',
-  deps: [StateRepositoryI, BotP, Http.Connector, ConfigsI],
+  deps: [StateRepositoryI, SenderP, Http.Connector, ConfigsI],
   factory: (
     stateRepository,
-    bot,
+    sender,
     connector,
     { appId, webhookVerifyToken, webhookPath, subscriptionFields },
   ) =>
-    new FacebookAssetsManager(stateRepository, bot, {
+    new FacebookAssetsManager(stateRepository, sender, {
       appId,
       webhookVerifyToken,
       subscriptionFields,

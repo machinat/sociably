@@ -64,9 +64,9 @@ export type ChatActionProps = {
 };
 
 /**
- * Inform user that something is happening on the bot's side. The status is set
- * for 5 seconds or less (when a message arrives from your bot, Telegram clients
- * clear its typing status).
+ * Inform user that something is happening on the sender's side. The status is
+ * set for 5 seconds or less (when a message arrives from your sender, Telegram
+ * clients clear its typing status).
  *
  * @category Component
  * @props {@link ChatActionProps}
@@ -101,8 +101,8 @@ export type KickChatMemberProps = {
 /**
  * Kick a user from a group, a supergroup or a channel. In the case of
  * supergroups and channels, the user will not be able to return to the group on
- * their own using invite links, etc., unless unbanned first. The bot must be an
- * administrator in the chat for this to work and must have the appropriate
+ * their own using invite links, etc., unless unbanned first. The sender must be
+ * an administrator in the chat for this to work and must have the appropriate
  * admin rights.
  *
  * @category Component
@@ -138,7 +138,7 @@ export type UnbanChatMemberProps = {
 /**
  * Unban a previously kicked user in a supergroup or channel. The user will not
  * return to the group or channel automatically, but will be able to join via
- * link, etc. The bot must be an administrator for this to work.
+ * link, etc. The sender must be an administrator for this to work.
  *
  * @category Component
  * @props {@link UnbanChatMemberProps}
@@ -208,7 +208,7 @@ export type RestrictChatMemberProps = {
 } & ChatPromotionProps;
 
 /**
- * Restrict a user in a supergroup. The bot must be an administrator in the
+ * Restrict a user in a supergroup. The sender must be an administrator in the
  * supergroup for this to work and must have the appropriate admin rights. Pass
  * True for all permissions to lift restrictions from a user.
  *
@@ -291,7 +291,7 @@ export type PromoteChatMemberProps = {
 };
 
 /**
- * Promote or demote a user in a supergroup or a channel. The bot must be an
+ * Promote or demote a user in a supergroup or a channel. The sender must be an
  * administrator in the chat for this to work and must have the appropriate
  * admin rights. Pass False for all boolean params to demote a user.
  *
@@ -345,7 +345,8 @@ export type SetChatAdministratorCustomTitleProps = {
 };
 
 /**
- * Set a custom title for an administrator in a supergroup promoted by the bot.
+ * Set a custom title for an administrator in a supergroup promoted by the
+ * sender.
  *
  * @category Component
  * @props {@link SetChatAdministratorCustomTitleProps}
@@ -369,7 +370,7 @@ export const SetChatAdministratorCustomTitle: TelegramComponent<
 });
 
 /**
- * Set default chat permissions for all members. The bot must be an
+ * Set default chat permissions for all members. The sender must be an
  * administrator in the group or a supergroup for this to work and must have the
  * can_restrict_members admin rights.
  *
@@ -419,8 +420,8 @@ export type SetChatPhotoProps = {
 
 /**
  * Set a new profile photo for the chat. Photos can't be changed for private
- * chats. The bot must be an administrator in the chat for this to work and must
- * have the appropriate admin rights.
+ * chats. The sender must be an administrator in the chat for this to work and
+ * must have the appropriate admin rights.
  *
  * @category Component
  * @props {@link SetChatPhotoProps}
@@ -448,8 +449,8 @@ export const SetChatPhoto: TelegramComponent<
 });
 
 /**
- * Delete a chat photo. Photos can't be changed for private chats. The bot must
- * be an administrator in the chat for this to work and must have the
+ * Delete a chat photo. Photos can't be changed for private chats. The sender
+ * must be an administrator in the chat for this to work and must have the
  * appropriate admin rights.
  *
  * @category Component
@@ -476,8 +477,8 @@ export type SetChatTitleProps = {
 
 /**
  * Change the title of a chat. Titles can't be changed for private chats. The
- * bot must be an administrator in the chat for this to work and must have the
- * appropriate admin rights.
+ * sender must be an administrator in the chat for this to work and must have
+ * the appropriate admin rights.
  *
  * @category Component
  * @props {@link SetChatTitleProps}
@@ -504,9 +505,9 @@ export type SetChatDescriptionProps = {
 };
 
 /**
- * Change the description of a group, a supergroup or a channel. The bot must be
- * an administrator in the chat for this to work and must have the appropriate
- * admin rights.
+ * Change the description of a group, a supergroup or a channel. The sender must
+ * be an administrator in the chat for this to work and must have the
+ * appropriate admin rights.
  *
  * @category Component
  * @props {@link SetChatDescriptionProps}
@@ -539,7 +540,7 @@ export type PinChatMessageProps = {
 };
 
 /**
- * Pin a message in a group, a supergroup, or a channel. The bot must be an
+ * Pin a message in a group, a supergroup, or a channel. The sender must be an
  * administrator in the chat for this to work and must have the
  * 'can_pin_messages' admin right in the supergroup or 'can_edit_messages' admin
  * right in the channel.
@@ -566,7 +567,7 @@ export const PinChatMessage: TelegramComponent<
 });
 
 /**
- * Unpin a message in a group, a supergroup, or a channel. The bot must be an
+ * Unpin a message in a group, a supergroup, or a channel. The sender must be an
  * administrator in the chat for this to work and must have the
  * 'can_pin_messages' admin right in the supergroup or 'can_edit_messages' admin
  * right in the channel.
@@ -613,9 +614,9 @@ export type SetChatStickerSetProps = {
 };
 
 /**
- * Change the description of a group, a supergroup or a channel. The bot must be
- * an administrator in the chat for this to work and must have the appropriate
- * admin rights.
+ * Change the description of a group, a supergroup or a channel. The sender must
+ * be an administrator in the chat for this to work and must have the
+ * appropriate admin rights.
  *
  * @category Component
  * @props {@link SetChatStickerSetProps}

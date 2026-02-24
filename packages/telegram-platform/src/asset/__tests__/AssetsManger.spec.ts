@@ -1,6 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import type StateRepositoryI from '@sociably/core/base/StateRepository.js';
-import { TelegramBot } from '../../Bot.js';
+import { TelegramSender } from '../../Sender.js';
 import TelegramUser from '../../User.js';
 import { TelegramAssetsManager } from '../AssetsManager.js';
 
@@ -18,7 +18,7 @@ const stateRepository = moxy<StateRepositoryI>({
     return state;
   },
 } as never);
-const bot = moxy<TelegramBot>({
+const sender = moxy<TelegramSender>({
   requestApi() {},
 } as never);
 
@@ -27,11 +27,11 @@ const botUser = new TelegramUser(12345, true);
 beforeEach(() => {
   stateRepository.mock.reset();
   state.mock.reset();
-  bot.mock.reset();
+  sender.mock.reset();
 });
 
 test('get asset id', async () => {
-  const manager = new TelegramAssetsManager(bot, stateRepository);
+  const manager = new TelegramAssetsManager(sender, stateRepository);
 
   await expect(manager.getAssetId(botUser, 'foo', 'bar')).resolves.toBe(
     undefined,
@@ -68,7 +68,7 @@ test('get asset id', async () => {
 });
 
 test('set asset id', async () => {
-  const manager = new TelegramAssetsManager(bot, stateRepository);
+  const manager = new TelegramAssetsManager(sender, stateRepository);
 
   await expect(manager.saveAssetId(botUser, 'foo', 'bar', 'baz')).resolves.toBe(
     false,
@@ -101,7 +101,7 @@ test('set asset id', async () => {
 });
 
 test('get all assets', async () => {
-  const manager = new TelegramAssetsManager(bot, stateRepository);
+  const manager = new TelegramAssetsManager(sender, stateRepository);
 
   await expect(manager.getAllAssets(botUser, 'foo')).resolves.toBe(null);
   await expect(manager.getAllFiles(botUser)).resolves.toBe(null);
@@ -135,7 +135,7 @@ test('get all assets', async () => {
 });
 
 test('remove asset id', async () => {
-  const manager = new TelegramAssetsManager(bot, stateRepository);
+  const manager = new TelegramAssetsManager(sender, stateRepository);
 
   await expect(manager.unsaveAssetId(botUser, 'foo', 'bar')).resolves.toBe(
     true,
@@ -170,14 +170,14 @@ test('remove asset id', async () => {
 
 describe('.setBotWebhook(bot, options)', () => {
   it('call setWebhook API', async () => {
-    const manager = new TelegramAssetsManager(bot, stateRepository);
+    const manager = new TelegramAssetsManager(sender, stateRepository);
 
     await expect(
       manager.setBotWebhook(botUser, { url: 'https://sociably.io/foo' }),
     ).resolves.toBe(undefined);
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(1);
-    expect(bot.requestApi).toHaveBeenCalledWith({
+    expect(sender.requestApi).toHaveBeenCalledTimes(1);
+    expect(sender.requestApi).toHaveBeenCalledWith({
       agent: botUser,
       method: 'setWebhook',
       params: {
@@ -196,8 +196,8 @@ describe('.setBotWebhook(bot, options)', () => {
       }),
     ).resolves.toBe(undefined);
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(2);
-    expect(bot.requestApi).toHaveBeenCalledWith({
+    expect(sender.requestApi).toHaveBeenCalledTimes(2);
+    expect(sender.requestApi).toHaveBeenCalledWith({
       agent: 67890,
       method: 'setWebhook',
       params: {
@@ -212,15 +212,15 @@ describe('.setBotWebhook(bot, options)', () => {
   });
 
   test('with default options', async () => {
-    const manager = new TelegramAssetsManager(bot, stateRepository, {
+    const manager = new TelegramAssetsManager(sender, stateRepository, {
       webhookUrl: 'https://sociably.io/foo',
       secretToken: '_SECRET_',
     });
 
     await expect(manager.setBotWebhook(botUser)).resolves.toBe(undefined);
 
-    expect(bot.requestApi).toHaveBeenCalledTimes(1);
-    expect(bot.requestApi).toHaveBeenCalledWith({
+    expect(sender.requestApi).toHaveBeenCalledTimes(1);
+    expect(sender.requestApi).toHaveBeenCalledWith({
       agent: botUser,
       method: 'setWebhook',
       params: {
@@ -232,12 +232,12 @@ describe('.setBotWebhook(bot, options)', () => {
 });
 
 test('.deleteBotWebhook(bot, options)', async () => {
-  const manager = new TelegramAssetsManager(bot, stateRepository);
+  const manager = new TelegramAssetsManager(sender, stateRepository);
 
   await expect(manager.deleteBotWebhook(botUser)).resolves.toBe(undefined);
 
-  expect(bot.requestApi).toHaveBeenCalledTimes(1);
-  expect(bot.requestApi).toHaveBeenCalledWith({
+  expect(sender.requestApi).toHaveBeenCalledTimes(1);
+  expect(sender.requestApi).toHaveBeenCalledWith({
     agent: botUser,
     method: 'deleteWebhook',
     params: { drop_pending_updates: false },
@@ -247,8 +247,8 @@ test('.deleteBotWebhook(bot, options)', async () => {
     manager.deleteBotWebhook(botUser, { dropPendingUpdates: true }),
   ).resolves.toBe(undefined);
 
-  expect(bot.requestApi).toHaveBeenCalledTimes(2);
-  expect(bot.requestApi).toHaveBeenCalledWith({
+  expect(sender.requestApi).toHaveBeenCalledTimes(2);
+  expect(sender.requestApi).toHaveBeenCalledWith({
     agent: botUser,
     method: 'deleteWebhook',
     params: { drop_pending_updates: true },

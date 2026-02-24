@@ -23,7 +23,7 @@ import {
   TakeThreadControlValue,
   RequestThreadControlValue,
 } from '@sociably/meta-messenger-platform-base';
-import type { FacebookBot } from './Bot.js';
+import type { FacebookSender } from './Sender.js';
 import type FacebookChat from './Chat.js';
 import FacebookInteractTarget from './InteractTarget.js';
 import { AgentSettingsAccessorI } from './interface.js';
@@ -129,7 +129,7 @@ export type FacebookEventContext = {
   description: string;
   event: FacebookEvent;
   metadata: WebhookMetadata;
-  bot: FacebookBot;
+  sender: FacebookSender;
   reply(message: SociablyNode): Promise<null | MetaApiDispatchResponse>;
 };
 

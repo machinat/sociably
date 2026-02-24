@@ -66,8 +66,8 @@ const updateAssetsFromSuccessfulJobs = async (
             }
 
             if (fileId) {
-              const bot = new TelegramUser(agentId, true);
-              updatingAssets.push(manager.saveFile(bot, assetTag, fileId));
+              const sender = new TelegramUser(agentId, true);
+              updatingAssets.push(manager.saveFile(sender, assetTag, fileId));
             }
           }
         }

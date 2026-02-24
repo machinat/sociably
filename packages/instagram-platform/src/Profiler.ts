@@ -1,6 +1,6 @@
 import { serviceProviderClass } from '@sociably/core/service';
 import type { UserProfiler } from '@sociably/core/base/Profiler.js';
-import BotP from './Bot.js';
+import SenderP from './Sender.js';
 import type InstagramAgent from './Agent.js';
 import type InstagramUser from './User.js';
 import type { RawUserProfile } from './types.js';
@@ -27,11 +27,11 @@ export class InstagramProfiler
   implements UserProfiler<InstagramAgent, InstagramUser>
 {
   private profileFieldsStr: string;
-  private bot: BotP;
+  private sender: SenderP;
   platform = INSTAGRAM;
 
-  constructor(bot: BotP) {
-    this.bot = bot;
+  constructor(sender: SenderP) {
+    this.sender = sender;
     this.profileFieldsStr = PROFILE_FIELDS.join(',');
   }
 
@@ -41,7 +41,7 @@ export class InstagramProfiler
   ): Promise<null | InstagramUserProfile> {
     const userId = typeof user === 'string' ? user : user.id;
 
-    const rawProfile = await this.bot.requestApi<RawUserProfile>({
+    const rawProfile = await this.sender.requestApi<RawUserProfile>({
       agent,
       method: 'GET',
       url: userId,
@@ -54,7 +54,7 @@ export class InstagramProfiler
 
 const ProfilerP = serviceProviderClass({
   lifetime: 'scoped',
-  deps: [BotP],
+  deps: [SenderP],
 })(InstagramProfiler);
 
 type ProfilerP = InstagramProfiler;

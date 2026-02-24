@@ -15,7 +15,7 @@ import type {
   MetaApiDispatchResponse,
   MetaApiUploadingFile,
 } from '@sociably/meta-api';
-import type { WhatsAppBot } from './Bot.js';
+import type { WhatsAppSender } from './Sender.js';
 import type WhatsAppChat from './Chat.js';
 import type { AgentSettingsAccessorI } from './interface.js';
 import type { WhatsAppEvent } from './event/events.js';
@@ -42,7 +42,7 @@ export type WhatsAppEventContext = {
   platform: 'whatsapp';
   event: WhatsAppEvent;
   metadata: WebhookMetadata;
-  bot: WhatsAppBot;
+  sender: WhatsAppSender;
   reply(message: SociablyNode): Promise<null | MetaApiDispatchResponse>;
 };
 

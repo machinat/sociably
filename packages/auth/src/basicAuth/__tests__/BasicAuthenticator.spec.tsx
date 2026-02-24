@@ -3,7 +3,7 @@ import { IncomingMessage, ServerResponse } from 'http';
 import moxy, { Moxy } from '@moxyjs/moxy';
 import Sociably, {
   StateRepository,
-  SociablyBot,
+  SociablySender,
   SociablyThread,
 } from '@sociably/core';
 import HttpOperator from '../../HttpOperator.js';
@@ -34,7 +34,7 @@ const operator = moxy<HttpOperator>({
     `https://sociably.io/myApp/webview/${subpath}`,
 } as never);
 
-const bot = moxy<SociablyBot<SociablyThread, unknown, unknown>>({
+const sender = moxy<SociablySender<SociablyThread, unknown, unknown>>({
   render: async () => null,
 } as never);
 
@@ -45,7 +45,7 @@ const thread = {
 };
 
 const delegateOptions = moxy({
-  bot,
+  sender,
   platform: 'test',
   platformName: 'Test',
   platformColor: '#009',
@@ -80,7 +80,7 @@ afterAll(() => {
 });
 
 beforeEach(() => {
-  bot.mock.reset();
+  sender.mock.reset();
   operator.mock.reset();
   state.mock.reset();
   stateRepository.mock.reset();
@@ -595,10 +595,10 @@ describe('login page', () => {
 
     await delegateRequest(req, res, routing);
 
-    expect(bot.render).toHaveBeenCalledTimes(1);
-    expect(bot.render).toHaveBeenCalledWith(thread, expect.any(Object));
+    expect(sender.render).toHaveBeenCalledTimes(1);
+    expect(sender.render).toHaveBeenCalledWith(thread, expect.any(Object));
 
-    expect(bot.render.mock.calls[0].args[1]).toMatchInlineSnapshot(
+    expect(sender.render.mock.calls[0].args[1]).toMatchInlineSnapshot(
       { props: { code: expect.stringMatching(/^[0-9]{6}$/) } },
       `
       <DefaultCodeMessage
@@ -613,7 +613,7 @@ describe('login page', () => {
     `,
     );
 
-    const msgElement = bot.render.mock.calls[0].args[1];
+    const msgElement = sender.render.mock.calls[0].args[1];
     expect(msgElement.type({ ...msgElement.props, code: 123456 }))
       .toMatchInlineSnapshot(`
       <p>
@@ -676,10 +676,10 @@ describe('login page', () => {
 
     await delegateRequest(req, res, routing);
 
-    expect(bot.render).toHaveBeenCalledTimes(1);
-    expect(bot.render).toHaveBeenCalledWith(thread, expect.any(Object));
+    expect(sender.render).toHaveBeenCalledTimes(1);
+    expect(sender.render).toHaveBeenCalledWith(thread, expect.any(Object));
 
-    expect(bot.render.mock.calls[0].args[1]).toMatchInlineSnapshot(
+    expect(sender.render.mock.calls[0].args[1]).toMatchInlineSnapshot(
       { props: { code: expect.stringMatching(/^[0-9]{20}$/) } },
       `
       <CodeMessage
@@ -726,7 +726,7 @@ describe('login page', () => {
     await delegateRequest(req, res, routing);
 
     expect(operator.signToken).not.toHaveBeenCalled();
-    expect(bot.render).not.toHaveBeenCalled();
+    expect(sender.render).not.toHaveBeenCalled();
     expect(operator.issueState).not.toHaveBeenCalled();
 
     expect(res.end).toHaveBeenCalledTimes(1);
@@ -751,7 +751,7 @@ describe('login page', () => {
     await delegateRequest(req, res, routing);
 
     expect(operator.signToken).toHaveBeenCalledTimes(1);
-    expect(bot.render).toHaveBeenCalledTimes(1);
+    expect(sender.render).toHaveBeenCalledTimes(1);
     expect(operator.issueState).toHaveBeenCalledTimes(1);
     expect(operator.issueState).toHaveBeenCalledWith(res, 'test', {
       status: 'verify',
@@ -785,7 +785,7 @@ describe('login page', () => {
     await delegateRequest(req, res, routing);
 
     expect(operator.signToken).toHaveBeenCalledTimes(1);
-    expect(bot.render).toHaveBeenCalledTimes(1);
+    expect(sender.render).toHaveBeenCalledTimes(1);
     expect(operator.issueState).toHaveBeenCalledTimes(1);
     expect(operator.issueState).toHaveBeenCalledWith(res, 'test', {
       status: 'verify',
@@ -818,7 +818,7 @@ describe('login page', () => {
     await delegateRequest(req, res, routing);
 
     expect(operator.signToken).not.toHaveBeenCalled();
-    expect(bot.render).not.toHaveBeenCalled();
+    expect(sender.render).not.toHaveBeenCalled();
     expect(operator.issueState).not.toHaveBeenCalled();
     expect(res.end).not.toHaveBeenCalled();
 
@@ -860,7 +860,7 @@ describe('login page', () => {
     await delegateRequest(req, res, routing);
 
     expect(operator.signToken).not.toHaveBeenCalled();
-    expect(bot.render).not.toHaveBeenCalled();
+    expect(sender.render).not.toHaveBeenCalled();
     expect(operator.issueState).not.toHaveBeenCalled();
     expect(res.end).not.toHaveBeenCalled();
 
@@ -890,13 +890,13 @@ describe('login page', () => {
       data: { foo: 'bar' },
       redirect: '/foo/bar',
     }));
-    bot.render.mock.fake(async () => {
+    sender.render.mock.fake(async () => {
       throw new Error('YOU SHALL NOT PASS');
     });
 
     await delegateRequest(req, res, routing);
 
-    expect(bot.render).toHaveBeenCalledTimes(1);
+    expect(sender.render).toHaveBeenCalledTimes(1);
     expect(operator.signToken).not.toHaveBeenCalled();
     expect(operator.issueState).not.toHaveBeenCalled();
     expect(res.end).not.toHaveBeenCalled();

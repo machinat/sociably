@@ -1,6 +1,6 @@
 import type {
   SociablyNode,
-  SociablyBot,
+  SociablySender,
   SociablyUser,
   InitScopeFn,
   DispatchWrapper,
@@ -40,10 +40,9 @@ const toConnection = ({ serverId, id }: ConnIdentifier): WebviewConnection =>
   new WebviewConnection(serverId, id);
 
 /** @category Provider */
-export class WebviewBot
-  implements SociablyBot<WebviewConnection, WebSocketJob, WebSocketResult>
+export class WebviewSender
+  implements SociablySender<WebviewConnection, WebSocketJob, WebSocketResult>
 {
-  private _server: WebviewSocketServer<AnyServerAuthenticator>;
   engine: Engine<
     WebviewConnection,
     EventInput,
@@ -55,7 +54,7 @@ export class WebviewBot
   platform = WEBVIEW;
 
   constructor(
-    server: WebviewSocketServer<AnyServerAuthenticator>,
+    private _server: WebviewSocketServer<AnyServerAuthenticator>,
     initScope?: InitScopeFn,
     dispatchWrapper?: DispatchWrapper<
       WebSocketJob,
@@ -63,10 +62,8 @@ export class WebviewBot
       WebSocketResult
     >,
   ) {
-    this._server = server;
-
     const queue = new Queue<WebSocketJob, WebSocketResult>();
-    const worker = new WebSocketWorker(server);
+    const worker = new WebSocketWorker(this._server);
 
     const renderer = new Renderer<EventInput, WebviewComponent>(WEBVIEW, () => {
       throw new TypeError(
@@ -163,23 +160,19 @@ export class WebviewBot
   }
 }
 
-export const BotP = serviceProviderClass({
+export const SenderP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [
     WebSocket.Server,
     { require: ModuleUtilitiesI, optional: true },
     { require: PlatformUtilitiesI, optional: true },
   ],
-  factory: (
-    server: WebviewSocketServer<AnyServerAuthenticator>,
-    moduleUitils,
-    platformUtils,
-  ) =>
-    new WebviewBot(
-      server,
+  factory: (server, moduleUitils, platformUtils) =>
+    new WebviewSender(
+      server as WebviewSocketServer<AnyServerAuthenticator>,
       moduleUitils?.initScope,
       platformUtils?.dispatchWrapper,
     ),
-})(WebviewBot);
+})(WebviewSender);
 
-export type BotP = WebviewBot;
+export type SenderP = WebviewSender;

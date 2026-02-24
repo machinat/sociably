@@ -3,7 +3,7 @@ export { default as TelegramChat } from './Chat.js';
 export { default as TelegramChatProfile } from './ChatProfile.js';
 export { default as TelegramUser } from './User.js';
 export { default as TelegramUserProfile } from './UserProfile.js';
-export { TelegramBot } from './Bot.js';
+export { TelegramSender } from './Sender.js';
 export { TelegramReceiver } from './Receiver.js';
 export { TelegramProfiler } from './Profiler.js';
 export { TelegramAssetsManager, saveUploadedFile } from './asset/index.js';

@@ -11,7 +11,7 @@ import {
   Interfaceable,
 } from './service/index.js';
 import type { AnyDispatchFrame } from './engine/types.js';
-import BaseBotP from './base/Bot.js';
+import BaseSenderP from './base/Sender.js';
 import BaseProfilerP from './base/Profiler.js';
 import BaseMarshalerP from './base/Marshaler.js';
 import ModuleUtilitiesI from './base/ModuleUtilities.js';
@@ -128,7 +128,7 @@ export default class SociablyApp<
     }
 
     const moduleOnlySpace = new ServiceSpace(null, [
-      BaseBotP,
+      BaseSenderP,
       BaseProfilerP,
       BaseMarshalerP,
       ...moduleProvisions,

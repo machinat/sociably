@@ -244,31 +244,35 @@ export type SociablyMetadata = {
   source: string;
 };
 
-export type SociablyBot<Target extends DispatchTarget, Job, Result> = {
+export type SociablySender<Target extends DispatchTarget, Job, Result> = {
   render(
     target: Target,
     message: SociablyNode,
   ): Promise<null | DispatchResponse<Job, Result>>;
 };
 
-export type AnySociablyBot = SociablyBot<DispatchTarget, unknown, unknown>;
+export type AnySociablySender = SociablySender<
+  DispatchTarget,
+  unknown,
+  unknown
+>;
 
 export type EventContext<
   Event extends SociablyEvent<unknown>,
   Metadata extends SociablyMetadata,
-  Bot extends SociablyBot<SociablyThread, unknown, unknown>,
+  Sender extends SociablySender<SociablyThread, unknown, unknown>,
 > = {
   platform: string;
   event: Event;
   metadata: Metadata;
-  bot: Bot;
-  reply(message: SociablyNode): ReturnType<Bot['render']>;
+  sender: Sender;
+  reply(message: SociablyNode): ReturnType<Sender['render']>;
 };
 
 export type AnyEventContext = EventContext<
   SociablyEvent<unknown>,
   SociablyMetadata,
-  SociablyBot<DispatchTarget, unknown, unknown>
+  SociablySender<DispatchTarget, unknown, unknown>
 >;
 
 export type Middleware<Input, Output> = (

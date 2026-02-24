@@ -3,7 +3,7 @@ import invariant from 'invariant';
 import fetch from 'node-fetch';
 import type {
   SociablyNode,
-  SociablyBot,
+  SociablySender,
   InitScopeFn,
   DispatchWrapper,
 } from '@sociably/core';
@@ -42,7 +42,7 @@ import type {
   RenderMediaResponse,
 } from './types.js';
 
-type TwitterBotOptions = {
+type TwitterSenderOptions = {
   appKey: string;
   appSecret: string;
   bearerToken: string;
@@ -69,8 +69,8 @@ type ApiCallOptions = {
 };
 
 /** @category Provider */
-export class TwitterBot
-  implements SociablyBot<TwitterThread, TwitterJob, TwitterApiResult>
+export class TwitterSender
+  implements SociablySender<TwitterThread, TwitterJob, TwitterApiResult>
 {
   agentSettingsAccessor: AgentSettingsAccessorI;
   client: TwitterWorker;
@@ -93,7 +93,7 @@ export class TwitterBot
       maxRequestConnections = 100,
       initScope,
       dispatchWrapper,
-    }: TwitterBotOptions,
+    }: TwitterSenderOptions,
   ) {
     invariant(appKey, 'options.appKey should not be empty');
     invariant(appSecret, 'options.appSecret should not be empty');
@@ -274,7 +274,7 @@ export class TwitterBot
   }
 }
 
-const BotP = serviceProviderClass({
+const SenderP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [
     ConfigsI,
@@ -290,7 +290,7 @@ const BotP = serviceProviderClass({
   ) => {
     invariant(appKey, 'configs.appKey should not be empty');
 
-    return new TwitterBot(settingsAccessor, {
+    return new TwitterSender(settingsAccessor, {
       appKey,
       appSecret,
       bearerToken,
@@ -299,7 +299,7 @@ const BotP = serviceProviderClass({
       dispatchWrapper: platformUtils?.dispatchWrapper,
     });
   },
-})(TwitterBot);
+})(TwitterSender);
 
-type BotP = TwitterBot;
-export default BotP;
+type SenderP = TwitterSender;
+export default SenderP;

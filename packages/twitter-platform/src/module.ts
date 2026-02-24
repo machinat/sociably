@@ -4,7 +4,7 @@ import {
   serviceProviderFactory,
   ServiceProvision,
 } from '@sociably/core/service';
-import BaseBot from '@sociably/core/base/Bot.js';
+import BaseSender from '@sociably/core/base/Sender.js';
 import BaseProfiler from '@sociably/core/base/Profiler.js';
 import BaseMarshaler from '@sociably/core/base/Marshaler.js';
 import Http from '@sociably/http';
@@ -19,7 +19,7 @@ import {
   saveUploadedMedia,
 } from './asset/index.js';
 import { TWITTER } from './constant.js';
-import BotP from './Bot.js';
+import SenderP from './Sender.js';
 import ReceiverP from './Receiver.js';
 import ProfilerP from './Profiler.js';
 import TwitterUserProfile from './UserProfile.js';
@@ -48,8 +48,8 @@ const webhookRouteFactory = serviceProviderFactory({
 
 /** @category Root */
 namespace Twitter {
-  export const Bot = BotP;
-  export type Bot = BotP;
+  export const Sender = SenderP;
+  export type Sender = SenderP;
 
   export const Receiver = ReceiverP;
   export type Receiver = ReceiverP;
@@ -77,10 +77,10 @@ namespace Twitter {
   > => {
     const provisions: ServiceProvision<unknown>[] = [
       { provide: ConfigsI, withValue: configs },
-      BotP,
+      SenderP,
       {
-        provide: BaseBot.PlatformMap,
-        withProvider: BotP,
+        provide: BaseSender.PlatformMap,
+        withProvider: SenderP,
         platform: TWITTER,
       },
 
@@ -143,8 +143,12 @@ namespace Twitter {
         saveUploadedMedia,
       ],
 
-      startHook: serviceContainer({ deps: [BotP] })((bot: BotP) => bot.start()),
-      stopHook: serviceContainer({ deps: [BotP] })((bot: BotP) => bot.stop()),
+      startHook: serviceContainer({ deps: [SenderP] })((sender: SenderP) =>
+        sender.start(),
+      ),
+      stopHook: serviceContainer({ deps: [SenderP] })((sender: SenderP) =>
+        sender.stop(),
+      ),
     };
   };
 }

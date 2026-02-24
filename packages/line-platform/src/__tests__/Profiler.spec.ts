@@ -1,5 +1,5 @@
 import moxy from '@moxyjs/moxy';
-import type { LineBot } from '../Bot.js';
+import type { LineSender } from '../Sender.js';
 import LineChannel from '../Channel.js';
 import LineUser from '../User.js';
 import LineChat from '../Chat.js';
@@ -7,12 +7,12 @@ import LineUserProfile from '../UserProfile.js';
 import LineGroupProfile from '../GroupProfile.js';
 import { LineProfiler } from '../Profiler.js';
 
-const bot = moxy<LineBot>({
+const sender = moxy<LineSender>({
   requestApi: async () => ({}),
 } as never);
 
 beforeEach(() => {
-  bot.mock.reset();
+  sender.mock.reset();
 });
 
 describe('#getUserProfile(user)', () => {
@@ -28,11 +28,11 @@ describe('#getUserProfile(user)', () => {
   const user = new LineUser('_PROVIDER_ID_', '_USER_ID_');
 
   beforeEach(() => {
-    bot.requestApi.mock.fake(async () => userProfileData);
+    sender.requestApi.mock.fake(async () => userProfileData);
   });
 
   it('fetch profile from api', async () => {
-    const profiler = new LineProfiler(bot);
+    const profiler = new LineProfiler(sender);
 
     const profile = await profiler.getUserProfile(channel, user);
     expect(profile).toBeInstanceOf(LineUserProfile);
@@ -45,8 +45,8 @@ describe('#getUserProfile(user)', () => {
     expect(profile.languageCode).toBe('en');
     expect(profile.data).toEqual(userProfileData);
 
-    expect(bot.requestApi).toHaveReturnedTimes(1);
-    expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+    expect(sender.requestApi).toHaveReturnedTimes(1);
+    expect(sender.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       {
         "agent": LineChannel {
           "$$typeofAgent": true,
@@ -60,7 +60,7 @@ describe('#getUserProfile(user)', () => {
   });
 
   test('profile object is marshallable', async () => {
-    const profiler = new LineProfiler(bot);
+    const profiler = new LineProfiler(sender);
     const profile = await profiler.getUserProfile(channel, user);
 
     expect(profile.typeName()).toBe('LineUserProfile');
@@ -81,7 +81,7 @@ describe('#getUserProfile(user)', () => {
   });
 
   it('fetch group member profile', async () => {
-    const profiler = new LineProfiler(bot);
+    const profiler = new LineProfiler(sender);
     const group = new LineChat('_CHANNEL_ID_', 'group', '_GROUP_ID_');
 
     const groupMemberData = {
@@ -90,7 +90,7 @@ describe('#getUserProfile(user)', () => {
       pictureUrl: 'https://obs.line-apps.com/...',
     };
 
-    bot.requestApi.mock.fake(async () => groupMemberData);
+    sender.requestApi.mock.fake(async () => groupMemberData);
 
     const profile = await profiler.getUserProfile(channel, user, {
       inChat: group,
@@ -105,8 +105,8 @@ describe('#getUserProfile(user)', () => {
     expect(profile.languageCode).toBe(undefined);
     expect(profile.data).toEqual(groupMemberData);
 
-    expect(bot.requestApi).toHaveReturnedTimes(1);
-    expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+    expect(sender.requestApi).toHaveReturnedTimes(1);
+    expect(sender.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       {
         "agent": LineChannel {
           "$$typeofAgent": true,
@@ -120,7 +120,7 @@ describe('#getUserProfile(user)', () => {
   });
 
   it('fetch room member profile', async () => {
-    const profiler = new LineProfiler(bot);
+    const profiler = new LineProfiler(sender);
     const room = new LineChat('_CHANNEL_ID_', 'room', '_ROOM_ID_');
 
     const roomMemberData = {
@@ -129,7 +129,7 @@ describe('#getUserProfile(user)', () => {
       pictureUrl: 'https://obs.line-apps.com/...',
     };
 
-    bot.requestApi.mock.fake(async () => roomMemberData);
+    sender.requestApi.mock.fake(async () => roomMemberData);
 
     const profile = await profiler.getUserProfile(channel, user, {
       inChat: room,
@@ -144,8 +144,8 @@ describe('#getUserProfile(user)', () => {
     expect(profile.languageCode).toBe(undefined);
     expect(profile.data).toEqual(roomMemberData);
 
-    expect(bot.requestApi).toHaveReturnedTimes(1);
-    expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+    expect(sender.requestApi).toHaveReturnedTimes(1);
+    expect(sender.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       {
         "agent": LineChannel {
           "$$typeofAgent": true,
@@ -170,11 +170,11 @@ describe('#getGroupProfile(user)', () => {
   const group = new LineChat('_CHANNEL_ID_', 'group', '_GROUP_ID_');
 
   beforeEach(() => {
-    bot.requestApi.mock.fake(async () => groupSummary);
+    sender.requestApi.mock.fake(async () => groupSummary);
   });
 
   it('fetch profile from api', async () => {
-    const profiler = new LineProfiler(bot);
+    const profiler = new LineProfiler(sender);
 
     const profile = await profiler.getGroupProfile(channel, group);
     expect(profile).toBeInstanceOf(LineGroupProfile);
@@ -187,8 +187,8 @@ describe('#getGroupProfile(user)', () => {
     );
     expect(profile.data).toEqual(groupSummary);
 
-    expect(bot.requestApi).toHaveReturnedTimes(1);
-    expect(bot.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
+    expect(sender.requestApi).toHaveReturnedTimes(1);
+    expect(sender.requestApi.mock.calls[0].args[0]).toMatchInlineSnapshot(`
       {
         "agent": LineChannel {
           "$$typeofAgent": true,
@@ -202,7 +202,7 @@ describe('#getGroupProfile(user)', () => {
   });
 
   test('profile object is marshallable', async () => {
-    const profiler = new LineProfiler(bot);
+    const profiler = new LineProfiler(sender);
 
     const profile = await profiler.getGroupProfile(channel, group);
     expect(profile.typeName()).toBe('LineGroupProfile');

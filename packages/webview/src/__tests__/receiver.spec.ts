@@ -4,9 +4,9 @@ import { ServerAuthenticator } from '@sociably/auth';
 import type { WebviewSocketServer } from '../interface.js';
 import { WebviewReceiver } from '../Receiver.js';
 import WebviewConnection from '../Connection.js';
-import { WebviewBot } from '../Bot.js';
+import { WebviewSender } from '../Sender.js';
 
-const bot = moxy<WebviewBot>({
+const sender = moxy<WebviewSender>({
   render: async () => ({ jobs: [], results: [], tasks: [] }),
 } as never);
 
@@ -74,7 +74,7 @@ beforeEach(() => {
 });
 
 it('pop events', () => {
-  (() => new WebviewReceiver(bot, server, popEventWrapper, popError))();
+  (() => new WebviewReceiver(sender, server, popEventWrapper, popError))();
 
   expect(popEventWrapper).toHaveBeenCalledTimes(1);
   expect(popEventWrapper).toHaveBeenCalledWith(expect.any(Function));
@@ -100,7 +100,7 @@ it('pop events', () => {
   expect(popEventMock).toHaveBeenCalledTimes(1);
   expect(popEventMock).toHaveBeenCalledWith({
     platform: 'webview',
-    bot,
+    sender,
     event: {
       kind: 'connection',
       type: 'connect',
@@ -122,7 +122,7 @@ it('pop events', () => {
   expect(popEventMock).toHaveBeenCalledTimes(3);
   expect(popEventMock).toHaveBeenNthCalledWith(2, {
     platform: 'webview',
-    bot,
+    sender,
     event: {
       kind: 'greet',
       type: 'hello',
@@ -136,7 +136,7 @@ it('pop events', () => {
   });
   expect(popEventMock).toHaveBeenNthCalledWith(3, {
     platform: 'webview',
-    bot,
+    sender,
     event: {
       kind: 'default',
       type: 'hug',
@@ -153,7 +153,7 @@ it('pop events', () => {
   expect(popEventMock).toHaveBeenCalledTimes(4);
   expect(popEventMock).toHaveBeenNthCalledWith(4, {
     platform: 'webview',
-    bot,
+    sender,
     event: {
       kind: 'connection',
       type: 'disconnect',
@@ -170,7 +170,7 @@ it('pop events', () => {
 });
 
 it('register auth user topic if authContext.user is present', () => {
-  (() => new WebviewReceiver(bot, server, popEventWrapper, popError))();
+  (() => new WebviewReceiver(sender, server, popEventWrapper, popError))();
 
   server.emit('connect', {
     connId: '_CONN_ID_',
@@ -203,7 +203,7 @@ it('register auth user topic if authContext.user is present', () => {
 });
 
 it('register auth thread topic if authContext.thread is present', () => {
-  (() => new WebviewReceiver(bot, server, popEventWrapper, popError))();
+  (() => new WebviewReceiver(sender, server, popEventWrapper, popError))();
 
   server.emit('connect', {
     connId: '_CONN_ID_',
@@ -236,7 +236,7 @@ it('register auth thread topic if authContext.thread is present', () => {
 });
 
 test('reply(message) sugar', async () => {
-  (() => new WebviewReceiver(bot, server, popEventWrapper, popError))();
+  (() => new WebviewReceiver(sender, server, popEventWrapper, popError))();
 
   server.emit('connect', {
     connId: '_CONN_ID_',
@@ -256,12 +256,12 @@ test('reply(message) sugar', async () => {
     }
   `);
 
-  expect(bot.render).toHaveBeenCalledTimes(1);
-  expect(bot.render).toHaveBeenCalledWith(event.thread, 'hello world');
+  expect(sender.render).toHaveBeenCalledTimes(1);
+  expect(sender.render).toHaveBeenCalledWith(event.thread, 'hello world');
 });
 
 it('pop error', () => {
-  (() => new WebviewReceiver(bot, server, popEventWrapper, popError))();
+  (() => new WebviewReceiver(sender, server, popEventWrapper, popError))();
 
   server.emit('error', new Error('BOO!'));
 

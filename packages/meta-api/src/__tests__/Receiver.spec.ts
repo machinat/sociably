@@ -4,7 +4,7 @@ import moxy from '@moxyjs/moxy';
 import { SociablyEvent } from '@sociably/core';
 import MetaWebhookReceiver from '../Receiver.js';
 
-const bot = moxy({
+const sender = moxy({
   render: async () => ({ jobs: [], results: [], tasks: [] }),
 });
 
@@ -23,7 +23,7 @@ const popFooEvent = moxy(async () => null);
 
 const fooListeningPlatformOptions = {
   platform: 'test',
-  bot,
+  sender,
   objectType: 'foo',
   makeEventsFromUpdate,
   popEvent: popFooEvent,
@@ -32,7 +32,7 @@ const fooListeningPlatformOptions = {
 const popBarEvent = moxy(async () => null);
 const barListeningPlatformOptions = {
   platform: 'test2',
-  bot,
+  sender,
   objectType: 'bar',
   makeEventsFromUpdate,
   popEvent: popBarEvent,
@@ -76,7 +76,7 @@ const routingInfo = {
 };
 
 beforeEach(() => {
-  bot.mock.reset();
+  sender.mock.reset();
   popFooEvent.mock.clear();
   makeEventsFromUpdate.mock.reset();
 });
@@ -398,7 +398,7 @@ describe('handling POST', () => {
     popFooEvent.mock.calls.forEach(({ args: [context] }, i) => {
       expect(context).toEqual({
         platform: 'test',
-        bot,
+        sender,
         event: {
           platform: 'test',
           category: 'foo',
@@ -515,7 +515,7 @@ describe('handling POST', () => {
 
     const expectedFooEventContext = {
       platform: 'test',
-      bot,
+      sender,
       event: fooEvent,
       metadata: {
         source: 'webhook',
@@ -540,7 +540,7 @@ describe('handling POST', () => {
   });
 
   describe('context.reply(message)', () => {
-    test('call bot.render(event.thread, message)', async () => {
+    test('call sender.render(event.thread, message)', async () => {
       const receiver = new MetaWebhookReceiver({
         appSecret: '_APP_SECRET_',
         webhookVerifyToken: '_VERIFY_TOKEN_',
@@ -571,8 +571,8 @@ describe('handling POST', () => {
         }
       `);
 
-      expect(bot.render).toHaveBeenCalledTimes(1);
-      expect(bot.render).toHaveBeenCalledWith(event.thread, 'hello world');
+      expect(sender.render).toHaveBeenCalledTimes(1);
+      expect(sender.render).toHaveBeenCalledWith(event.thread, 'hello world');
 
       expect(makeEventsFromUpdate).toHaveBeenCalledTimes(1);
       expect(makeEventsFromUpdate).toHaveBeenCalledWith({
@@ -610,7 +610,7 @@ describe('handling POST', () => {
     const { reply } = popFooEvent.mock.calls[0].args[0];
 
     await expect(reply('hello world')).resolves.toBe(null);
-    expect(bot.render).not.toHaveBeenCalled();
+    expect(sender.render).not.toHaveBeenCalled();
 
     expect(popBarEvent).not.toHaveBeenCalled();
   });

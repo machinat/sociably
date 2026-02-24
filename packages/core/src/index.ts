@@ -26,7 +26,7 @@ export {
   serviceProviderClass,
   serviceProviderFactory,
 } from './service/index.js';
-export { default as BaseBot } from './base/Bot.js';
+export { default as BaseSender } from './base/Sender.js';
 export { default as BaseProfiler } from './base/Profiler.js';
 export { default as StateRepository } from './base/StateRepository.js';
 export { default as IntentRecognizer } from './base/IntentRecognizer.js';

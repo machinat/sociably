@@ -1,6 +1,6 @@
 import StateRepositoryI from '@sociably/core/base/StateRepository.js';
 import {
-  MetaApiBot,
+  MetaApiSender,
   MetaApiAgent,
   SetMetaAppSubscriptionOptions,
   DeleteMetaAppSubscriptionOptions,
@@ -11,19 +11,19 @@ const agentInputId = (agent: string | MetaApiAgent): string =>
 
 export class MetaAssetsManager<
   Agent extends MetaApiAgent,
-  Bot extends MetaApiBot<Agent>,
+  Sender extends MetaApiSender<Agent>,
 > {
-  protected bot: Bot;
+  protected sender: Sender;
   private stateRepository: StateRepositoryI;
   private platformShortId: string;
 
   constructor(
     stateManager: StateRepositoryI,
-    bot: Bot,
+    sender: Sender,
     platformShortId: string,
   ) {
     this.stateRepository = stateManager;
-    this.bot = bot;
+    this.sender = sender;
     this.platformShortId = platformShortId;
   }
 
@@ -34,7 +34,7 @@ export class MetaAssetsManager<
     appId,
     webhookVerifyToken,
   }: SetMetaAppSubscriptionOptions): Promise<void> {
-    await this.bot.requestApi({
+    await this.sender.requestApi({
       asApp: true,
       method: 'POST',
       url: `${appId}/subscriptions`,
@@ -53,7 +53,7 @@ export class MetaAssetsManager<
     objectType,
     fields,
   }: DeleteMetaAppSubscriptionOptions): Promise<void> {
-    await this.bot.requestApi({
+    await this.sender.requestApi({
       asApp: true,
       method: 'DELETE',
       url: `${appId}/subscriptions`,

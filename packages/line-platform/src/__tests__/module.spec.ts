@@ -1,7 +1,7 @@
 import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { serviceProviderFactory } from '@sociably/core/service';
-import BaseBot from '@sociably/core/base/Bot.js';
+import BaseSender from '@sociably/core/base/Sender.js';
 import BaseProfiler from '@sociably/core/base/Profiler.js';
 import BaseMarshaler from '@sociably/core/base/Marshaler.js';
 import Http from '@sociably/http';
@@ -13,7 +13,7 @@ import LineGroupProfile from '../GroupProfile.js';
 import { LineProfiler } from '../Profiler.js';
 import { AgentSettingsAccessorI } from '../interface.js';
 import { LineAssetsManager } from '../asset/index.js';
-import { LineBot } from '../Bot.js';
+import { LineSender } from '../Sender.js';
 import LineChannel from '../Channel.js';
 import LineUser from '../User.js';
 import LineChat from '../Chat.js';
@@ -21,7 +21,7 @@ import { LineChatChannelSettings } from '../types.js';
 
 it('export interfaces', () => {
   expect(Line.Receiver).toBe(LineReceiver);
-  expect(Line.Bot).toBe(LineBot);
+  expect(Line.Sender).toBe(LineSender);
   expect(Line.Profiler).toBe(LineProfiler);
   expect(Line.Configs).toMatchInlineSnapshot(`
     {
@@ -85,17 +85,23 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [bot, receiver, configsProvided, profiler, assetManager, routings] =
-      app.useServices([
-        Line.Bot,
-        Line.Receiver,
-        Line.Configs,
-        Line.Profiler,
-        Line.AssetsManager,
-        Http.RequestRouteList,
-      ]);
+    const [
+      sender,
+      receiver,
+      configsProvided,
+      profiler,
+      assetManager,
+      routings,
+    ] = app.useServices([
+      Line.Sender,
+      Line.Receiver,
+      Line.Configs,
+      Line.Profiler,
+      Line.AssetsManager,
+      Http.RequestRouteList,
+    ]);
 
-    expect(bot).toBeInstanceOf(LineBot);
+    expect(sender).toBeInstanceOf(LineSender);
     expect(receiver).toBeInstanceOf(LineReceiver);
     expect(profiler).toBeInstanceOf(LineProfiler);
     expect(assetManager).toBeInstanceOf(LineAssetsManager);
@@ -381,12 +387,12 @@ describe('initModule(configs)', () => {
     await app.start();
 
     const [bots, profilers, marshalTypes] = app.useServices([
-      BaseBot.PlatformMap,
+      BaseSender.PlatformMap,
       BaseProfiler.PlatformMap,
       BaseMarshaler.TypeList,
     ]);
 
-    expect(bots.get('line')).toBeInstanceOf(LineBot);
+    expect(bots.get('line')).toBeInstanceOf(LineSender);
     expect(profilers.get('line')).toBeInstanceOf(LineProfiler);
     expect(marshalTypes).toEqual(
       expect.arrayContaining([
@@ -425,8 +431,8 @@ describe('initModule(configs)', () => {
     ]);
   });
 
-  test('#startHook() start bot', async () => {
-    const bot = moxy({ start: async () => {} });
+  test('#startHook() start sender', async () => {
+    const sender = moxy({ start: async () => {} });
     const module = Line.initModule({
       agentSettings: {
         providerId: '_PROVIDER_ID_',
@@ -437,12 +443,12 @@ describe('initModule(configs)', () => {
       shouldVerifyRequest: false,
     });
 
-    await expect(module.startHook!.$$factory(bot)).resolves.toBe(undefined);
-    expect(bot.start).toHaveBeenCalledTimes(1);
+    await expect(module.startHook!.$$factory(sender)).resolves.toBe(undefined);
+    expect(sender.start).toHaveBeenCalledTimes(1);
   });
 
-  test('#stopHook() stop bot', async () => {
-    const bot = moxy({ stop: async () => {} });
+  test('#stopHook() stop sender', async () => {
+    const sender = moxy({ stop: async () => {} });
     const module = Line.initModule({
       agentSettings: {
         providerId: '_PROVIDER_ID_',
@@ -453,7 +459,7 @@ describe('initModule(configs)', () => {
       shouldVerifyRequest: false,
     });
 
-    await expect(module.stopHook!.$$factory(bot)).resolves.toBe(undefined);
-    expect(bot.stop).toHaveBeenCalledTimes(1);
+    await expect(module.stopHook!.$$factory(sender)).resolves.toBe(undefined);
+    expect(sender.stop).toHaveBeenCalledTimes(1);
   });
 });

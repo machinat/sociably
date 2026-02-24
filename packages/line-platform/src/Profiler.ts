@@ -1,6 +1,6 @@
 import { serviceProviderClass } from '@sociably/core/service';
 import type { UserProfiler } from '@sociably/core/base/Profiler.js';
-import BotP from './Bot.js';
+import SenderP from './Sender.js';
 import type LineChnnel from './Channel.js';
 import type LineChat from './Chat.js';
 import type LineUser from './User.js';
@@ -15,11 +15,11 @@ type GetUserProfileOptions = {
 
 /** @category Provider */
 export class LineProfiler implements UserProfiler<LineChnnel, LineUser> {
-  bot: BotP;
+  sender: SenderP;
   platform = LINE;
 
-  constructor(bot: BotP) {
-    this.bot = bot;
+  constructor(sender: SenderP) {
+    this.sender = sender;
   }
 
   async getUserProfile(
@@ -36,7 +36,7 @@ export class LineProfiler implements UserProfiler<LineChnnel, LineUser> {
       ? `v2/bot/room/${inChat.id}/member/${userId}`
       : `v2/bot/profile/${userId}`;
 
-    const profileData: LineRawUserProfile = await this.bot.requestApi({
+    const profileData: LineRawUserProfile = await this.sender.requestApi({
       agent,
       method: 'GET',
       url: requestApi,
@@ -55,7 +55,7 @@ export class LineProfiler implements UserProfiler<LineChnnel, LineUser> {
     }
 
     const chatId = typeof chat === 'string' ? chat : chat.id;
-    const groupSummary: LineGroupData = await this.bot.requestApi({
+    const groupSummary: LineGroupData = await this.sender.requestApi({
       agent,
       method: 'GET',
       url: `v2/bot/group/${chatId}/summary`,
@@ -67,7 +67,7 @@ export class LineProfiler implements UserProfiler<LineChnnel, LineUser> {
 
 const ProfilerP = serviceProviderClass({
   lifetime: 'scoped',
-  deps: [BotP],
+  deps: [SenderP],
 })(LineProfiler);
 
 type ProfilerP = LineProfiler;

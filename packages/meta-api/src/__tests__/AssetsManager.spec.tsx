@@ -1,7 +1,7 @@
 import moxy from '@moxyjs/moxy';
 import type StateRepositoryI from '@sociably/core/base/StateRepository.js';
 import { MetaAssetsManager } from '../AssetsManager.js';
-import { MetaApiBot } from '../types.js';
+import { MetaApiSender } from '../types.js';
 
 const state = moxy({
   get: async () => null,
@@ -18,7 +18,7 @@ const stateRepository = moxy<StateRepositoryI>({
   },
 } as never);
 
-const bot = moxy<MetaApiBot>({
+const sender = moxy<MetaApiSender>({
   uploadChatAttachment() {
     return {};
   },
@@ -28,13 +28,13 @@ const bot = moxy<MetaApiBot>({
 beforeEach(() => {
   stateRepository.mock.reset();
   state.mock.reset();
-  bot.mock.reset();
+  sender.mock.reset();
 });
 
 describe('page/app management', () => {
   describe('.setAppSubscription(options)', () => {
     it('call subscription API as application', async () => {
-      const manager = new MetaAssetsManager(stateRepository, bot, 'test');
+      const manager = new MetaAssetsManager(stateRepository, sender, 'test');
 
       await expect(
         manager.setAppSubscription({
@@ -46,8 +46,8 @@ describe('page/app management', () => {
         }),
       ).resolves.toBe(undefined);
 
-      expect(bot.requestApi).toHaveBeenCalledTimes(1);
-      expect(bot.requestApi).toHaveBeenCalledWith({
+      expect(sender.requestApi).toHaveBeenCalledTimes(1);
+      expect(sender.requestApi).toHaveBeenCalledWith({
         asApp: true,
         method: 'POST',
         url: '_APP_ID_/subscriptions',
@@ -64,7 +64,7 @@ describe('page/app management', () => {
 
   describe('.deleteAppSubscription(options)', () => {
     it('call subscription API as application', async () => {
-      const manager = new MetaAssetsManager(stateRepository, bot, 'test');
+      const manager = new MetaAssetsManager(stateRepository, sender, 'test');
 
       await expect(
         manager.deleteAppSubscription({
@@ -72,8 +72,8 @@ describe('page/app management', () => {
         }),
       ).resolves.toBe(undefined);
 
-      expect(bot.requestApi).toHaveBeenCalledTimes(1);
-      expect(bot.requestApi).toHaveBeenCalledWith({
+      expect(sender.requestApi).toHaveBeenCalledTimes(1);
+      expect(sender.requestApi).toHaveBeenCalledWith({
         asApp: true,
         method: 'DELETE',
         url: '_APP_ID_/subscriptions',
@@ -88,8 +88,8 @@ describe('page/app management', () => {
         }),
       ).resolves.toBe(undefined);
 
-      expect(bot.requestApi).toHaveBeenCalledTimes(2);
-      expect(bot.requestApi).toHaveBeenCalledWith({
+      expect(sender.requestApi).toHaveBeenCalledTimes(2);
+      expect(sender.requestApi).toHaveBeenCalledWith({
         asApp: true,
         method: 'DELETE',
         url: '_ANOTHER_APP_ID_/subscriptions',
@@ -104,7 +104,7 @@ describe('page/app management', () => {
 
 describe('assets management', () => {
   test('get asset id', async () => {
-    const manager = new MetaAssetsManager(stateRepository, bot, 'test');
+    const manager = new MetaAssetsManager(stateRepository, sender, 'test');
 
     await expect(manager.getAssetId('_AGENT_ID_', 'foo', 'bar')).resolves.toBe(
       undefined,
@@ -128,7 +128,7 @@ describe('assets management', () => {
   });
 
   test('set asset id', async () => {
-    const manager = new MetaAssetsManager(stateRepository, bot, 'test');
+    const manager = new MetaAssetsManager(stateRepository, sender, 'test');
 
     await expect(
       manager.saveAssetId('_AGENT_ID_', 'foo', 'bar', 'baz'),
@@ -151,7 +151,7 @@ describe('assets management', () => {
   });
 
   test('get all assets', async () => {
-    const manager = new MetaAssetsManager(stateRepository, bot, 'test');
+    const manager = new MetaAssetsManager(stateRepository, sender, 'test');
 
     await expect(manager.getAllAssets('_AGENT_ID_', 'foo')).resolves.toBe(null);
 
@@ -176,7 +176,7 @@ describe('assets management', () => {
   });
 
   test('remove asset id', async () => {
-    const manager = new MetaAssetsManager(stateRepository, bot, 'test');
+    const manager = new MetaAssetsManager(stateRepository, sender, 'test');
 
     await expect(
       manager.unsaveAssetId('_AGENT_ID_', 'foo', 'bar'),

@@ -12,7 +12,7 @@ import {
   MetaApiError,
   GraphApiErrorBody,
 } from '@sociably/meta-api';
-import BotP from '../Bot.js';
+import SenderP from '../Sender.js';
 import WhatsAppAgent from '../Agent.js';
 import { ConfigsI } from '../interface.js';
 import { WHATSAPP } from '../constant.js';
@@ -170,16 +170,16 @@ export type CreatePredefinedTemplateOptions = {
  */
 export class WhatsAppAssetsManager extends MetaAssetsManager<
   WhatsAppAgent,
-  BotP
+  SenderP
 > {
   defaultSettings: DefaultSettings;
 
   constructor(
     stateRepository: StateRepositoryI,
-    bot: BotP,
+    sender: SenderP,
     defaultSettings: DefaultSettings = {},
   ) {
-    super(stateRepository, bot, WHATSAPP);
+    super(stateRepository, sender, WHATSAPP);
     this.defaultSettings = {
       ...defaultSettings,
       subscriptionFields:
@@ -257,7 +257,7 @@ export class WhatsAppAssetsManager extends MetaAssetsManager<
     assetTag: string,
     node: SociablyNode,
   ): Promise<string> {
-    const result = await this.bot.uploadMedia(agent, node);
+    const result = await this.sender.uploadMedia(agent, node);
     if (result === null) {
       throw new Error(`message ${formatNode(node)} render to empty`);
     }
@@ -343,7 +343,7 @@ export class WhatsAppAssetsManager extends MetaAssetsManager<
       });
     }
 
-    const result = await this.bot.requestApi({
+    const result = await this.sender.requestApi({
       method: 'POST',
       url: `${businessAccountId}/message_templates`,
       params: {
@@ -369,7 +369,7 @@ export class WhatsAppAssetsManager extends MetaAssetsManager<
       id?: string;
     },
   ): Promise<void> {
-    await this.bot.requestApi({
+    await this.sender.requestApi({
       method: 'DELETE',
       url: `${businessAccountId}/message_templates`,
       params: { name, hsm_id: id },
@@ -401,7 +401,7 @@ export class WhatsAppAssetsManager extends MetaAssetsManager<
       );
     }
 
-    const { id: uploadId } = await this.bot.requestApi({
+    const { id: uploadId } = await this.sender.requestApi({
       method: 'POST',
       url: `${appId}/uploads`,
       params: {
@@ -412,11 +412,11 @@ export class WhatsAppAssetsManager extends MetaAssetsManager<
     });
 
     const res = await fetch(
-      `https://graph.facebook.com/${this.bot.graphApiVersion}/${uploadId}`,
+      `https://graph.facebook.com/${this.sender.graphApiVersion}/${uploadId}`,
       {
         method: 'POST',
         headers: {
-          Authorization: `OAuth ${this.bot.accessToken}`,
+          Authorization: `OAuth ${this.sender.accessToken}`,
           'Content-Type': contentType,
           'Content-Length': String(contentLength),
           file_offset: '0',
@@ -436,14 +436,14 @@ export class WhatsAppAssetsManager extends MetaAssetsManager<
 
 const AssetsManagerP = serviceProviderClass({
   lifetime: 'scoped',
-  deps: [StateRepositoryI, BotP, Http.Connector, ConfigsI],
+  deps: [StateRepositoryI, SenderP, Http.Connector, ConfigsI],
   factory: (
     stateRepository,
-    bot,
+    sender,
     connector,
     { appId, webhookPath, webhookVerifyToken, subscriptionFields },
   ) =>
-    new WhatsAppAssetsManager(stateRepository, bot, {
+    new WhatsAppAssetsManager(stateRepository, sender, {
       appId,
       webhookVerifyToken,
       subscriptionFields,

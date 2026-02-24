@@ -1,7 +1,7 @@
 import invariant from 'invariant';
 import type {
   SociablyNode,
-  SociablyBot,
+  SociablySender,
   InitScopeFn,
   DispatchWrapper,
 } from '@sociably/core';
@@ -30,7 +30,7 @@ import type {
   WhatsAppDispatchFrame,
 } from './types.js';
 
-type WhatsAppBotOptions = {
+type WhatsAppSenderOptions = {
   accessToken: string;
   appId: string;
   appSecret: string;
@@ -58,12 +58,12 @@ type ApiCallOptions = {
 };
 
 /**
- * WhatsAppBot render messages and make API call to WhatsApp platform.
+ * WhatsAppSender render messages and make API call to WhatsApp platform.
  *
  * @category Provider
  */
-export class WhatsAppBot
-  implements SociablyBot<WhatsAppChat, MetaApiJob, MetaApiResult>
+export class WhatsAppSender
+  implements SociablySender<WhatsAppChat, MetaApiJob, MetaApiResult>
 {
   graphApiVersion: string;
   accessToken: string;
@@ -85,7 +85,7 @@ export class WhatsAppBot
     apiBatchRequestInterval = 500,
     initScope,
     dispatchWrapper,
-  }: WhatsAppBotOptions) {
+  }: WhatsAppSenderOptions) {
     invariant(accessToken, 'options.accessToken should not be empty');
     this.graphApiVersion = graphApiVersion;
     this.accessToken = accessToken;
@@ -172,7 +172,7 @@ export class WhatsAppBot
   }
 }
 
-const BotP = serviceProviderClass({
+const SenderP = serviceProviderClass({
   lifetime: 'singleton',
   deps: [
     ConfigsI,
@@ -184,7 +184,7 @@ const BotP = serviceProviderClass({
     moduleUitils,
     platformUtils,
   ) =>
-    new WhatsAppBot({
+    new WhatsAppSender({
       accessToken,
       appId,
       appSecret,
@@ -192,7 +192,7 @@ const BotP = serviceProviderClass({
       initScope: moduleUitils?.initScope,
       dispatchWrapper: platformUtils?.dispatchWrapper,
     }),
-})(WhatsAppBot);
+})(WhatsAppSender);
 
-type BotP = WhatsAppBot;
-export default BotP;
+type SenderP = WhatsAppSender;
+export default SenderP;

@@ -3,7 +3,7 @@ import { WebhookReceiver } from '@sociably/http/webhook';
 import type { WebhookHandler } from '@sociably/http/webhook';
 import { serviceProviderClass } from '@sociably/core/service';
 import createEvent from './event/factory.js';
-import BotP from './Bot.js';
+import SenderP from './Sender.js';
 import {
   ConfigsI,
   PlatformUtilitiesI,
@@ -14,7 +14,7 @@ import { TELEGRAM } from './constant.js';
 import type { TelegramEventContext, TelegramRawEvent } from './types.js';
 
 type TelegramReceiverOptions = {
-  bot: BotP;
+  sender: SenderP;
   agentSettingsAccessor: AgentSettingsAccessorI;
   secretToken: string;
   shouldVerifySecretToken?: boolean;
@@ -22,7 +22,7 @@ type TelegramReceiverOptions = {
 };
 
 const handleWebhook = ({
-  bot,
+  sender,
   agentSettingsAccessor,
   secretToken,
   shouldVerifySecretToken = true,
@@ -57,7 +57,7 @@ const handleWebhook = ({
     // validate secret token header
     if (
       shouldVerifySecretToken &&
-      headers['x-telegram-bot-api-secret-token'] !== secretToken
+      headers['x-telegram-sender-api-secret-token'] !== secretToken
     ) {
       return { code: 401 };
     }
@@ -72,10 +72,10 @@ const handleWebhook = ({
     const event = createEvent(botId, body);
     await popEvent({
       platform: TELEGRAM,
-      bot,
+      sender,
       event,
       metadata,
-      reply: (message) => bot.render(event.thread ?? event.agent, message),
+      reply: (message) => sender.render(event.thread ?? event.agent, message),
     });
     return { code: 200 };
   };
@@ -94,15 +94,15 @@ export class TelegramReceiver extends WebhookReceiver {
 
 const ReceiverP = serviceProviderClass({
   lifetime: 'singleton',
-  deps: [ConfigsI, BotP, AgentSettingsAccessorI, PlatformUtilitiesI],
+  deps: [ConfigsI, SenderP, AgentSettingsAccessorI, PlatformUtilitiesI],
   factory: (
     { secretToken, shouldVerifySecretToken },
-    bot,
+    sender,
     agentSettingsAccessor,
     { popEventWrapper },
   ) =>
     new TelegramReceiver({
-      bot,
+      sender,
       secretToken,
       agentSettingsAccessor,
       shouldVerifySecretToken,

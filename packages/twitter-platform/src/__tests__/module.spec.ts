@@ -1,7 +1,7 @@
 import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
 import { serviceInterface } from '@sociably/core/service';
-import BaseBot from '@sociably/core/base/Bot.js';
+import BaseSender from '@sociably/core/base/Sender.js';
 import BaseProfiler from '@sociably/core/base/Profiler.js';
 import BaseMarshaler from '@sociably/core/base/Marshaler.js';
 import Http from '@sociably/http';
@@ -13,7 +13,7 @@ import TwitterUser from '../User.js';
 import { TwitterReceiver } from '../Receiver.js';
 import TwitterUserProfile from '../UserProfile.js';
 import { TwitterProfiler } from '../Profiler.js';
-import { TwitterBot } from '../Bot.js';
+import { TwitterSender } from '../Sender.js';
 import { AgentSettingsAccessorI } from '../interface.js';
 import { TwitterAssetsManager, saveUploadedMedia } from '../asset/index.js';
 
@@ -30,7 +30,7 @@ const basicConfigs = {
 
 it('export interfaces', () => {
   expect(Twitter.Receiver).toBe(TwitterReceiver);
-  expect(Twitter.Bot).toBe(TwitterBot);
+  expect(Twitter.Sender).toBe(TwitterSender);
   expect(Twitter.Profiler).toBe(TwitterProfiler);
   expect(Twitter.Configs).toMatchInlineSnapshot(`
     {
@@ -86,17 +86,23 @@ describe('initModule(configs)', () => {
     });
     await app.start();
 
-    const [bot, receiver, configsProvided, profiler, assetsManager, routings] =
-      app.useServices([
-        Twitter.Bot,
-        Twitter.Receiver,
-        Twitter.Configs,
-        Twitter.Profiler,
-        Twitter.AssetsManager,
-        Http.RequestRouteList,
-      ]);
+    const [
+      sender,
+      receiver,
+      configsProvided,
+      profiler,
+      assetsManager,
+      routings,
+    ] = app.useServices([
+      Twitter.Sender,
+      Twitter.Receiver,
+      Twitter.Configs,
+      Twitter.Profiler,
+      Twitter.AssetsManager,
+      Http.RequestRouteList,
+    ]);
 
-    expect(bot).toBeInstanceOf(TwitterBot);
+    expect(sender).toBeInstanceOf(TwitterSender);
     expect(receiver).toBeInstanceOf(TwitterReceiver);
     expect(profiler).toBeInstanceOf(TwitterProfiler);
     expect(assetsManager).toBeInstanceOf(TwitterAssetsManager);
@@ -118,12 +124,12 @@ describe('initModule(configs)', () => {
     await app.start();
 
     const [bots, profilers, marshalTypes]: any = app.useServices([
-      BaseBot.PlatformMap,
+      BaseSender.PlatformMap,
       BaseProfiler.PlatformMap,
       BaseMarshaler.TypeList,
     ]);
 
-    expect(bots.get('twitter')).toBeInstanceOf(TwitterBot);
+    expect(bots.get('twitter')).toBeInstanceOf(TwitterSender);
     expect(profilers.get('twitter')).toBeInstanceOf(TwitterProfiler);
     expect(marshalTypes).toEqual(
       expect.arrayContaining([
@@ -277,21 +283,21 @@ describe('initModule(configs)', () => {
     });
   });
 
-  test('.startHook() start bot', async () => {
-    const bot = moxy({ start: async () => {} });
+  test('.startHook() start sender', async () => {
+    const sender = moxy({ start: async () => {} });
     const module = Twitter.initModule(basicConfigs);
 
     const startHook = module.startHook as any;
-    await expect(startHook(bot)).resolves.toBe(undefined);
-    expect(bot.start).toHaveBeenCalledTimes(1);
+    await expect(startHook(sender)).resolves.toBe(undefined);
+    expect(sender.start).toHaveBeenCalledTimes(1);
   });
 
-  test('.stopHook() stop bot', async () => {
-    const bot = moxy({ stop: async () => {} });
+  test('.stopHook() stop sender', async () => {
+    const sender = moxy({ stop: async () => {} });
     const module = Twitter.initModule(basicConfigs);
 
     const stopHook = module.stopHook as any;
-    await expect(stopHook(bot)).resolves.toBe(undefined);
-    expect(bot.stop).toHaveBeenCalledTimes(1);
+    await expect(stopHook(sender)).resolves.toBe(undefined);
+    expect(sender.stop).toHaveBeenCalledTimes(1);
   });
 });
