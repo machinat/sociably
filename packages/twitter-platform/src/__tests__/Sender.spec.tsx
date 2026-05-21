@@ -167,8 +167,9 @@ describe('.render(thread, content)', () => {
     const response = await sender.render(
       new TweetTarget('1234567890'),
       <>
-        <p>Hello World</p>
-        <p>Foo Bar Baz</p>
+        <b>Hello World</b>
+        <Sociably.Pause />
+        <b>Foo Bar Baz</b>
       </>,
     );
     expect(response?.results).toMatchSnapshot();
@@ -199,8 +200,9 @@ describe('.render(thread, content)', () => {
     const response = await sender.render(
       new TweetTarget('1234567890', '1111111111111'),
       <>
-        <p>Hello World</p>
-        <p>Foo Bar Baz</p>
+        <b>Hello World</b>
+        <Sociably.Pause />
+        <b>Foo Bar Baz</b>
       </>,
     );
     expect(response?.results).toMatchSnapshot();
@@ -232,8 +234,9 @@ describe('.render(thread, content)', () => {
     const response = await sender.render(
       new TiwtterChat('1234567890', '9876543210'),
       <>
-        <p>Hello World</p>
-        <p>Foo Bar Baz</p>
+        <b>Hello World</b>
+        <Sociably.Pause />
+        <b>Foo Bar Baz</b>
       </>,
     );
     expect(response).toMatchSnapshot();
@@ -271,8 +274,12 @@ describe('.render(thread, content)', () => {
 
     const replyToTweet = new TweetTarget('1234567890', '1111111111111');
     const [response1, response2] = await Promise.all([
-      sender.render(replyToTweet, [<p>Foo 1</p>, <p>Bar 2</p>]),
-      sender.render(replyToTweet, <p>Baz 3</p>),
+      sender.render(replyToTweet, [
+        <b>Foo 1</b>,
+        <Sociably.Pause />,
+        <b>Bar 2</b>,
+      ]),
+      sender.render(replyToTweet, <b>Baz 3</b>),
     ]);
 
     expect(bodySpy).toHaveBeenNthCalledWith(1, {
@@ -305,11 +312,11 @@ describe('.render(thread, content)', () => {
 
     const chat = new TiwtterChat('1234567890', '9876543210');
     const [response1, response2] = await Promise.all([
-      sender.render(chat, [<p>Foo 1</p>, <p>Bar 2</p>]),
-      sender.render(chat, <p>Baz 3</p>),
+      sender.render(chat, [<b>Foo 1</b>, <Sociably.Pause />, <b>Bar 2</b>]),
+      sender.render(chat, <b>Baz 3</b>),
     ]);
 
-    ['Foo 1', 'Bar 2', 'Baz 3'].forEach((text, i) => {
+    ['Foo 1', 'Baz 3', 'Bar 2'].forEach((text, i) => {
       expect(bodySpy).toHaveBeenNthCalledWith(i + 1, {
         event: {
           type: 'message_create',

@@ -1,88 +1,42 @@
+import type { GeneralElement, SociablyNode } from '@sociably/core';
 import {
   makeTextSegment,
-  makeBreakSegment,
-  makeUnitSegment,
-  IntermediateSegment,
+  type InnerRenderFn,
+  type TextSegment,
 } from '@sociably/core/renderer';
 import { formatNode } from '@sociably/core/utils';
-import { TwitterSegmentValue } from '../types.js';
 
-const p = async (node, path, render) => {
-  const contentSegments = await render(node.props.children, '.children');
-  if (contentSegments === null) {
-    return null;
-  }
+const br = (node: GeneralElement, path: string): TextSegment[] => [
+  makeTextSegment(node, path, '\n'),
+];
 
-  for (const segment of contentSegments) {
-    if (segment.type !== 'text') {
-      throw new TypeError(
-        `non-textual node ${formatNode(segment.node)} is placed in <p/>`,
-      );
+const plainText =
+  (tag: string) =>
+  async (
+    node: GeneralElement,
+    path: string,
+    render: InnerRenderFn,
+  ): Promise<null | TextSegment[]> => {
+    const contentSegments = await render(
+      node.props.children as SociablyNode,
+      '.children',
+    );
+    if (!contentSegments) {
+      return null;
     }
-  }
 
-  return [
-    makeBreakSegment(node, path),
-    makeTextSegment(node, path, contentSegments[0].value),
-    makeBreakSegment(node, path),
-  ];
-};
-
-const br = (node, path) => [makeTextSegment(node, path, '\n')];
-
-const plainText = (tag) => async (node, path, render) => {
-  const contentSegments = await render(node.props.children, '.children');
-  if (!contentSegments) {
-    return null;
-  }
-
-  for (const segment of contentSegments) {
-    if (segment.type !== 'text') {
-      throw new TypeError(
-        `non-textual node ${formatNode(segment.node)} is placed in <${tag}/>`,
-      );
+    for (const segment of contentSegments) {
+      if (segment.type !== 'text') {
+        throw new TypeError(
+          `non-textual node ${formatNode(segment.node)} is placed in <${tag}/>`,
+        );
+      }
     }
-  }
 
-  return [makeTextSegment(node, path, contentSegments[0].value)];
-};
-
-const unsuportedMedia = (node, path) => [
-  makeBreakSegment(node, path),
-  makeTextSegment(node, path, node.props.src),
-  makeBreakSegment(node, path),
-];
-
-const img = (node, path) => [
-  makeUnitSegment<TwitterSegmentValue>(node, path, {
-    type: 'media',
-    attachment: {
-      type: 'photo',
-      source: {
-        type: 'url',
-        url: node.props.src,
-        params: {},
-      },
-    },
-  }),
-];
-
-const video = (node, path) => [
-  makeUnitSegment<TwitterSegmentValue>(node, path, {
-    type: 'media',
-    attachment: {
-      type: 'video',
-      source: {
-        type: 'url',
-        url: node.props.src,
-        params: {},
-      },
-    },
-  }),
-];
+    return [makeTextSegment(node, path, contentSegments[0].value)];
+  };
 
 const generalComponents = {
-  p,
   br,
   b: plainText('b'),
   i: plainText('i'),
@@ -90,20 +44,16 @@ const generalComponents = {
   u: plainText('u'),
   code: plainText('code'),
   pre: plainText('pre'),
-  img,
-  video,
-  audio: unsuportedMedia,
-  file: unsuportedMedia,
 };
 
-const objectHasOwnProperty = (obj, prop) =>
+const objectHasOwnProperty = (obj: object, prop: PropertyKey): boolean =>
   Object.prototype.hasOwnProperty.call(obj, prop);
 
 const generalComponentDelegator = async (
-  node,
-  path,
-  render,
-): Promise<IntermediateSegment<TwitterSegmentValue>[]> => {
+  node: GeneralElement,
+  path: string,
+  render: InnerRenderFn,
+): Promise<null | TextSegment[]> => {
   const { type } = node;
 
   if (!objectHasOwnProperty(generalComponents, type)) {
@@ -112,7 +62,9 @@ const generalComponentDelegator = async (
     );
   }
 
-  const segments = await generalComponents[type](node, path, render);
+  const segments = await generalComponents[
+    type as keyof typeof generalComponents
+  ](node, path, render);
   return segments;
 };
 

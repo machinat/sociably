@@ -1,109 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<p/> renders into individual text segment 1`] = `
-[
-  {
-    "node": <p>
-      foo
-    </p>,
-    "path": "$::0",
-    "type": "text",
-    "value": "foo",
-  },
-  {
-    "node": "bar",
-    "path": "$::1",
-    "type": "text",
-    "value": "bar",
-  },
-  {
-    "node": <p>
-      baz
-    </p>,
-    "path": "$::2",
-    "type": "text",
-    "value": "baz",
-  },
-]
-`;
-
-exports[`media elements match snapshot 1`] = `
-[
-  {
-    "node": <img
-      src="http://avatar.my.bot"
-    />,
-    "path": "$::0",
-    "type": "unit",
-    "value": {
-      "message": {
-        "attachment": {
-          "payload": {
-            "url": "http://avatar.my.bot",
-          },
-          "type": "image",
-        },
-      },
-    },
-  },
-  {
-    "node": <video
-      src="http://vid.my.bot"
-    />,
-    "path": "$::1",
-    "type": "unit",
-    "value": {
-      "message": {
-        "attachment": {
-          "payload": {
-            "url": "http://vid.my.bot",
-          },
-          "type": "video",
-        },
-      },
-    },
-  },
-  {
-    "node": <audio
-      src="http://sound.my.bot"
-    />,
-    "path": "$::2",
-    "type": "unit",
-    "value": {
-      "message": {
-        "attachment": {
-          "payload": {
-            "url": "http://sound.my.bot",
-          },
-          "type": "audio",
-        },
-      },
-    },
-  },
-  {
-    "node": <file
-      src="http://profile.my.bot"
-    />,
-    "path": "$::3",
-    "type": "unit",
-    "value": {
-      "message": {
-        "attachment": {
-          "payload": {
-            "url": "http://profile.my.bot",
-          },
-          "type": "file",
-        },
-      },
-    },
-  },
-]
-`;
-
 exports[`render nested elements match snapshot 1`] = `
 [
   {
-    "node": <p>
+    "node": <Sociably.Fragment>
       Mic test
        
       <code>
@@ -135,7 +35,7 @@ exports[`render nested elements match snapshot 1`] = `
         May the force be with you!
       </pre>
        Test over
-    </p>,
+    </Sociably.Fragment>,
     "path": "$",
     "type": "text",
     "value": "Mic test \`Hello, Luke Skywalker!\`
@@ -151,16 +51,6 @@ May the force be with you!
 
 exports[`render shallow element match snapshot 1`] = `
 [
-  [
-    {
-      "node": <p>
-        abc
-      </p>,
-      "path": "$",
-      "type": "text",
-      "value": "abc",
-    },
-  ],
   [
     {
       "node": <b>

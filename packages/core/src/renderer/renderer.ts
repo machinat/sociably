@@ -54,24 +54,24 @@ type RenderTraverseContext<Value> = {
   servicesProvided: Map<Interfaceable<unknown>, unknown>;
 };
 
-type GeneralComponentDelegate<Value> = (
+type GeneralComponentDelegate = (
   element: GeneralElement,
   path: string,
   render: InnerRenderFn,
-) => Promise<null | IntermediateSegment<Value>[]>;
+) => Promise<null | TextSegment[]>;
 
 export default class SociablyRenderer<
   Value,
   Component extends NativeComponent<unknown, IntermediateSegment<Value>>,
 > {
   platform: string;
-  generalComponentDelegator: GeneralComponentDelegate<Value>;
+  generalComponentDelegator: GeneralComponentDelegate;
 
   private _traverseCallback: TraverseNodeCallback<RenderTraverseContext<Value>>;
 
   constructor(
     platform: string,
-    generalComponentDelegator: GeneralComponentDelegate<Value>,
+    generalComponentDelegator: GeneralComponentDelegate,
   ) {
     this.platform = platform;
     this.generalComponentDelegator = generalComponentDelegator;

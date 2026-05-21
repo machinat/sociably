@@ -664,6 +664,12 @@ test('.getError()', async () => {
 });
 
 describe('.redirect(url, options)', () => {
+  const makeRes = () => {
+    const res = moxy(new ServerResponse({} as never));
+    res.end.mock.fake(() => {});
+    return res;
+  };
+
   test('with relative redirectUrl', () => {
     const operator = new HttpOperator({
       secret,
@@ -671,29 +677,29 @@ describe('.redirect(url, options)', () => {
       apiPath: '/auth',
       redirectUrl: './webview/',
     });
-    const res = moxy(new ServerResponse({} as never));
-    res.end.mock.fake(() => {});
-
-    expect(operator.redirect(res)).toBe(true);
-    expect(res.end).toHaveBeenCalledTimes(1);
-    expect(res.writeHead).toHaveBeenCalledTimes(1);
-    expect(res.writeHead).toHaveBeenCalledWith(302, {
+    const res1 = makeRes();
+    expect(operator.redirect(res1)).toBe(true);
+    expect(res1.end).toHaveBeenCalledTimes(1);
+    expect(res1.writeHead).toHaveBeenCalledTimes(1);
+    expect(res1.writeHead).toHaveBeenCalledWith(302, {
       Location: 'https://sociably.io/myApp/webview/',
     });
 
-    expect(operator.redirect(res, 'foo?bar=baz')).toBe(true);
-    expect(res.end).toHaveBeenCalledTimes(2);
-    expect(res.writeHead).toHaveBeenCalledTimes(2);
-    expect(res.writeHead).toHaveBeenCalledWith(302, {
+    const res2 = makeRes();
+    expect(operator.redirect(res2, 'foo?bar=baz')).toBe(true);
+    expect(res2.end).toHaveBeenCalledTimes(1);
+    expect(res2.writeHead).toHaveBeenCalledTimes(1);
+    expect(res2.writeHead).toHaveBeenCalledWith(302, {
       Location: 'https://sociably.io/myApp/webview/foo?bar=baz',
     });
 
-    expect(operator.redirect(res, 'http://api.sociably.io/foo?bar=baz')).toBe(
+    const res3 = makeRes();
+    expect(operator.redirect(res3, 'http://api.sociably.io/foo?bar=baz')).toBe(
       true,
     );
-    expect(res.end).toHaveBeenCalledTimes(3);
-    expect(res.writeHead).toHaveBeenCalledTimes(3);
-    expect(res.writeHead).toHaveBeenCalledWith(302, {
+    expect(res3.end).toHaveBeenCalledTimes(1);
+    expect(res3.writeHead).toHaveBeenCalledTimes(1);
+    expect(res3.writeHead).toHaveBeenCalledWith(302, {
       Location: 'http://api.sociably.io/foo?bar=baz',
     });
   });
@@ -705,29 +711,29 @@ describe('.redirect(url, options)', () => {
       apiPath: '/auth',
       redirectUrl: '/hello/world/',
     });
-    const res = moxy(new ServerResponse({} as never));
-    res.end.mock.fake(() => {});
-
-    expect(operator.redirect(res)).toBe(true);
-    expect(res.end).toHaveBeenCalledTimes(1);
-    expect(res.writeHead).toHaveBeenCalledTimes(1);
-    expect(res.writeHead).toHaveBeenCalledWith(302, {
+    const res1 = makeRes();
+    expect(operator.redirect(res1)).toBe(true);
+    expect(res1.end).toHaveBeenCalledTimes(1);
+    expect(res1.writeHead).toHaveBeenCalledTimes(1);
+    expect(res1.writeHead).toHaveBeenCalledWith(302, {
       Location: 'https://sociably.io/hello/world/',
     });
 
-    expect(operator.redirect(res, 'foo?bar=baz')).toBe(true);
-    expect(res.end).toHaveBeenCalledTimes(2);
-    expect(res.writeHead).toHaveBeenCalledTimes(2);
-    expect(res.writeHead).toHaveBeenCalledWith(302, {
+    const res2 = makeRes();
+    expect(operator.redirect(res2, 'foo?bar=baz')).toBe(true);
+    expect(res2.end).toHaveBeenCalledTimes(1);
+    expect(res2.writeHead).toHaveBeenCalledTimes(1);
+    expect(res2.writeHead).toHaveBeenCalledWith(302, {
       Location: 'https://sociably.io/hello/world/foo?bar=baz',
     });
 
-    expect(operator.redirect(res, 'http://api.sociably.io/foo?bar=baz')).toBe(
+    const res3 = makeRes();
+    expect(operator.redirect(res3, 'http://api.sociably.io/foo?bar=baz')).toBe(
       true,
     );
-    expect(res.end).toHaveBeenCalledTimes(3);
-    expect(res.writeHead).toHaveBeenCalledTimes(3);
-    expect(res.writeHead).toHaveBeenCalledWith(302, {
+    expect(res3.end).toHaveBeenCalledTimes(1);
+    expect(res3.writeHead).toHaveBeenCalledTimes(1);
+    expect(res3.writeHead).toHaveBeenCalledWith(302, {
       Location: 'http://api.sociably.io/foo?bar=baz',
     });
   });
@@ -739,69 +745,73 @@ describe('.redirect(url, options)', () => {
       apiPath: '/auth',
       redirectUrl: './webview/',
     });
-    const res = moxy(new ServerResponse({} as never));
-    res.end.mock.fake(() => {});
-
-    expect(operator.redirect(res, undefined, { assertInternal: true })).toBe(
+    const res1 = makeRes();
+    expect(operator.redirect(res1, undefined, { assertInternal: true })).toBe(
       true,
     );
-    expect(res.end).toHaveBeenCalledTimes(1);
-    expect(res.writeHead).toHaveBeenCalledTimes(1);
-    expect(res.writeHead).toHaveBeenCalledWith(302, {
+    expect(res1.end).toHaveBeenCalledTimes(1);
+    expect(res1.writeHead).toHaveBeenCalledTimes(1);
+    expect(res1.writeHead).toHaveBeenCalledWith(302, {
       Location: 'https://sociably.io/myApp/webview/',
     });
 
-    expect(operator.redirect(res, 'foo?a=b', { assertInternal: true })).toBe(
+    const res2 = makeRes();
+    expect(operator.redirect(res2, 'foo?a=b', { assertInternal: true })).toBe(
       true,
     );
-    expect(res.end).toHaveBeenCalledTimes(2);
-    expect(res.writeHead).toHaveBeenCalledTimes(2);
-    expect(res.writeHead).toHaveBeenNthCalledWith(2, 302, {
+    expect(res2.end).toHaveBeenCalledTimes(1);
+    expect(res2.writeHead).toHaveBeenCalledTimes(1);
+    expect(res2.writeHead).toHaveBeenCalledWith(302, {
       Location: 'https://sociably.io/myApp/webview/foo?a=b',
     });
 
-    expect(operator.redirect(res, '/foo', { assertInternal: true })).toBe(
+    const res3 = makeRes();
+    expect(operator.redirect(res3, '/foo', { assertInternal: true })).toBe(
       false,
     );
-    expect(res.end).toHaveBeenCalledTimes(3);
-    expect(res.writeHead).toHaveBeenCalledTimes(3);
-    expect(res.writeHead).toHaveBeenNthCalledWith(3, 400);
+    expect(res3.end).toHaveBeenCalledTimes(1);
+    expect(res3.writeHead).toHaveBeenCalledTimes(1);
+    expect(res3.writeHead).toHaveBeenCalledWith(400);
 
-    expect(operator.redirect(res, undefined, { assertInternal: true })).toBe(
+    const res4 = makeRes();
+    expect(operator.redirect(res4, undefined, { assertInternal: true })).toBe(
       true,
     );
-    expect(res.end).toHaveBeenCalledTimes(4);
-    expect(res.writeHead).toHaveBeenCalledTimes(4);
-    expect(res.writeHead).toHaveBeenNthCalledWith(4, 302, {
+    expect(res4.end).toHaveBeenCalledTimes(1);
+    expect(res4.writeHead).toHaveBeenCalledTimes(1);
+    expect(res4.writeHead).toHaveBeenCalledWith(302, {
       Location: 'https://sociably.io/myApp/webview/',
     });
 
+    const res5 = makeRes();
     expect(
-      operator.redirect(res, 'https://sociably.io/foo', {
+      operator.redirect(res5, 'https://sociably.io/foo', {
         assertInternal: true,
       }),
     ).toBe(false);
-    expect(res.end).toHaveBeenCalledTimes(5);
-    expect(res.writeHead).toHaveBeenCalledTimes(5);
-    expect(res.writeHead).toHaveBeenNthCalledWith(5, 400);
+    expect(res5.end).toHaveBeenCalledTimes(1);
+    expect(res5.writeHead).toHaveBeenCalledTimes(1);
+    expect(res5.writeHead).toHaveBeenCalledWith(400);
 
+    const res6 = makeRes();
     expect(
-      operator.redirect(res, 'http://sociably.io/myApp/webview/', {
+      operator.redirect(res6, 'http://sociably.io/myApp/webview/', {
         assertInternal: true,
       }),
     ).toBe(false);
-    expect(res.end).toHaveBeenCalledTimes(6);
-    expect(res.writeHead).toHaveBeenCalledTimes(6);
-    expect(res.writeHead).toHaveBeenNthCalledWith(6, 400);
+    expect(res6.end).toHaveBeenCalledTimes(1);
+    expect(res6.writeHead).toHaveBeenCalledTimes(1);
+    expect(res6.writeHead).toHaveBeenCalledWith(400);
 
+    const res7 = makeRes();
     expect(
-      operator.redirect(res, 'https://sociably.app/myApp/webview/', {
+      operator.redirect(res7, 'https://sociably.app/myApp/webview/', {
         assertInternal: true,
       }),
     ).toBe(false);
-    expect(res.end).toHaveBeenCalledTimes(7);
-    expect(res.writeHead).toHaveBeenCalledTimes(7);
-    expect(res.writeHead).toHaveBeenNthCalledWith(7, 400);
+    expect(res7.end).toHaveBeenCalledTimes(1);
+    expect(res7.writeHead).toHaveBeenCalledTimes(1);
+    expect(res7.writeHead).toHaveBeenCalledWith(400);
   });
 });
 

@@ -6,6 +6,7 @@ import { Photo } from '../Media.js';
 import { Typing } from '../Typing.js';
 import { QuickReply } from '../QuickReply.js';
 import { Expression } from '../Expression.js';
+import { DirectMessage } from '../DirectMessage.js';
 
 const renderer = new Renderer('twitter', async (node, path) => [
   { type: 'text', path, node, value: node.props.children as string },
@@ -22,8 +23,8 @@ it('is a valid Component', () => {
 test('rendering', async () => {
   const segments = await render(
     <Expression customProfileId="11111">
-      <p>Hello</p>
-      <p>World</p>
+      <DirectMessage>Hello</DirectMessage>
+      <DirectMessage>World</DirectMessage>
     </Expression>,
   );
   expect(segments).toMatchSnapshot();
@@ -86,8 +87,8 @@ test('rendering with quick replies', async () => {
         </>
       }
     >
-      <p>Hello World</p>
-      <p>Choose One</p>
+      <DirectMessage>Hello World</DirectMessage>
+      <DirectMessage>Choose One</DirectMessage>
     </Expression>,
   );
   expect(segments).toMatchSnapshot();
@@ -162,7 +163,7 @@ test('rendering with quick replies', async () => {
 test('rendering with media content', async () => {
   const segments = await render(
     <Expression quickReplies={<QuickReply label="foo" />}>
-      <p>Hello</p>
+      <DirectMessage>Hello</DirectMessage>
       <Photo shared url="http://foo.bar/baz.png" />
     </Expression>,
   );

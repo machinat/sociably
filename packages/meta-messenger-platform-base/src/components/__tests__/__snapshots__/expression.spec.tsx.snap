@@ -3,28 +3,13 @@
 exports[`Expression with all props match snapshot 1`] = `
 [
   {
-    "node": <p>
-      foo
-    </p>,
-    "path": "$#Expression.children::0",
-    "type": "unit",
-    "value": {
-      "apiPath": "me/messages",
-      "params": {
-        "message": {
-          "text": "foo",
-        },
-        "messaging_type": "MESSAGE_TAG",
-        "notification_type": "SILENT_PUSH",
-        "persona_id": "_PERSONA_ID_",
-        "tag": "CONFIRMED_EVENT_UPDATE",
-      },
-      "type": "message",
-    },
-  },
-  {
-    "node": "bar",
-    "path": "$#Expression.children::1",
+    "node": <Sociably.Fragment>
+      <b>
+        foo
+      </b>
+      bar
+    </Sociably.Fragment>,
+    "path": "$#Expression.children",
     "type": "unit",
     "value": {
       "apiPath": "me/messages",
@@ -45,7 +30,7 @@ exports[`Expression with all props match snapshot 1`] = `
               "content_type": "user_email",
             },
           ],
-          "text": "bar",
+          "text": "foobar",
         },
         "messaging_type": "MESSAGE_TAG",
         "notification_type": "SILENT_PUSH",
@@ -61,34 +46,26 @@ exports[`Expression with all props match snapshot 1`] = `
 exports[`Expression with break, pause and thunk in children match snapshot 1`] = `
 [
   {
-    "node": <p>
-      foo
-    </p>,
-    "path": "$#Expression.children:0",
+    "node": [
+      <b>
+        foo
+      </b>,
+      "bar",
+      <Sociably.Pause
+        time={2000}
+      />,
+      "baz",
+      <Sociably.Thunk
+        effect={[Function]}
+      />,
+    ],
+    "path": "$#Expression.children",
     "type": "unit",
     "value": {
       "apiPath": "me/messages",
       "params": {
         "message": {
-          "text": "foo",
-        },
-        "messaging_type": undefined,
-        "notification_type": undefined,
-        "persona_id": undefined,
-        "tag": undefined,
-      },
-      "type": "message",
-    },
-  },
-  {
-    "node": "bar",
-    "path": "$#Expression.children:1",
-    "type": "unit",
-    "value": {
-      "apiPath": "me/messages",
-      "params": {
-        "message": {
-          "text": "bar",
+          "text": "foobar",
         },
         "messaging_type": undefined,
         "notification_type": undefined,
@@ -140,28 +117,13 @@ exports[`Expression with break, pause and thunk in children match snapshot 1`] =
 exports[`Expression with metadata match snapshot 1`] = `
 [
   {
-    "node": <p>
-      foo
-    </p>,
-    "path": "$#Expression.children::0",
-    "type": "unit",
-    "value": {
-      "apiPath": "me/messages",
-      "params": {
-        "message": {
-          "text": "foo",
-        },
-        "messaging_type": undefined,
-        "notification_type": undefined,
-        "persona_id": undefined,
-        "tag": undefined,
-      },
-      "type": "message",
-    },
-  },
-  {
-    "node": "bar",
-    "path": "$#Expression.children::1",
+    "node": <Sociably.Fragment>
+      <b>
+        foo
+      </b>
+      bar
+    </Sociably.Fragment>,
+    "path": "$#Expression.children",
     "type": "unit",
     "value": {
       "apiPath": "me/messages",
@@ -169,7 +131,7 @@ exports[`Expression with metadata match snapshot 1`] = `
         "message": {
           "metadata": "_SOME_METADATA_",
           "quick_replies": undefined,
-          "text": "bar",
+          "text": "foobar",
         },
         "messaging_type": undefined,
         "notification_type": undefined,
@@ -185,28 +147,13 @@ exports[`Expression with metadata match snapshot 1`] = `
 exports[`Expression with notificationType match snapshot 1`] = `
 [
   {
-    "node": <p>
-      foo
-    </p>,
-    "path": "$#Expression.children::0",
-    "type": "unit",
-    "value": {
-      "apiPath": "me/messages",
-      "params": {
-        "message": {
-          "text": "foo",
-        },
-        "messaging_type": undefined,
-        "notification_type": "NO_PUSH",
-        "persona_id": undefined,
-        "tag": undefined,
-      },
-      "type": "message",
-    },
-  },
-  {
-    "node": "bar",
-    "path": "$#Expression.children::1",
+    "node": <Sociably.Fragment>
+      <b>
+        foo
+      </b>
+      bar
+    </Sociably.Fragment>,
+    "path": "$#Expression.children",
     "type": "unit",
     "value": {
       "apiPath": "me/messages",
@@ -214,7 +161,7 @@ exports[`Expression with notificationType match snapshot 1`] = `
         "message": {
           "metadata": undefined,
           "quick_replies": undefined,
-          "text": "bar",
+          "text": "foobar",
         },
         "messaging_type": undefined,
         "notification_type": "NO_PUSH",
@@ -230,28 +177,13 @@ exports[`Expression with notificationType match snapshot 1`] = `
 exports[`Expression with personaId match snapshot 1`] = `
 [
   {
-    "node": <p>
-      foo
-    </p>,
-    "path": "$#Expression.children::0",
-    "type": "unit",
-    "value": {
-      "apiPath": "me/messages",
-      "params": {
-        "message": {
-          "text": "foo",
-        },
-        "messaging_type": undefined,
-        "notification_type": undefined,
-        "persona_id": "_PERSONA_ID_",
-        "tag": undefined,
-      },
-      "type": "message",
-    },
-  },
-  {
-    "node": "bar",
-    "path": "$#Expression.children::1",
+    "node": <Sociably.Fragment>
+      <b>
+        foo
+      </b>
+      bar
+    </Sociably.Fragment>,
+    "path": "$#Expression.children",
     "type": "unit",
     "value": {
       "apiPath": "me/messages",
@@ -259,7 +191,7 @@ exports[`Expression with personaId match snapshot 1`] = `
         "message": {
           "metadata": undefined,
           "quick_replies": undefined,
-          "text": "bar",
+          "text": "foobar",
         },
         "messaging_type": undefined,
         "notification_type": undefined,
@@ -275,28 +207,13 @@ exports[`Expression with personaId match snapshot 1`] = `
 exports[`Expression with quickReplies match snapshot 1`] = `
 [
   {
-    "node": <p>
-      foo
-    </p>,
-    "path": "$#Expression.children::0",
-    "type": "unit",
-    "value": {
-      "apiPath": "me/messages",
-      "params": {
-        "message": {
-          "text": "foo",
-        },
-        "messaging_type": undefined,
-        "notification_type": undefined,
-        "persona_id": undefined,
-        "tag": undefined,
-      },
-      "type": "message",
-    },
-  },
-  {
-    "node": "bar",
-    "path": "$#Expression.children::1",
+    "node": <Sociably.Fragment>
+      <b>
+        foo
+      </b>
+      bar
+    </Sociably.Fragment>,
+    "path": "$#Expression.children",
     "type": "unit",
     "value": {
       "apiPath": "me/messages",
@@ -317,7 +234,7 @@ exports[`Expression with quickReplies match snapshot 1`] = `
               "content_type": "user_email",
             },
           ],
-          "text": "bar",
+          "text": "foobar",
         },
         "messaging_type": undefined,
         "notification_type": undefined,
@@ -333,28 +250,13 @@ exports[`Expression with quickReplies match snapshot 1`] = `
 exports[`Expression with type and tag match snapshot 1`] = `
 [
   {
-    "node": <p>
-      foo
-    </p>,
-    "path": "$#Expression.children::0",
-    "type": "unit",
-    "value": {
-      "apiPath": "me/messages",
-      "params": {
-        "message": {
-          "text": "foo",
-        },
-        "messaging_type": "MESSAGE_TAG",
-        "notification_type": undefined,
-        "persona_id": undefined,
-        "tag": "ACCOUNT_UPDATE",
-      },
-      "type": "message",
-    },
-  },
-  {
-    "node": "bar",
-    "path": "$#Expression.children::1",
+    "node": <Sociably.Fragment>
+      <b>
+        foo
+      </b>
+      bar
+    </Sociably.Fragment>,
+    "path": "$#Expression.children",
     "type": "unit",
     "value": {
       "apiPath": "me/messages",
@@ -362,7 +264,7 @@ exports[`Expression with type and tag match snapshot 1`] = `
         "message": {
           "metadata": undefined,
           "quick_replies": undefined,
-          "text": "bar",
+          "text": "foobar",
         },
         "messaging_type": "MESSAGE_TAG",
         "notification_type": undefined,
@@ -378,28 +280,13 @@ exports[`Expression with type and tag match snapshot 1`] = `
 exports[`Expression with type match snapshot 1`] = `
 [
   {
-    "node": <p>
-      foo
-    </p>,
-    "path": "$#Expression.children::0",
-    "type": "unit",
-    "value": {
-      "apiPath": "me/messages",
-      "params": {
-        "message": {
-          "text": "foo",
-        },
-        "messaging_type": "UPDATE",
-        "notification_type": undefined,
-        "persona_id": undefined,
-        "tag": undefined,
-      },
-      "type": "message",
-    },
-  },
-  {
-    "node": "bar",
-    "path": "$#Expression.children::1",
+    "node": <Sociably.Fragment>
+      <b>
+        foo
+      </b>
+      bar
+    </Sociably.Fragment>,
+    "path": "$#Expression.children",
     "type": "unit",
     "value": {
       "apiPath": "me/messages",
@@ -407,7 +294,7 @@ exports[`Expression with type match snapshot 1`] = `
         "message": {
           "metadata": undefined,
           "quick_replies": undefined,
-          "text": "bar",
+          "text": "foobar",
         },
         "messaging_type": "UPDATE",
         "notification_type": undefined,

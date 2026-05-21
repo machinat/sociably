@@ -354,9 +354,10 @@ describe('.uploadChatAttachment(agent, message)', () => {
   it('resolves null if message is empty', async () => {
     const empties = [undefined, null, [], <></>];
     for (const empty of empties) {
+      // eslint-disable-next-line no-await-in-loop
       await expect(sender.uploadChatAttachment(agent, empty)).resolves.toBe(
         null,
-      ); // eslint-disable-line no-await-in-loop
+      );
     }
   });
 

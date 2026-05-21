@@ -1,30 +1,5 @@
-import {
-  makeUnitSegment,
-  makeTextSegment,
-  makeBreakSegment,
-} from '@sociably/core/renderer';
+import { makeTextSegment } from '@sociably/core/renderer';
 import { formatNode } from '@sociably/core/utils';
-
-const p = async (node, path, render) => {
-  const contentSegments = await render(node.props.children, '.children');
-  if (contentSegments === null) {
-    return null;
-  }
-
-  for (const segment of contentSegments) {
-    if (segment.type !== 'text') {
-      throw new TypeError(
-        `non-textual node ${formatNode(segment.node)} is placed in <p/>`,
-      );
-    }
-  }
-
-  return [
-    makeBreakSegment(node, path),
-    makeTextSegment(node, path, contentSegments[0].value),
-    makeBreakSegment(node, path),
-  ];
-};
 
 const br = (node, path) => [makeTextSegment(node, path, '\n')];
 
@@ -45,15 +20,7 @@ const plainText = (tag) => async (node, path, render) => {
   return [makeTextSegment(node, path, contentSegments[0].value)];
 };
 
-const media = (node, path) => [
-  makeUnitSegment(node, path, {
-    type: 'text',
-    text: node.props.src || '',
-  }),
-];
-
 const generalComponents = {
-  p,
   br,
   b: plainText('b'),
   i: plainText('i'),
@@ -61,10 +28,6 @@ const generalComponents = {
   u: plainText('u'),
   code: plainText('code'),
   pre: plainText('pre'),
-  img: media,
-  video: media,
-  audio: media,
-  file: media,
 };
 
 const objectHasOwnProperty = (obj, prop) =>

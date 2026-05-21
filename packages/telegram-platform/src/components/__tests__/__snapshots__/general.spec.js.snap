@@ -1,101 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<p/> renders into individual text segment 1`] = `
-[
-  {
-    "node": <p>
-      foo
-    </p>,
-    "path": "$::0",
-    "type": "text",
-    "value": "foo",
-  },
-  {
-    "node": "bar",
-    "path": "$::1",
-    "type": "text",
-    "value": "bar",
-  },
-  {
-    "node": <p>
-      baz
-    </p>,
-    "path": "$::2",
-    "type": "text",
-    "value": "baz",
-  },
-]
-`;
-
-exports[`media elements match snapshot 1`] = `
-[
-  {
-    "node": <img
-      src="http://avatar.my.bot"
-    />,
-    "path": "$::0",
-    "type": "unit",
-    "value": {
-      "message": {
-        "method": "sendPhoto",
-        "parameters": {
-          "photo": "http://avatar.my.bot",
-        },
-      },
-    },
-  },
-  {
-    "node": <video
-      src="http://vid.my.bot"
-    />,
-    "path": "$::1",
-    "type": "unit",
-    "value": {
-      "message": {
-        "method": "sendVideo",
-        "parameters": {
-          "video": "http://vid.my.bot",
-        },
-      },
-    },
-  },
-  {
-    "node": <audio
-      src="http://sound.my.bot"
-    />,
-    "path": "$::2",
-    "type": "unit",
-    "value": {
-      "message": {
-        "method": "sendAudio",
-        "parameters": {
-          "audio": "http://sound.my.bot",
-        },
-      },
-    },
-  },
-  {
-    "node": <file
-      src="http://profile.my.bot"
-    />,
-    "path": "$::3",
-    "type": "unit",
-    "value": {
-      "message": {
-        "method": "sendDocument",
-        "parameters": {
-          "document": "http://profile.my.bot",
-        },
-      },
-    },
-  },
-]
-`;
-
 exports[`render nested elements match snapshot 1`] = `
 [
   {
-    "node": <p>
+    "node": <Sociably.Fragment>
       Mic test
        
       <code>
@@ -127,7 +35,7 @@ exports[`render nested elements match snapshot 1`] = `
         May the force be with you!
       </pre>
        Test over
-    </p>,
+    </Sociably.Fragment>,
     "path": "$",
     "type": "text",
     "value": "Mic test <code>Hello, <b>Luke Skywalker!</b></code>
@@ -141,16 +49,6 @@ You know what?
 
 exports[`render shallow elements match snapshot 1`] = `
 [
-  [
-    {
-      "node": <p>
-        abc
-      </p>,
-      "path": "$",
-      "type": "text",
-      "value": "abc",
-    },
-  ],
   [
     {
       "node": <b>

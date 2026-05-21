@@ -29,7 +29,7 @@ const quickReplies = (
 
 const children = (
   <>
-    <p>foo</p>
+    <b>foo</b>
     bar
   </>
 );
@@ -77,7 +77,7 @@ it.each([
   [
     'Expression with break, pause and thunk in children',
     <Expression>
-      <p>foo</p>
+      <b>foo</b>
       bar
       <Sociably.Pause time={2000} />
       baz
@@ -101,7 +101,7 @@ it('hoist text value into message object', async () => {
   const segments = await renderUnitElement(
     <Expression>
       foo
-      <p>bar</p>
+      <b>bar</b>
       {'baz'}
     </Expression>,
   );
@@ -109,46 +109,14 @@ it('hoist text value into message object', async () => {
   expect(segments).toMatchInlineSnapshot(`
     [
       {
-        "node": "foo",
-        "path": "$#Expression.children:0",
-        "type": "unit",
-        "value": {
-          "apiPath": "me/messages",
-          "params": {
-            "message": {
-              "text": "foo",
-            },
-            "messaging_type": undefined,
-            "notification_type": undefined,
-            "persona_id": undefined,
-            "tag": undefined,
-          },
-          "type": "message",
-        },
-      },
-      {
-        "node": <p>
-          bar
-        </p>,
-        "path": "$#Expression.children:1",
-        "type": "unit",
-        "value": {
-          "apiPath": "me/messages",
-          "params": {
-            "message": {
-              "text": "bar",
-            },
-            "messaging_type": undefined,
-            "notification_type": undefined,
-            "persona_id": undefined,
-            "tag": undefined,
-          },
-          "type": "message",
-        },
-      },
-      {
-        "node": "baz",
-        "path": "$#Expression.children:2",
+        "node": [
+          "foo",
+          <b>
+            bar
+          </b>,
+          "baz",
+        ],
+        "path": "$#Expression.children",
         "type": "unit",
         "value": {
           "apiPath": "me/messages",
@@ -156,7 +124,7 @@ it('hoist text value into message object', async () => {
             "message": {
               "metadata": undefined,
               "quick_replies": undefined,
-              "text": "baz",
+              "text": "foobarbaz",
             },
             "messaging_type": undefined,
             "notification_type": undefined,
@@ -179,7 +147,7 @@ it('add attributes to message value', async () => {
       personaId="_PERSONA_ID_"
     >
       foo
-      <p>bar</p>
+      <b>bar</b>
       {'baz'}
     </Expression>,
   );
@@ -264,7 +232,7 @@ it('adds metadata to last message action', async () => {
   const segments = await renderUnitElement(
     <Expression metadata="_META_">
       foo
-      <p>bar</p>
+      <b>bar</b>
       <TypingOn />
     </Expression>,
   );
@@ -275,22 +243,9 @@ it('adds metadata to last message action', async () => {
         "apiPath": "me/messages",
         "params": {
           "message": {
-            "text": "foo",
-          },
-          "messaging_type": undefined,
-          "notification_type": undefined,
-          "persona_id": undefined,
-          "tag": undefined,
-        },
-        "type": "message",
-      },
-      {
-        "apiPath": "me/messages",
-        "params": {
-          "message": {
             "metadata": "_META_",
             "quick_replies": undefined,
-            "text": "bar",
+            "text": "foobar",
           },
           "messaging_type": undefined,
           "notification_type": undefined,
@@ -322,7 +277,7 @@ it('adds quickReplies to last message action', async () => {
         </>
       }
     >
-      <p>foo</p>
+      <b>foo</b>
       bar
       <TypingOn />
     </Expression>,
@@ -330,19 +285,6 @@ it('adds quickReplies to last message action', async () => {
 
   expect(segments?.map(({ value }) => value)).toMatchInlineSnapshot(`
     [
-      {
-        "apiPath": "me/messages",
-        "params": {
-          "message": {
-            "text": "foo",
-          },
-          "messaging_type": undefined,
-          "notification_type": undefined,
-          "persona_id": undefined,
-          "tag": undefined,
-        },
-        "type": "message",
-      },
       {
         "apiPath": "me/messages",
         "params": {
@@ -362,7 +304,7 @@ it('adds quickReplies to last message action', async () => {
                 "content_type": "user_email",
               },
             ],
-            "text": "bar",
+            "text": "foobar",
           },
           "messaging_type": undefined,
           "notification_type": undefined,

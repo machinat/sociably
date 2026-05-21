@@ -81,9 +81,12 @@ const SOCIABLY_WEBSOCKET_PROTOCOL_V0 = 'sociably-websocket-v0';
 const createClientSocket = async (url: string): Promise<Socket> => {
   let webSocket: EmittableWebSocket;
 
-  if (typeof WebSocket !== 'undefined') {
+  if (
+    typeof window !== 'undefined' &&
+    typeof window.WebSocket !== 'undefined'
+  ) {
     webSocket = new WrappedWebSocket(
-      new WebSocket(url, SOCIABLY_WEBSOCKET_PROTOCOL_V0),
+      new window.WebSocket(url, SOCIABLY_WEBSOCKET_PROTOCOL_V0),
     );
   } else {
     const { default: WebSocket } = await import('ws');

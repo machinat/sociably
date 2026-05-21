@@ -1,31 +1,6 @@
 import invariant from 'invariant';
 import { formatNode } from '@sociably/core/utils';
-import {
-  makeTextSegment,
-  makeUnitSegment,
-  makeBreakSegment,
-} from '@sociably/core/renderer';
-
-const p = async (node, path, render) => {
-  const childrenSegments = await render(node.props.children);
-  if (!childrenSegments) {
-    return null;
-  }
-
-  for (const segment of childrenSegments) {
-    if (!segment || segment.type !== 'text') {
-      throw new TypeError(
-        `non-textual node ${formatNode(segment.node)} is placed in <p/>`,
-      );
-    }
-  }
-
-  return [
-    makeBreakSegment(node, path),
-    makeTextSegment(node, path, childrenSegments[0].value),
-    makeBreakSegment(node, path),
-  ];
-};
+import { makeTextSegment } from '@sociably/core/renderer';
 
 const br = (node, path) => [makeTextSegment(node, path, '\n')];
 
@@ -58,24 +33,7 @@ const code = transormText('code', (v) => `<code>${v}</code>`);
 
 const pre = transormText('pre', (v) => `<pre>${v}</pre>`);
 
-const generalMediaFactory = (type, method) => (node, path) => [
-  makeUnitSegment(node, path, {
-    message: {
-      method,
-      parameters: {
-        [type]: node.props.src,
-      },
-    },
-  }),
-];
-
-const img = generalMediaFactory('photo', 'sendPhoto');
-const video = generalMediaFactory('video', 'sendVideo');
-const audio = generalMediaFactory('audio', 'sendAudio');
-const file = generalMediaFactory('document', 'sendDocument');
-
 const generalComponents = {
-  p,
   b,
   i,
   s,
@@ -83,10 +41,6 @@ const generalComponents = {
   code,
   pre,
   br,
-  img,
-  video,
-  audio,
-  file,
 };
 
 const { hasOwnProperty } = Object.prototype;

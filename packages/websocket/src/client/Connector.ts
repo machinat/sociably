@@ -219,7 +219,9 @@ class WebScoketConnector<User extends null | SociablyUser> extends Emitter<{
   }
 
   private _emitError(err: Error) {
-    this.emit('error', err);
+    if (this.listenerCount('error') > 0) {
+      this.emit('error', err);
+    }
   }
 }
 

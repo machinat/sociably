@@ -18,19 +18,14 @@ it('is valid unit Component', () => {
 it('hoist text value into message object', async () => {
   const result = await renderer.render(
     <Expression>
-      <p>foo</p>
-      <p>
-        <b>bar</b>
-      </p>
+      foo
+      <b>bar</b>
       baz
     </Expression>,
   );
   expect(result[0].value.method).toBe('sendMessage');
-  expect(result[0].value.params.text).toBe('foo');
-  expect(result[1].value.method).toBe('sendMessage');
-  expect(result[1].value.params.text).toBe('<b>bar</b>');
-  expect(result[2].value.method).toBe('sendMessage');
-  expect(result[2].value.params.text).toBe('baz');
+  expect(result[0].value.params.text).toBe('foo<b>bar</b>baz');
+  expect(result).toHaveLength(1);
   expect().toMatchSnapshot();
 });
 

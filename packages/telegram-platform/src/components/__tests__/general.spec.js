@@ -1,13 +1,13 @@
 import Sociably from '@sociably/core';
 import Renderer from '@sociably/core/renderer';
 import generalComponentDelegator from '../general';
+import { Photo } from '../media';
 
 const renderer = new Renderer('telegram', generalComponentDelegator);
 
 test('render shallow elements match snapshot', async () => {
   const results = await Promise.all(
     [
-      <p>abc</p>,
       <b>important</b>,
       <i>italic</i>,
       <s>nooooo</s>,
@@ -21,7 +21,6 @@ test('render shallow elements match snapshot', async () => {
   expect(results).toMatchSnapshot();
   expect(results.flat().map((seg) => seg.value)).toMatchInlineSnapshot(`
     [
-      "abc",
       "<b>important</b>",
       "<i>italic</i>",
       "<s>nooooo</s>",
@@ -36,7 +35,7 @@ test('render shallow elements match snapshot', async () => {
 
 test('render nested elements match snapshot', async () => {
   const segments = await renderer.render(
-    <p>
+    <>
       Mic test{' '}
       <code>
         Hello, <b>Luke Skywalker!</b>
@@ -50,7 +49,7 @@ test('render nested elements match snapshot', async () => {
       <br />
       <br />
       <pre>May the force be with you!</pre> Test over
-    </p>,
+    </>,
   );
   expect(segments).toMatchSnapshot();
   expect(segments.map((seg) => seg.value)).toMatchInlineSnapshot(`
@@ -64,123 +63,79 @@ test('render nested elements match snapshot', async () => {
   `);
 });
 
-test('<p/> renders into individual text segment', async () => {
-  const segments = await renderer.render(
-    <>
-      <p>foo</p>
-      bar
-      <p>baz</p>
-    </>,
-  );
-
-  expect(segments).toMatchSnapshot();
-  expect(segments.map((seg) => seg.value)).toMatchInlineSnapshot(`
-    [
-      "foo",
-      "bar",
-      "baz",
-    ]
-  `);
-});
-
 test('throw if non-texual value received', async () => {
   const children = (
     <>
       foo
-      <img />
+      <Photo fileId="12345" />
       bar
     </>
   );
 
   await expect(
-    renderer.render(<p>{children}</p>),
-  ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"non-textual node <img /> is placed in <p/>"`,
-  );
-  await expect(
     renderer.render(<b>{children}</b>),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"non-textual node <img /> is placed in <b/>"`,
+    `"non-textual node <Photo /> is placed in <b/>"`,
   );
   await expect(
     renderer.render(<i>{children}</i>),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"non-textual node <img /> is placed in <i/>"`,
+    `"non-textual node <Photo /> is placed in <i/>"`,
   );
   await expect(
     renderer.render(<s>{children}</s>),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"non-textual node <img /> is placed in <s/>"`,
+    `"non-textual node <Photo /> is placed in <s/>"`,
   );
   await expect(
     renderer.render(<u>{children}</u>),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"non-textual node <img /> is placed in <u/>"`,
+    `"non-textual node <Photo /> is placed in <u/>"`,
   );
   await expect(
     renderer.render(<code>{children}</code>),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"non-textual node <img /> is placed in <code/>"`,
+    `"non-textual node <Photo /> is placed in <code/>"`,
   );
   await expect(
     renderer.render(<pre>{children}</pre>),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"non-textual node <img /> is placed in <pre/>"`,
+    `"non-textual node <Photo /> is placed in <pre/>"`,
   );
 });
 
 test('render null if content is empty', async () => {
-  const elements = [<b />, <i />, <s />, <u />, <p />, <code />, <pre />];
+  const elements = [<b />, <i />, <s />, <u />, <code />, <pre />];
   for (const element of elements) {
     // eslint-disable-next-line no-await-in-loop
     await expect(renderer.render(element)).resolves.toEqual(null);
   }
 });
 
-test('media elements match snapshot', async () => {
-  const segments = await renderer.render(
-    <>
-      <img src="http://avatar.my.bot" />
-      <video src="http://vid.my.bot" />
-      <audio src="http://sound.my.bot" />
-      <file src="http://profile.my.bot" />
-    </>,
+test('throw on invalid general element tags', async () => {
+  await expect(
+    renderer.render(<p>foo</p>),
+  ).rejects.toThrowErrorMatchingInlineSnapshot(
+    `""p" is not a valid general component tag on Telegram platform"`,
   );
-  expect(segments).toMatchSnapshot();
-  expect(segments.map((seg) => seg.value)).toMatchInlineSnapshot(`
-    [
-      {
-        "message": {
-          "method": "sendPhoto",
-          "parameters": {
-            "photo": "http://avatar.my.bot",
-          },
-        },
-      },
-      {
-        "message": {
-          "method": "sendVideo",
-          "parameters": {
-            "video": "http://vid.my.bot",
-          },
-        },
-      },
-      {
-        "message": {
-          "method": "sendAudio",
-          "parameters": {
-            "audio": "http://sound.my.bot",
-          },
-        },
-      },
-      {
-        "message": {
-          "method": "sendDocument",
-          "parameters": {
-            "document": "http://profile.my.bot",
-          },
-        },
-      },
-    ]
-  `);
+  await expect(
+    renderer.render(<img src="http://avatar.my.bot" />),
+  ).rejects.toThrowErrorMatchingInlineSnapshot(
+    `""img" is not a valid general component tag on Telegram platform"`,
+  );
+  await expect(
+    renderer.render(<video src="http://vid.my.bot" />),
+  ).rejects.toThrowErrorMatchingInlineSnapshot(
+    `""video" is not a valid general component tag on Telegram platform"`,
+  );
+  await expect(
+    renderer.render(<audio src="http://sound.my.bot" />),
+  ).rejects.toThrowErrorMatchingInlineSnapshot(
+    `""audio" is not a valid general component tag on Telegram platform"`,
+  );
+  await expect(
+    renderer.render(<file src="http://profile.my.bot" />),
+  ).rejects.toThrowErrorMatchingInlineSnapshot(
+    `""file" is not a valid general component tag on Telegram platform"`,
+  );
 });

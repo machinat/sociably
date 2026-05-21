@@ -1,36 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<p/> <p/> renders into individual text segment 1`] = `
+exports[`render nested text elements 1`] = `
 [
   {
-    "node": <p>
-      foo
-    </p>,
-    "path": "$::0",
-    "type": "text",
-    "value": "foo",
-  },
-  {
-    "node": "bar",
-    "path": "$::1",
-    "type": "text",
-    "value": "bar",
-  },
-  {
-    "node": <p>
-      baz
-    </p>,
-    "path": "$::2",
-    "type": "text",
-    "value": "baz",
-  },
-]
-`;
-
-exports[`text components render nested elements 1`] = `
-[
-  {
-    "node": <p>
+    "node": <Sociably.Fragment>
       123
        
       <code>
@@ -61,7 +34,7 @@ exports[`text components render nested elements 1`] = `
         May the force be with you!
       </pre>
        Bye!
-    </p>,
+    </Sociably.Fragment>,
     "path": "$",
     "type": "text",
     "value": "123 Hello, R2D2!
@@ -72,7 +45,7 @@ May the force be with you! Bye!",
 ]
 `;
 
-exports[`text components render shallow elements 1`] = `
+exports[`render shallow text elements 1`] = `
 [
   [
     {

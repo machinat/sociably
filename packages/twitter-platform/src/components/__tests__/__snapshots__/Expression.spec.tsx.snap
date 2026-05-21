@@ -3,9 +3,9 @@
 exports[`rendering 1`] = `
 [
   {
-    "node": <p>
+    "node": <DirectMessage>
       Hello
-    </p>,
+    </DirectMessage>,
     "path": "$#Expression.children:0",
     "type": "unit",
     "value": {
@@ -34,9 +34,9 @@ exports[`rendering 1`] = `
     },
   },
   {
-    "node": <p>
+    "node": <DirectMessage>
       World
-    </p>,
+    </DirectMessage>,
     "path": "$#Expression.children:1",
     "type": "unit",
     "value": {
@@ -70,9 +70,9 @@ exports[`rendering 1`] = `
 exports[`rendering with media content 1`] = `
 [
   {
-    "node": <p>
+    "node": <DirectMessage>
       Hello
-    </p>,
+    </DirectMessage>,
     "path": "$#Expression.children:0",
     "type": "unit",
     "value": {
@@ -163,9 +163,9 @@ exports[`rendering with media content 1`] = `
 exports[`rendering with quick replies 1`] = `
 [
   {
-    "node": <p>
+    "node": <DirectMessage>
       Hello World
-    </p>,
+    </DirectMessage>,
     "path": "$#Expression.children:0",
     "type": "unit",
     "value": {
@@ -194,9 +194,9 @@ exports[`rendering with quick replies 1`] = `
     },
   },
   {
-    "node": <p>
+    "node": <DirectMessage>
       Choose One
-    </p>,
+    </DirectMessage>,
     "path": "$#Expression.children:1",
     "type": "unit",
     "value": {

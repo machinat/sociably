@@ -4,6 +4,7 @@ import { Expression } from '../Expression.js';
 import { QuickReply } from '../QuickReply.js';
 import { MessageAction } from '../Action.js';
 import { LinkRichMenu } from '../LinkRichMenu.js';
+import { Text } from '../Text.js';
 import { renderUnitElement } from './utils.js';
 
 it('is valid native component', () => {
@@ -16,21 +17,22 @@ it('return segments from children', async () => {
   await expect(
     renderUnitElement(
       <Expression>
-        <p>foo</p>
-        <p>bar</p>
-        <p>baz</p>
+        <Text>foo</Text>
+        <Text>bar</Text>
+        <Text>baz</Text>
       </Expression>,
     ),
   ).resolves.toMatchInlineSnapshot(`
     [
       {
-        "node": <p>
+        "node": <Text>
           foo
-        </p>,
+        </Text>,
         "path": "$#Expression.children:0",
         "type": "unit",
         "value": {
           "params": {
+            "emojis": undefined,
             "text": "foo",
             "type": "text",
           },
@@ -38,13 +40,14 @@ it('return segments from children', async () => {
         },
       },
       {
-        "node": <p>
+        "node": <Text>
           bar
-        </p>,
+        </Text>,
         "path": "$#Expression.children:1",
         "type": "unit",
         "value": {
           "params": {
+            "emojis": undefined,
             "text": "bar",
             "type": "text",
           },
@@ -52,13 +55,14 @@ it('return segments from children', async () => {
         },
       },
       {
-        "node": <p>
+        "node": <Text>
           baz
-        </p>,
+        </Text>,
         "path": "$#Expression.children:2",
         "type": "unit",
         "value": {
           "params": {
+            "emojis": undefined,
             "text": "baz",
             "type": "text",
           },
@@ -153,7 +157,7 @@ it('attach quickReply to last message', async () => {
         }
       >
         Where you wanna go
-        <p>How much you wanna risk</p>
+        <Text>How much you wanna risk</Text>
         I'm not looking for
         <LinkRichMenu id="somebody_with_superhuman_gift" />
       </Expression>,
@@ -173,13 +177,14 @@ it('attach quickReply to last message', async () => {
         },
       },
       {
-        "node": <p>
+        "node": <Text>
           How much you wanna risk
-        </p>,
+        </Text>,
         "path": "$#Expression.children:1",
         "type": "unit",
         "value": {
           "params": {
+            "emojis": undefined,
             "text": "How much you wanna risk",
             "type": "text",
           },

@@ -256,6 +256,15 @@ exports[`.render(thread, content) send direct message 1`] = `
             "userId": "9876543210",
           },
         },
+      ],
+      "type": "dispatch",
+    },
+    {
+      "payload": null,
+      "type": "pause",
+    },
+    {
+      "payload": [
         {
           "accomplishRequest": [Function],
           "asApplication": false,
