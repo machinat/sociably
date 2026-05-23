@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import { Photo, Video, AnimatedGif } from '../Media.js';
 import { renderUnitElement } from './utils.js';

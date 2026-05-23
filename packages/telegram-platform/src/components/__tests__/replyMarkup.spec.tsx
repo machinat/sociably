@@ -1,7 +1,7 @@
-import Sociably from '@sociably/core';
 import Renderer from '@sociably/core/renderer';
 import { isNativeType } from '@sociably/core/utils';
 
+import { SociablyNode } from '@sociably/core';
 import {
   UrlButton,
   CallbackButton,
@@ -19,14 +19,14 @@ import {
   ForceReply,
 } from '../replyMarkup.js';
 
-const render = async (node) => {
+const render = async (node: SociablyNode) => {
   let rendered;
   const renderer = new Renderer('telegram', async (_, __, renderInner) => {
     rendered = await renderInner(node, null as never);
     return null;
   });
 
-  await renderer.render(<container />, null, []);
+  await renderer.render(<b />, null, []);
   return rendered;
 };
 
@@ -60,7 +60,7 @@ describe('UrlButton', () => {
             text="Go"
             url="http://sociably.io"
           />,
-          "path": "$#container",
+          "path": "$#b",
           "type": "part",
           "value": {
             "text": "Go",
@@ -82,7 +82,7 @@ describe('UrlButton', () => {
             text="Go and Log in"
             url="http://sociably.io"
           />,
-          "path": "$#container",
+          "path": "$#b",
           "type": "part",
           "value": {
             "login_url": {
@@ -119,7 +119,7 @@ describe('UrlButton', () => {
             text="Go and Log in"
             url="http://sociably.io"
           />,
-          "path": "$#container",
+          "path": "$#b",
           "type": "part",
           "value": {
             "login_url": {
@@ -146,7 +146,7 @@ describe('CallbackButton', () => {
             data="World!"
             text="Hello"
           />,
-          "path": "$#container",
+          "path": "$#b",
           "type": "part",
           "value": {
             "callback_data": "World!",
@@ -167,7 +167,7 @@ describe('SwitchQueryButton', () => {
           "node": <SwitchQueryButton
             text="Try"
           />,
-          "path": "$#container",
+          "path": "$#b",
           "type": "part",
           "value": {
             "switch_inline_query": "",
@@ -184,7 +184,7 @@ describe('SwitchQueryButton', () => {
             query="foo"
             text="Try"
           />,
-          "path": "$#container",
+          "path": "$#b",
           "type": "part",
           "value": {
             "switch_inline_query": "foo",
@@ -204,7 +204,7 @@ describe('SwitchQueryButton', () => {
             currentChat={true}
             text="Try"
           />,
-          "path": "$#container",
+          "path": "$#b",
           "type": "part",
           "value": {
             "switch_inline_query_current_chat": "",
@@ -223,7 +223,7 @@ describe('SwitchQueryButton', () => {
             query="foo"
             text="Try"
           />,
-          "path": "$#container",
+          "path": "$#b",
           "type": "part",
           "value": {
             "switch_inline_query_current_chat": "foo",
@@ -244,7 +244,7 @@ describe('GameButton', () => {
           "node": <GameButton
             text="Play"
           />,
-          "path": "$#container",
+          "path": "$#b",
           "type": "part",
           "value": {
             "callback_game": {},
@@ -265,7 +265,7 @@ describe('PayButton', () => {
           "node": <PayButton
             text="$$$"
           />,
-          "path": "$#container",
+          "path": "$#b",
           "type": "part",
           "value": {
             "pay": true,
@@ -308,7 +308,7 @@ describe('InlineKeyboard', () => {
               />
             </KeyboardRow>
           </InlineKeyboard>,
-          "path": "$#container",
+          "path": "$#b",
           "type": "part",
           "value": {
             "inline_keyboard": [
@@ -385,7 +385,7 @@ describe('ReplyKeyboard', () => {
               type="regular"
             />
           </ReplyKeyboard>,
-          "path": "$#container",
+          "path": "$#b",
           "type": "part",
           "value": {
             "keyboard": [
@@ -461,7 +461,7 @@ describe('ReplyKeyboard', () => {
               />
             </KeyboardRow>
           </ReplyKeyboard>,
-          "path": "$#container",
+          "path": "$#b",
           "type": "part",
           "value": {
             "keyboard": [
@@ -491,7 +491,7 @@ describe('RemoveReplyKeyboard', () => {
       [
         {
           "node": <RemoveReplyKeyboard />,
-          "path": "$#container",
+          "path": "$#b",
           "type": "part",
           "value": {
             "remove_keyboard": true,
@@ -508,7 +508,7 @@ describe('RemoveReplyKeyboard', () => {
           "node": <RemoveReplyKeyboard
             selective={true}
           />,
-          "path": "$#container",
+          "path": "$#b",
           "type": "part",
           "value": {
             "remove_keyboard": true,
@@ -526,7 +526,7 @@ describe('ForceReply', () => {
       [
         {
           "node": <ForceReply />,
-          "path": "$#container",
+          "path": "$#b",
           "type": "part",
           "value": {
             "force_reply": true,
@@ -543,7 +543,7 @@ describe('ForceReply', () => {
           "node": <ForceReply
             selective={true}
           />,
-          "path": "$#container",
+          "path": "$#b",
           "type": "part",
           "value": {
             "force_reply": true,

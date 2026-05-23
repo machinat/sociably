@@ -2,7 +2,7 @@ import { CreateAppContext } from '../../../types.js';
 import { when } from '../../../utils.js';
 
 export default ({ platforms }: CreateAppContext): string => `
-import Sociably, { serviceContainer } from '@sociably/core';
+import { serviceContainer } from '@sociably/core';
 import About from '../scenes/About.js';
 import HelloWithMenu from '../components/HelloWithMenu.js';
 import useIntent from '../services/useIntent.js';

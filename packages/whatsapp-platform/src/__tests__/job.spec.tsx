@@ -1,11 +1,21 @@
-import Sociably from '@sociably/core';
 import moxy from '@moxyjs/moxy';
 import { createChatJobs, createUploadingMediaJobs } from '../job.js';
 import WhatsAppAgent from '../Agent.js';
 import WhatsAppChat from '../Chat.js';
 
-const agent = new WhatsAppAgent('1234567890');
+declare module '@sociably/core/jsx-runtime' {
+  namespace JSX {
+    interface IntrinsicElements {
+      audio: { src?: string };
+      bar: { children?: unknown; x?: string };
+      baz: { children?: unknown };
+      image: {};
+      media: {};
+    }
+  }
+}
 
+const agent = new WhatsAppAgent('1234567890');
 describe('createChatJobs', () => {
   test('create jobs from text segments', () => {
     const chat = new WhatsAppChat('1234567890', '9876543210');
@@ -374,7 +384,7 @@ describe('createUploadingMediaJobs', () => {
       createUploadingMediaJobs(agent, [
         {
           type: 'unit',
-          value: { message: { type: 'text', text: 'BAR' } },
+          value: { message: { type: 'text', text: { body: 'BAR' } } },
           node: <bar />,
           path: '$:0',
         },

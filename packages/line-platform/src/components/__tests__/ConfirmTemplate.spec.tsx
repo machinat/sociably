@@ -1,5 +1,4 @@
 import moxy from '@moxyjs/moxy';
-import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import { MessageSegmentValue, TemplateMessageParams } from '../../types.js';
 import { ConfirmTemplate, ConfirmTemplateProps } from '../ConfirmTemplate.js';

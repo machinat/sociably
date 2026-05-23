@@ -1,5 +1,4 @@
 import moxy, { Moxy } from '@moxyjs/moxy';
-import Sociably from '@sociably/core';
 import Queue from '@sociably/core/queue';
 import _Engine from '@sociably/core/engine';
 import _Renderer from '@sociably/core/renderer';

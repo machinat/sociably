@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import { MultiProductParam } from '../MultiProductParam.js';
 import { renderPartElement } from './utils.js';
@@ -72,7 +71,7 @@ test('rendering value', async () => {
           }
           thumbnailProductRetailerId="_PRODUCT_ID_"
         />,
-        "path": "$#container",
+        "path": "$#b",
         "type": "part",
         "value": {
           "index": undefined,

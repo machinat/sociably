@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { renderPartElement, makeTestComponent } from './utils.js';
 import { GamePlayButton as _GamePlayButton } from '../GamePlayButton.js';
 
@@ -23,7 +22,7 @@ it('match snapshot', async () => {
           playerId="Adam"
           title="I want to play a game"
         />,
-        "path": "$#container",
+        "path": "$#b",
         "type": "part",
         "value": {
           "game_metadata": {

@@ -2,7 +2,6 @@
 import { Readable } from 'stream';
 import moxy, { Moxy } from '@moxyjs/moxy';
 import nock from 'nock';
-import Sociably from '@sociably/core';
 import Queue from '@sociably/core/queue';
 import _Engine from '@sociably/core/engine';
 import _Renderer from '@sociably/core/renderer';
@@ -38,7 +37,9 @@ jest.mock('../Worker.js', () =>
 );
 
 const initScope = moxy(() => moxy());
-const dispatchWrapper = moxy((x) => x);
+const dispatchWrapper = moxy(function dispatch<T>(x: T): T {
+  return x;
+});
 
 const agentSettings = {
   botToken: '12345:_BOT_TOKEN_',
@@ -316,7 +317,7 @@ describe('.requestApi()', () => {
       expect('should not get here').toBeFalsy();
     } catch (error) {
       expect(error).toBeInstanceOf(TelegramApiError);
-      expect(error.body).toEqual(failBody);
+      expect((error as TelegramApiError).body).toEqual(failBody);
     }
 
     expect(bodySpy).toHaveBeenCalledTimes(1);

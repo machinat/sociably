@@ -9,9 +9,6 @@ import createSociablyElement from './createElement.js';
 import App from './app.js';
 import type {
   AppConfig,
-  SociablyElement,
-  NativeComponent,
-  ContainerComponent,
   AnySociablyPlatform,
   FragmentProps,
   PauseProps,
@@ -61,31 +58,6 @@ namespace Sociably {
   ) => null;
 
   export const Raw = SOCIABLY_RAW_TYPE as unknown as (props: RawProps) => null;
-
-  export namespace JSX {
-    export type Element = SociablyElement<any, any>;
-    export type ElementClass =
-      | NativeComponent<any, any>
-      | ContainerComponent<any>;
-
-    export type ElementAttributesProperty = {
-      $$typeof: {};
-    };
-    export type ElementChildrenAttribute = {
-      children: {};
-    };
-
-    export type LibraryManagedAttributes<C, P> = C extends NativeComponent<
-      infer T,
-      any
-    >
-      ? T
-      : C extends ContainerComponent<infer U>
-      ? U
-      : P;
-
-    // interface IntrinsicElements {}
-  }
 }
 
 export default Sociably;

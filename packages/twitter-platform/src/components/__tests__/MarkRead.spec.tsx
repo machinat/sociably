@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import TwitterChat from '../../Chat.js';
 import { MarkRead } from '../MarkRead.js';

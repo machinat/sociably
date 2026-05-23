@@ -27,8 +27,8 @@ const login = moxy(async () => ({
 }));
 
 const marshaler = moxy({
-  marshal: (x) => x,
-  unmarshal: (x) => x,
+  marshal: (x: unknown) => x,
+  unmarshal: (x: unknown) => x,
 });
 
 const connectSpy = moxy();

@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import { QuickReplyParam } from '../QuickReplyParam.js';
 import { renderPartElement } from './utils.js';
@@ -17,7 +16,7 @@ test('rendering value', async () => {
         "node": <QuickReplyParam
           payload="_HELLO_WORLD_"
         />,
-        "path": "$#container",
+        "path": "$#b",
         "type": "part",
         "value": {
           "index": undefined,

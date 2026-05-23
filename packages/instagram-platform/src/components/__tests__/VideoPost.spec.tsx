@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import { VideoPost } from '../VideoPost.js';
 import { renderUnitElement } from './utils.js';

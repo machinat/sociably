@@ -112,10 +112,7 @@ export type NativeComponent<
   new (): NativeComponent<Props, Segment>; // eslint-disable-line @typescript-eslint/no-misused-new
 };
 
-export type AnyNativeComponent = NativeComponent<
-  unknown,
-  IntermediateSegment<unknown>
->;
+export type AnyNativeComponent = NativeComponent<any, IntermediateSegment<any>>;
 
 export type NativeElement<
   Props,
@@ -123,7 +120,7 @@ export type NativeElement<
 > = SociablyElement<Props, Component>;
 
 export type FragmentProps = {
-  children: SociablyNode;
+  children?: SociablyNode;
 };
 export type FragmentElement = SociablyElement<
   FragmentProps,

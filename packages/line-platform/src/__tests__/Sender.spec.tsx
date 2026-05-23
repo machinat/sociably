@@ -1,6 +1,5 @@
 import nock from 'nock';
 import moxy, { Moxy } from '@moxyjs/moxy';
-import Sociably from '@sociably/core';
 import _Engine from '@sociably/core/engine';
 import _Renderer from '@sociably/core/renderer';
 import Queue from '@sociably/core/queue';

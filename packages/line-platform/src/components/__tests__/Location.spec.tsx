@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import { Location, LocationProps } from '../Location.js';
 import { renderUnitElement } from './utils.js';

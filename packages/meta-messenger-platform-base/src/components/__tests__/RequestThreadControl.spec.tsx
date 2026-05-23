@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { RequestThreadControl as _RequestThreadControl } from '../RequestThreadControl.js';
 import { renderUnitElement, makeTestComponent } from './utils.js';
 

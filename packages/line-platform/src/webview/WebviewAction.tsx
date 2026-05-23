@@ -1,4 +1,4 @@
-import Sociably, { serviceContainer, RenderingTarget } from '@sociably/core';
+import { serviceContainer, RenderingTarget } from '@sociably/core';
 import { UriAction } from '../components/index.js';
 import LineChannel from '../Channel.js';
 import LineChat from '../Chat.js';

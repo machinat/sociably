@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { PhoneReply as _PhoneReply } from '../PhoneReply.js';
 import { renderPartElement, makeTestComponent } from './utils.js';
 
@@ -9,7 +8,7 @@ test('PhoneReply match snpshot', async () => {
     [
       {
         "node": <PhoneReply />,
-        "path": "$#container",
+        "path": "$#b",
         "type": "part",
         "value": {
           "content_type": "user_phone_number",

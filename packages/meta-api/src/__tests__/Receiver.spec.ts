@@ -18,7 +18,9 @@ const fooEvent = {
   payload: { id: '1234567890' },
 };
 
-const makeEventsFromUpdate = moxy(() => [fooEvent as SociablyEvent<unknown>]);
+const makeEventsFromUpdate = moxy(() => [
+  fooEvent as unknown as SociablyEvent<unknown>,
+]);
 const popFooEvent = moxy(async () => null);
 
 const fooListeningPlatformOptions = {

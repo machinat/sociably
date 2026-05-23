@@ -1,4 +1,5 @@
-import Sociably from '@sociably/core';
+import { SociablyNode } from '@sociably/core';
+import { UnitSegment } from '@sociably/core/renderer/types.js';
 import { isNativeType } from '@sociably/core/utils';
 import Renderer from '@sociably/core/renderer';
 import TwitterChat from '../../Chat.js';
@@ -7,12 +8,19 @@ import { Typing } from '../Typing.js';
 import { QuickReply } from '../QuickReply.js';
 import { Expression } from '../Expression.js';
 import { DirectMessage } from '../DirectMessage.js';
+import type {
+  TwitterSegmentValue,
+  DirectMessageSegmentValue,
+  TwitterComponent,
+} from '../../types.js';
 
-const renderer = new Renderer('twitter', async (node, path) => [
-  { type: 'text', path, node, value: node.props.children as string },
-  { type: 'break', path, node, value: null },
-]);
-const render = (element) => renderer.render(element, null, null);
+const renderer = new Renderer<TwitterSegmentValue, TwitterComponent<unknown>>(
+  'twitter',
+  async (node, path) => [
+    { type: 'text', path, node, value: node.props.children as string },
+  ],
+);
+const render = (element: SociablyNode) => renderer.render(element, null, null);
 
 it('is a valid Component', () => {
   expect(isNativeType(<Expression>foo</Expression>)).toBe(true);
@@ -29,8 +37,9 @@ test('rendering', async () => {
   );
   expect(segments).toMatchSnapshot();
   expect(
-    (segments as any).map(({ value: { request, accomplishRequest } }) =>
-      accomplishRequest(new TwitterChat('12345', '67890'), request, null),
+    (segments as UnitSegment<DirectMessageSegmentValue>[]).map(
+      ({ value: { request, accomplishRequest } }) =>
+        accomplishRequest!(new TwitterChat('12345', '67890'), request, null),
     ),
   ).toMatchInlineSnapshot(`
     [
@@ -93,8 +102,9 @@ test('rendering with quick replies', async () => {
   );
   expect(segments).toMatchSnapshot();
   expect(
-    (segments as any).map(({ value: { request, accomplishRequest } }) =>
-      accomplishRequest(new TwitterChat('12345', '67890'), request, null),
+    (segments as UnitSegment<DirectMessageSegmentValue>[]).map(
+      ({ value: { request, accomplishRequest } }) =>
+        accomplishRequest!(new TwitterChat('12345', '67890'), request, null),
     ),
   ).toMatchInlineSnapshot(`
     [
@@ -171,8 +181,9 @@ test('rendering with media content', async () => {
 
   const chat = new TwitterChat('12345', '67890');
   expect(
-    (segments as any).map(({ value: { request, accomplishRequest } }, i) =>
-      accomplishRequest(chat, request, i === 1 ? ['11111'] : null),
+    (segments as UnitSegment<DirectMessageSegmentValue>[]).map(
+      ({ value: { request, accomplishRequest } }, i) =>
+        accomplishRequest!(chat, request, i === 1 ? ['11111'] : null),
     ),
   ).toMatchInlineSnapshot(`
     [

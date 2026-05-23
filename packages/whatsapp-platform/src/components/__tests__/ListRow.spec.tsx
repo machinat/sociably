@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import { ListRow } from '../ListRow.js';
 import { renderPartElement } from './utils.js';
@@ -18,7 +17,7 @@ test('rendering value', async () => {
           data="foo"
           title="FOO"
         />,
-        "path": "$#container",
+        "path": "$#b",
         "type": "part",
         "value": {
           "description": undefined,
@@ -38,7 +37,7 @@ test('rendering value', async () => {
           description="BAZ"
           title="BAR"
         />,
-        "path": "$#container",
+        "path": "$#b",
         "type": "part",
         "value": {
           "description": "BAZ",

@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { PassThreadControl as _PassThreadControl } from '../PassThreadControl.js';
 import { renderUnitElement, makeTestComponent } from './utils.js';
 

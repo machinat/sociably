@@ -30,7 +30,7 @@ const batch2Resolved = jest.fn();
 const batch3Resolved = jest.fn();
 
 beforeEach(() => {
-  jest.useFakeTimers('modern');
+  jest.useFakeTimers();
   queue = new SociablyQueue();
 
   consume.mockImplementation(async (acquired) => {

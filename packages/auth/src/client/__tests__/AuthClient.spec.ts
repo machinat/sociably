@@ -4,7 +4,12 @@ import nock from 'nock';
 import fetch from 'node-fetch';
 import jwt from 'jsonwebtoken';
 import AuthError from '../../error.js';
-import type { AnyClientAuthenticator } from '../../types.js';
+import type {
+  AnyAuthContext,
+  AnyClientAuthenticator,
+  AuthenticatorCredentialResult,
+  ClientAuthenticator,
+} from '../../types.js';
 import AuthClient from '../AuthClient.js';
 
 const resolveAfterLoops = (resolve, n) => {
@@ -40,7 +45,12 @@ const fooThread = {
 const fooData = 'foo.data';
 const fooCredential = { foo: 'credential' };
 
-const fooAuthenticator = moxy<AnyClientAuthenticator>({
+type FooAuthContext = AnyAuthContext & { foo: string };
+type BarAuthContext = AnyAuthContext & { bar: string };
+
+const fooAuthenticator = moxy<
+  ClientAuthenticator<typeof fooCredential, typeof fooData, FooAuthContext>
+>({
   platform: 'foo',
   async init() {
     return { forceSignIn: false };
@@ -61,32 +71,51 @@ const fooAuthenticator = moxy<AnyClientAuthenticator>({
   },
 });
 
-const barAuthenticator = moxy<AnyClientAuthenticator>({
+const barAuthenticator = moxy<
+  ClientAuthenticator<never, never, BarAuthContext>
+>({
   platform: 'bar',
   async init() {
     return { forceSignIn: false };
   },
-  async fetchCredential() {
+  async fetchCredential(
+    _entry: string,
+  ): Promise<AuthenticatorCredentialResult<never>> {
     return {
       ok: false,
       code: 418,
       reason: "I'm drunk",
     };
   },
-  checkAuthData() {
+  checkAuthData(_data: never) {
     return {
       ok: true,
       contextDetails: {
-        agent: { platform: 'bar', uid: 'bar.my_agent' },
-        user: { platform: 'bar', uid: 'bar.jojo_doe' },
-        thread: { platform: 'bar', uid: 'bar.chat.jojo_doe' },
+        agent: {
+          $$typeofAgent: true as const,
+          platform: 'bar',
+          uid: 'bar.my_agent',
+        },
+        user: {
+          $$typeofUser: true as const,
+          platform: 'bar',
+          uid: 'bar.jojo_doe',
+        },
+        thread: {
+          $$typeofThread: true as const,
+          platform: 'bar',
+          uid: 'bar.chat.jojo_doe',
+        },
         bar: 'bar.data',
       },
     };
   },
 });
 
-const authenticators = [fooAuthenticator, barAuthenticator];
+const authenticators: AnyClientAuthenticator[] = [
+  fooAuthenticator,
+  barAuthenticator,
+];
 const serverUrl = '/auth';
 
 const location = moxy<Location>(

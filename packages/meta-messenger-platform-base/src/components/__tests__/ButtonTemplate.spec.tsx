@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { renderUnitElement, makeTestComponent } from './utils.js';
 import { ButtonTemplate as _ButtonTemplate } from '../ButtonTemplate.js';
 import { UrlButton as _UrlButton } from '../UrlButton.js';

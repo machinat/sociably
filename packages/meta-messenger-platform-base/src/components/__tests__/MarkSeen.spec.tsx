@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { MarkSeen as _MarkSeen } from '../MarkSeen.js';
 import { renderUnitElement, makeTestComponent } from './utils.js';
 

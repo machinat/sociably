@@ -1,4 +1,5 @@
 import moxy, { Moxy } from '@moxyjs/moxy';
+import type { AnySociablyPlatform, ServiceModule } from '../types.js';
 import {
   serviceContainer,
   serviceProviderClass,
@@ -20,7 +21,7 @@ const TestService = moxy(
   })(class TestService {}),
 );
 
-const TestModule = moxy({
+const TestModule = moxy<ServiceModule>({
   provisions: [
     TestService,
     serviceProviderFactory({
@@ -39,7 +40,7 @@ const AnotherService = moxy(
   })(class AnotherService {}),
 );
 
-const AnotherModule = moxy({
+const AnotherModule = moxy<ServiceModule>({
   provisions: [AnotherService],
   startHook: serviceContainer({
     deps: [TestService, AnotherService],
@@ -77,16 +78,16 @@ const FooPlatform = moxy(
       deps: [TestService, AnotherService, FooService],
     })(async () => {}),
     eventMiddlewares: [
-      (ctx, next) => next(ctx),
-      (ctx, next) => next(ctx),
-      (ctx, next) => next(ctx),
-    ],
+      (ctx: any, next: any) => next(ctx),
+      (ctx: any, next: any) => next(ctx),
+      (ctx: any, next: any) => next(ctx),
+    ] as Moxy<() => Promise<unknown>>[],
     dispatchMiddlewares: [
-      (frame, next) => next(frame),
-      (frame, next) => next(frame),
-      (frame, next) => next(frame),
-    ],
-  } as never,
+      (frame: any, next: any) => next(frame),
+      (frame: any, next: any) => next(frame),
+      (frame: any, next: any) => next(frame),
+    ] as Moxy<() => Promise<any>>[],
+  },
   { includeProperties: ['eventMiddlewares', 'dispatchMiddlewares'] },
 );
 
@@ -102,7 +103,7 @@ const AnotherPlatformUtilsI = serviceInterface({
 });
 const useAnotherPlatformUtils = moxy(() => ({}));
 
-const BarPlatform = moxy({
+const BarPlatform = moxy<AnySociablyPlatform>({
   name: 'bar',
   utilitiesInterface: AnotherPlatformUtilsI,
   provisions: [
@@ -164,10 +165,10 @@ it('start modules', async () => {
   expect(TestService.$$factory).toHaveBeenCalledTimes(5);
   expect(TestService.$$factory).toHaveBeenCalledWith(/* empty */);
   expect(
-    (TestModule.startHook.$$factory as Moxy<() => unknown>).mock,
+    (TestModule.startHook!.$$factory as Moxy<() => unknown>).mock,
   ).toHaveBeenCalledTimes(1);
   expect(
-    (TestModule.startHook.$$factory as Moxy<() => unknown>).mock,
+    (TestModule.startHook!.$$factory as Moxy<() => unknown>).mock,
   ).toHaveBeenCalledWith(expect.any(TestService));
 
   expect(AnotherService.$$factory).toHaveBeenCalledTimes(1);
@@ -175,10 +176,10 @@ it('start modules', async () => {
     expect.any(TestService),
   );
   expect(
-    (AnotherModule.startHook.$$factory as Moxy<() => unknown>).mock,
+    (AnotherModule.startHook!.$$factory as Moxy<() => unknown>).mock,
   ).toHaveBeenCalledTimes(1);
   expect(
-    (AnotherModule.startHook.$$factory as Moxy<() => unknown>).mock,
+    (AnotherModule.startHook!.$$factory as Moxy<() => unknown>).mock,
   ).toHaveBeenCalledWith(expect.any(TestService), expect.any(AnotherService));
 
   expect(FooService.$$factory).toHaveBeenCalledTimes(1);
@@ -186,8 +187,8 @@ it('start modules', async () => {
     expect.any(TestService),
     expect.any(AnotherService),
   );
-  expect(FooPlatform.startHook.$$factory).toHaveBeenCalledTimes(1);
-  expect(FooPlatform.startHook.$$factory).toHaveBeenCalledWith(
+  expect(FooPlatform.startHook!.$$factory).toHaveBeenCalledTimes(1);
+  expect(FooPlatform.startHook!.$$factory).toHaveBeenCalledWith(
     expect.any(TestService),
     expect.any(AnotherService),
     expect.any(FooService),
@@ -199,10 +200,10 @@ it('start modules', async () => {
     expect.any(AnotherService),
   );
   expect(
-    (BarPlatform.startHook.$$factory as Moxy<() => unknown>).mock,
+    (BarPlatform.startHook!.$$factory as Moxy<() => unknown>).mock,
   ).toHaveBeenCalledTimes(1);
   expect(
-    (BarPlatform.startHook.$$factory as Moxy<() => unknown>).mock,
+    (BarPlatform.startHook!.$$factory as Moxy<() => unknown>).mock,
   ).toHaveBeenCalledWith(
     expect.any(TestService),
     expect.any(AnotherService),
@@ -250,44 +251,44 @@ test('#stop() calls stopHook of platfroms & modules', async () => {
   await app.start();
 
   expect(
-    (TestModule.stopHook.$$factory as Moxy<() => unknown>).mock,
+    (TestModule.stopHook!.$$factory as Moxy<() => unknown>).mock,
   ).not.toHaveBeenCalled();
   expect(
-    (AnotherModule.stopHook.$$factory as Moxy<() => unknown>).mock,
+    (AnotherModule.stopHook!.$$factory as Moxy<() => unknown>).mock,
   ).not.toHaveBeenCalled();
-  expect(FooPlatform.stopHook.$$factory).not.toHaveBeenCalled();
+  expect(FooPlatform.stopHook!.$$factory).not.toHaveBeenCalled();
   expect(
-    (BarPlatform.stopHook.$$factory as Moxy<() => unknown>).mock,
+    (BarPlatform.stopHook!.$$factory as Moxy<() => unknown>).mock,
   ).not.toHaveBeenCalled();
 
   await app.stop();
 
   expect(
-    (TestModule.stopHook.$$factory as Moxy<() => unknown>).mock,
+    (TestModule.stopHook!.$$factory as Moxy<() => unknown>).mock,
   ).toHaveBeenCalledTimes(1);
   expect(
-    (TestModule.stopHook.$$factory as Moxy<() => unknown>).mock,
+    (TestModule.stopHook!.$$factory as Moxy<() => unknown>).mock,
   ).toHaveBeenCalledWith(expect.any(TestService));
 
   expect(
-    (AnotherModule.stopHook.$$factory as Moxy<() => unknown>).mock,
+    (AnotherModule.stopHook!.$$factory as Moxy<() => unknown>).mock,
   ).toHaveBeenCalledTimes(1);
   expect(
-    (AnotherModule.stopHook.$$factory as Moxy<() => unknown>).mock,
+    (AnotherModule.stopHook!.$$factory as Moxy<() => unknown>).mock,
   ).toHaveBeenCalledWith(expect.any(TestService), expect.any(AnotherService));
 
-  expect(FooPlatform.stopHook.$$factory).toHaveBeenCalledTimes(1);
-  expect(FooPlatform.stopHook.$$factory).toHaveBeenCalledWith(
+  expect(FooPlatform.stopHook!.$$factory).toHaveBeenCalledTimes(1);
+  expect(FooPlatform.stopHook!.$$factory).toHaveBeenCalledWith(
     expect.any(TestService),
     expect.any(AnotherService),
     expect.any(FooService),
   );
 
   expect(
-    (BarPlatform.stopHook.$$factory as Moxy<() => unknown>).mock,
+    (BarPlatform.stopHook!.$$factory as Moxy<() => unknown>).mock,
   ).toHaveBeenCalledTimes(1);
   expect(
-    (BarPlatform.stopHook.$$factory as Moxy<() => unknown>).mock,
+    (BarPlatform.stopHook!.$$factory as Moxy<() => unknown>).mock,
   ).toHaveBeenCalledWith(
     expect.any(TestService),
     expect.any(AnotherService),
@@ -443,7 +444,7 @@ describe('popEventWrapper', () => {
     expect(eventListener).toHaveBeenCalledWith(eventContext);
     expect(errorListener).not.toHaveBeenCalled();
 
-    for (const middleware of FooPlatform.eventMiddlewares) {
+    for (const middleware of FooPlatform.eventMiddlewares!) {
       expect(middleware).toHaveBeenCalledTimes(1);
       expect(middleware).toHaveBeenCalledWith(
         eventContext,
@@ -463,15 +464,15 @@ describe('popEventWrapper', () => {
 
     await app.start();
 
-    FooPlatform.eventMiddlewares[0].mock.fake(async (ctx, next) => ({
+    FooPlatform.eventMiddlewares![0].mock.fake(async (ctx, next) => ({
       ...(await next({ ...ctx, ping: 0 })),
       pong: 0,
     }));
-    FooPlatform.eventMiddlewares[1].mock.fake(async (ctx, next) => ({
+    FooPlatform.eventMiddlewares![1].mock.fake(async (ctx, next) => ({
       ...(await next({ ...ctx, ding: 1 })),
       dong: 1,
     }));
-    FooPlatform.eventMiddlewares[2].mock.fake(async (ctx, next) => ({
+    FooPlatform.eventMiddlewares![2].mock.fake(async (ctx, next) => ({
       ...(await next({ ...ctx, ling: 2 })),
       long: 2,
     }));
@@ -603,7 +604,7 @@ describe('popEventWrapper', () => {
         const response = await next(ctx);
         return response;
       } catch (err) {
-        return { hello: err.message };
+        return { hello: (err as Error).message };
       }
     });
 
@@ -664,7 +665,7 @@ describe('popEventWrapper', () => {
   });
 
   test('use service container for middleware', async () => {
-    const containedMiddleware = moxy((ctx, next) => next(ctx));
+    const containedMiddleware = moxy((ctx: any, next: any) => next(ctx));
     const middlewareContainer = moxy(
       serviceContainer({
         deps: [
@@ -891,7 +892,7 @@ describe('dispatchWrapper', () => {
   });
 
   test('DI within dispatch middleware', async () => {
-    const containedMiddleware = moxy((ctx, next) => next(ctx));
+    const containedMiddleware = moxy((ctx: any, next: any) => next(ctx));
     const middlewareContainer = moxy(
       serviceContainer({
         deps: [

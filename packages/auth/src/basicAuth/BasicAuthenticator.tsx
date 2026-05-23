@@ -2,7 +2,7 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import { parse as parseUrl, URL } from 'url';
 import Bowser from 'bowser';
 import { getClientIp } from 'request-ip';
-import Sociably, {
+import {
   serviceProviderClass,
   SociablyThread,
   StateRepository,
@@ -43,7 +43,9 @@ const numericCode = (n: number) => {
   return code;
 };
 
-const DefaultCodeMessage = ({ code }) => <p>Your login code is: {code}</p>;
+const DefaultCodeMessage = ({ code }: { code: string }) => (
+  <>Your login code is: {code}</>
+);
 
 type InitPayload<Credential> = {
   credential: Credential;
@@ -94,11 +96,11 @@ export class BasicAuthenticator {
       { trailingPath }: RoutingInfo,
     ): Promise<void> => {
       if (trailingPath === 'init') {
-        await this._handleInit(req, res, options);
+        await this._handleInit<Credential, Data, Thread>(req, res, options);
       } else if (trailingPath === 'login') {
-        await this._handleLogin(req, res, options);
+        await this._handleLogin<Credential, Data, Thread>(req, res, options);
       } else if (trailingPath === 'verify') {
-        await this._handleVerify(req, res, options);
+        await this._handleVerify<Credential, Data, Thread>(req, res, options);
       } else {
         res.writeHead(404);
         res.end();
@@ -200,7 +202,7 @@ export class BasicAuthenticator {
     this.operator.redirect(res, loginUrl);
   }
 
-  private async _handleLogin<Data, Thread extends SociablyThread>(
+  private async _handleLogin<Credential, Data, Thread extends SociablyThread>(
     req: IncomingMessage,
     res: ServerResponse,
     {
@@ -210,7 +212,7 @@ export class BasicAuthenticator {
       platformColor,
       platformImageUrl,
       checkAuthData,
-    }: AuthDelegatorOptions<unknown, Data, Thread>,
+    }: AuthDelegatorOptions<Credential, Data, Thread>,
   ) {
     const now = Date.now();
     const state = await this.operator.getState<BasicAuthState<Data>>(
@@ -311,10 +313,10 @@ export class BasicAuthenticator {
     );
   }
 
-  private async _handleVerify<Data, Thread extends SociablyThread>(
+  private async _handleVerify<Credential, Data, Thread extends SociablyThread>(
     req: IncomingMessage,
     res: ServerResponse,
-    { platform }: AuthDelegatorOptions<unknown, Data, Thread>,
+    { platform }: AuthDelegatorOptions<Credential, Data, Thread>,
   ) {
     const body: VerifyCodeRequestBody = await parseJsonBody(req);
     if (!body?.code) {

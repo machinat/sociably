@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { Latex as _Latex } from '../Latex.js';
 import { Image as _Image } from '../Media.js';
 import { renderUnitElement, makeTestComponent } from './utils.js';

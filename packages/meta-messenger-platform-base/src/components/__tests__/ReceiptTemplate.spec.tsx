@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { renderUnitElement, makeTestComponent } from './utils.js';
 import {
   ReceiptTemplate as _ReceiptTemplate,

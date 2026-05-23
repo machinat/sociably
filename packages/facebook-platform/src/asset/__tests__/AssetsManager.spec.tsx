@@ -1,9 +1,9 @@
 import moxy from '@moxyjs/moxy';
-import Sociably from '@sociably/core';
 import type StateRepositoryI from '@sociably/core/base/StateRepository.js';
 import type { FacebookSender } from '../../Sender.js';
 import FacebookPage from '../../Page.js';
 import { FacebookAssetsManager } from '../AssetsManager.js';
+import { Image } from '../../components/index.js';
 
 const state = moxy({
   get: async () => null,
@@ -617,20 +617,14 @@ describe('assets management', () => {
     sender.uploadChatAttachment.mock.fake(async () => ({
       attachmentId: '1857777774821032',
     }));
+    const avatar = <Image url="http://foo.bar/avatar" />;
 
     await expect(
-      manager.uploadChatAttachment(
-        page,
-        'my_avatar',
-        <img src="http://foo.bar/avatar" />,
-      ),
+      manager.uploadChatAttachment(page, 'my_avatar', avatar),
     ).resolves.toBe('1857777774821032');
 
     expect(sender.uploadChatAttachment).toHaveBeenCalledTimes(1);
-    expect(sender.uploadChatAttachment).toHaveBeenCalledWith(
-      page,
-      <img src="http://foo.bar/avatar" />,
-    );
+    expect(sender.uploadChatAttachment).toHaveBeenCalledWith(page, avatar);
 
     expect(state.set).toHaveBeenCalledTimes(1);
     expect(state.set).toHaveBeenCalledWith('my_avatar', '1857777774821032');

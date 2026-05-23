@@ -1,5 +1,5 @@
 /* eslint-disable no-await-in-loop */
-import Sociably from '@sociably/core';
+import type { SociablyNode } from '@sociably/core';
 import Renderer from '@sociably/core/renderer';
 import generalComponentDelegator from '../general.js';
 import { Image } from '../Image.js';
@@ -126,6 +126,18 @@ test('return null if text content is empty', async () => {
     await expect(renderer.render(element, null, null)).resolves.toEqual(null);
   }
 });
+
+declare module '@sociably/core/jsx-runtime' {
+  namespace JSX {
+    interface IntrinsicElements {
+      p: { children?: SociablyNode };
+      img: { src?: string };
+      video: { src?: string };
+      audio: { src?: string };
+      file: { src?: string };
+    }
+  }
+}
 
 it('throw on invalid general element tags', async () => {
   await expect(

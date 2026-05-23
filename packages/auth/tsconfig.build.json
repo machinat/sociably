@@ -9,7 +9,9 @@
       "@sociably/core": ["../core/src/index.js"],
       "@sociably/core/*": ["../core/src/*/index.js", "../core/src/*.js"],
       "@sociably/http": ["../http/src/index.js"],
-      "@sociably/http/*": ["../http/src/*/index.js", "../http/src/*.js"]
+      "@sociably/http/*": ["../http/src/*/index.js", "../http/src/*.js"],
+      "@sociably/core/jsx-runtime": ["../core/src/jsx-runtime.ts"],
+      "@sociably/core/jsx-dev-runtime": ["../core/src/jsx-dev-runtime.ts"]
     }
   },
   "references": [

@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { SOCIABLY_SCRIPT_TYPE } from '../constant.js';
 import {
   IF,
@@ -14,6 +13,17 @@ import {
 } from '../keyword.js';
 import parse from '../parse.js';
 import type { AnyScriptLibrary } from '../types.js';
+
+declare module '@sociably/core/jsx-runtime' {
+  namespace JSX {
+    interface IntrinsicElements {
+      del: { children?: unknown };
+      dolore: {};
+      eiusmod: {};
+      world: {};
+    }
+  }
+}
 
 const AnotherScript: AnyScriptLibrary = {
   $$typeof: SOCIABLY_SCRIPT_TYPE,

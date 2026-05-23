@@ -7,6 +7,7 @@ module.exports = {
   extends: [
     'airbnb-base',
     'plugin:react/recommended',
+    'plugin:react/jsx-runtime',
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/stylistic',
     'plugin:import/typescript',
@@ -81,7 +82,7 @@ module.exports = {
     },
   ],
   settings: {
-    react: { pragma: 'Sociably' },
+    react: { version: '18.2' },
     'import/parsers': {
       '@typescript-eslint/parser': ['.ts', '.tsx'],
     },

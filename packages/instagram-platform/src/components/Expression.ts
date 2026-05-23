@@ -5,6 +5,7 @@ import {
   ExpressionProps as MessengerExpressionProps,
 } from '@sociably/meta-messenger-platform-base/components';
 import makeInstagramComponent from '../utils/makeInstagramComponent.js';
+import type { InstagramComponent } from '../types.js';
 
 export type ExpressionProps = Omit<MessengerExpressionProps, 'tag'> & {
   /**
@@ -24,10 +25,11 @@ export type ExpressionProps = Omit<MessengerExpressionProps, 'tag'> & {
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/send-api).
  */
-export const Expression = makeInstagramComponent(function Expression(
-  node: NativeElement<ExpressionProps, AnyNativeComponent>,
-  path: string,
-  innerRender: InnerRenderFn,
-) {
-  return MessengerExpression(node, path, innerRender);
-});
+export const Expression: InstagramComponent<ExpressionProps> =
+  makeInstagramComponent(function Expression(
+    node: NativeElement<ExpressionProps, AnyNativeComponent>,
+    path: string,
+    innerRender: InnerRenderFn,
+  ) {
+    return MessengerExpression(node, path, innerRender);
+  });

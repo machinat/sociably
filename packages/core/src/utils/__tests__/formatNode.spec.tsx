@@ -2,11 +2,26 @@ import Sociably from '../../index.js';
 import formatNode from '../formatNode.js';
 import serviceInterface from '../../service/decorators/serviceInterface.js';
 
+declare module '@sociably/core/jsx-runtime' {
+  namespace JSX {
+    interface IntrinsicElements {
+      div: { x?: string; y?: number };
+    }
+  }
+}
+
 const { Pause, Fragment, Provider, Raw, Thunk } = Sociably;
 
-const MyComp = () => {};
-const Sym = Symbol('_symbol_component_');
-const Unnamed = (() => () => {})();
+type TestProps = { x?: string; y?: number };
+
+const MyComp = (_props: TestProps) => null;
+const Sym = Symbol('_symbol_component_') as unknown as (
+  props: TestProps,
+) => null;
+const Unnamed = (
+  () => (_props: TestProps) =>
+    null
+)();
 
 const Foo = serviceInterface({ name: 'Foo' });
 
@@ -23,13 +38,21 @@ test.each`
   ${(<MyComp x="0" y={1} />)}                    | ${true}   | ${'<MyComp x="0" y={1} />'}
   ${(<Sym x="0" y={1} />)}                       | ${false}  | ${'<Symbol(_symbol_component_) />'}
   ${(<Sym x="0" y={1} />)}                       | ${true}   | ${'<Symbol(_symbol_component_) x="0" y={1} />'}
-  ${(<Unnamed x="0" y={1} />)}                   | ${false}  | ${'<(()=>{}) />'}
-  ${(<Unnamed x="0" y={1} />)}                   | ${true}   | ${'<(()=>{}) x="0" y={1} />'}
+  ${(<Unnamed x="0" y={1} />)}                   | ${false}  | ${'<((_props)=>null) />'}
+  ${(<Unnamed x="0" y={1} />)}                   | ${true}   | ${'<((_props)=>null) x="0" y={1} />'}
   ${(<Fragment />)}                              | ${false}  | ${'<Fragment />'}
   ${(<Pause time={3} />)}                        | ${false}  | ${'<Pause />'}
   ${(<Pause delay={() => Promise.resolve()} />)} | ${true}   | ${'<Pause delay={()=>Promise.resolve()} />'}
-  ${(<Provider provide={Foo} value="foo" />)}    | ${false}  | ${'<Provider />'}
-  ${(<Provider provide={Foo} value="foo" />)}    | ${true}   | ${'<Provider provide={[object Object]} value="foo" />'}
+  ${(
+  <Provider provide={Foo} value="foo">
+    {null}
+  </Provider>
+)} | ${false} | ${'<Provider />'}
+  ${(
+  <Provider provide={Foo} value="foo">
+    {null}
+  </Provider>
+)} | ${true} | ${'<Provider provide={[object Object]} value="foo" children={null} />'}
   ${(<Thunk effect={async () => {}} />)}         | ${false}  | ${'<Thunk />'}
   ${(<Thunk effect={async () => {}} />)}         | ${true}   | ${'<Thunk effect={async ()=>{}} />'}
   ${(<Raw value={{ raw: 'content' }} />)}        | ${false}  | ${'<Raw />'}

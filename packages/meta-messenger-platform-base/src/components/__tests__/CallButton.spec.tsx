@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { renderPartElement, makeTestComponent } from './utils.js';
 import { CallButton as _CallButton } from '../CallButton.js';
 
@@ -16,7 +15,7 @@ it('match snapshot', async () => {
           number="+15105551234"
           title="call me maybe"
         />,
-        "path": "$#container",
+        "path": "$#b",
         "type": "part",
         "value": {
           "number": "+15105551234",

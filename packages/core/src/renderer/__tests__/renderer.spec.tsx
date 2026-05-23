@@ -7,25 +7,35 @@ import {
 } from '../../service/index.js';
 import Renderer from '../renderer.js';
 import { makeNativeComponent } from '../componentHelper.js';
-import { IntermediateSegment } from '../types.js';
+import type { TextSegment } from '../types.js';
+
+declare module '@sociably/core/jsx-runtime' {
+  namespace JSX {
+    interface IntrinsicElements {
+      a: { id?: number; children?: unknown };
+      c: { id?: number; children?: unknown };
+      dolor: {};
+      consectetur: {};
+      elit: {};
+      justo: {};
+      aliquam: {};
+      nec_odio: {};
+      ultricies: {};
+      pretium: {};
+      invalid: {};
+    }
+  }
+}
 
 const generalElementDelegate = moxy(
-  (node, path): Promise<IntermediateSegment<unknown, unknown>[]> =>
+  (node, path, _render): Promise<TextSegment[]> =>
     Promise.resolve(
       node.type === 'a'
         ? [
             { type: 'text', node, value: `${node.props.children}1`, path },
-            { type: 'break', node, value: null, path },
             { type: 'text', node, value: `${node.props.children}2`, path },
           ]
-        : [
-            {
-              type: 'unit',
-              node,
-              value: { letters: node.props.children },
-              path,
-            },
-          ],
+        : [{ type: 'text', node, value: `${node.props.children}`, path }],
     ),
 );
 
@@ -119,21 +129,9 @@ describe('.render()', () => {
       },
       {
         type: 'text',
-        node: <a>AAA</a>,
-        value: 'AAA1',
-        path: '$::3',
-      },
-      {
-        type: 'text',
-        node: <a>AAA</a>,
-        value: 'AAA2',
-        path: '$::3',
-      },
-      {
-        type: 'unit',
-        node: <b>BBB</b>,
-        value: { letters: 'BBB' },
-        path: '$::4',
+        node: message,
+        value: 'AAA1AAA2BBB',
+        path: '$',
       },
       {
         type: 'pause',
@@ -286,10 +284,12 @@ describe('.render()', () => {
 
   it('join continuous text segments', async () => {
     const renderer = new Renderer('test', async (node, path) => [
-      node.type === 'br'
-        ? { type: 'break', node, path, value: null }
-        : { type: 'text', value: node.type, node, path },
+      { type: 'text', value: node.type, node, path },
     ]);
+
+    const Break = makeNativeComponent('test')(function Break(node, path) {
+      return [{ type: 'break', node, path, value: null }];
+    });
 
     const Vestibulum = makeNativeComponent('test')(
       function Vestibulum(node, path) {
@@ -304,7 +304,7 @@ describe('.render()', () => {
     const message = (
       <>
         Lorem ipsum <dolor /> {'sit amet,'}
-        <br />
+        <Break />
         <consectetur /> adipiscing <elit />. <Vestibulum /> interdum
         <Sociably.Pause />
         aliquam <justo /> ut <aliquam />.

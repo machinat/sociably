@@ -1,9 +1,9 @@
 import moxy from '@moxyjs/moxy';
-import Sociably from '@sociably/core';
 import type StateRepositoryI from '@sociably/core/base/StateRepository.js';
 import type { InstagramSender } from '../../Sender.js';
 import InstagramAgent from '../../Agent.js';
 import { InstagramAssetsManager } from '../AssetsManager.js';
+import { Image } from '../../components/Image.js';
 
 const state = moxy({
   get: async () => null,
@@ -706,14 +706,14 @@ describe('assets management', () => {
       manager.uploadChatAttachment(
         agent,
         'my_avatar',
-        <img src="http://foo.bar/avatar" />,
+        <Image url="http://foo.bar/avatar" />,
       ),
     ).resolves.toBe('1857777774821032');
 
     expect(sender.uploadChatAttachment).toHaveBeenCalledTimes(1);
     expect(sender.uploadChatAttachment).toHaveBeenCalledWith(
       agent,
-      <img src="http://foo.bar/avatar" />,
+      <Image url="http://foo.bar/avatar" />,
     );
 
     expect(state.set).toHaveBeenCalledTimes(1);

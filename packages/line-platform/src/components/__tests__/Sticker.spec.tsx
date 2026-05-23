@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import { Sticker } from '../Sticker.js';
 import { renderUnitElement } from './utils.js';

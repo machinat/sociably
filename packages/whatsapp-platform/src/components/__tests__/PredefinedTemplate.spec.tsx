@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import { PredefinedTemplate } from '../PredefinedTemplate.js';
 import { Image, Audio } from '../Media.js';

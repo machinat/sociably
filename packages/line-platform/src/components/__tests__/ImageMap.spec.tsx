@@ -1,5 +1,4 @@
 import moxy from '@moxyjs/moxy';
-import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import {
   ImageMap,

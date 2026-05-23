@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import { QuickReply } from '../QuickReply.js';
 import { renderPartElement } from './utils.js';
@@ -17,7 +16,7 @@ test('rendering', async () => {
         "node": <QuickReply
           label="Hi"
         />,
-        "path": "$#p",
+        "path": "$#b",
         "type": "part",
         "value": {
           "description": undefined,
@@ -37,7 +36,7 @@ test('rendering', async () => {
           description="I'm friendly"
           label="Hi"
         />,
-        "path": "$#p",
+        "path": "$#b",
         "type": "part",
         "value": {
           "description": "I'm friendly",
@@ -64,7 +63,7 @@ test('rendering', async () => {
           label="Hi"
           metadata="friendly handshake"
         />,
-        "path": "$#p",
+        "path": "$#b",
         "type": "part",
         "value": {
           "description": "I'm a friend",

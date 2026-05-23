@@ -1,8 +1,17 @@
 import moxy from '@moxyjs/moxy';
-import Sociably from '@sociably/core';
 import LineChannel from '../Channel.js';
 import LineChat from '../Chat.js';
+import { Text } from '../components/Text.js';
 import { createChatJobs, createMulticastJobs } from '../job.js';
+
+declare module '@sociably/core/jsx-runtime' {
+  namespace JSX {
+    interface IntrinsicElements {
+      foo: { children?: unknown };
+      bar: { children?: unknown; x?: string };
+    }
+  }
+}
 
 const segment = (type: 'text' | 'unit', node, value) => ({
   type,
@@ -26,27 +35,27 @@ const chatActionValue = moxy({
 });
 
 const segments = [
-  segment('unit', <p />, {
+  segment('unit', <Text>_</Text>, {
     type: 'message',
     params: { type: 'text', text: '0' },
   }),
   segment('text', '1', '1'),
-  segment('unit', <p />, {
+  segment('unit', <Text>_</Text>, {
     type: 'message',
     params: { type: 'text', text: '2' },
   }),
   segment('text', '3', '3'),
-  segment('unit', <p />, {
+  segment('unit', <Text>_</Text>, {
     type: 'message',
     params: { type: 'text', text: '4' },
   }),
   segment('text', '5', '5'),
-  segment('unit', <p />, {
+  segment('unit', <Text>_</Text>, {
     type: 'message',
     params: { type: 'text', text: '6' },
   }),
   segment('unit', <foo />, chatActionValue),
-  segment('unit', <p />, {
+  segment('unit', <Text>_</Text>, {
     type: 'message',
     params: { type: 'text', text: '8' },
   }),
@@ -269,7 +278,7 @@ describe('createChatJobs()', () => {
     expect(() =>
       createChatJobs(undefined)(thread, [
         segment('text', '0', '0'),
-        segment('unit', <p />, {
+        segment('unit', <Text>_</Text>, {
           type: 'message',
           params: { type: 'text', text: '1' },
         }),
@@ -406,7 +415,7 @@ describe('createMulticastJobs()', () => {
     expect(() =>
       createMulticastJobs(['foo', 'bar', 'baz'])(channel, [
         segment('text', '0', '0'),
-        segment('unit', <p />, {
+        segment('unit', <Text>_</Text>, {
           type: 'message',
           params: { type: 'text', text: '1' },
         }),

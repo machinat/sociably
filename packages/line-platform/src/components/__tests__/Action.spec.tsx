@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import {
   PostbackAction,
@@ -45,7 +44,7 @@ test('<PostbackAction/>', async () => {
           displayText="WORLD!"
           label="Hello!"
         />,
-        "path": "$#container",
+        "path": "$#b",
         "type": "part",
         "value": {
           "data": "__POSTBACK_FOO__",
@@ -67,7 +66,7 @@ test('<MessageAction/>', async () => {
           label="Tick"
           text="Tock"
         />,
-        "path": "$#container",
+        "path": "$#b",
         "type": "part",
         "value": {
           "label": "Tick",
@@ -91,7 +90,7 @@ test('<UriAction/>', async () => {
           label="Try it!"
           uri="http://sociably.js.org"
         />,
-        "path": "$#container",
+        "path": "$#b",
         "type": "part",
         "value": {
           "label": "Try it!",
@@ -111,7 +110,7 @@ test('<CameraAction/>', async () => {
         "node": <CameraAction
           label="Cheer!"
         />,
-        "path": "$#container",
+        "path": "$#b",
         "type": "part",
         "value": {
           "label": "Cheer!",
@@ -130,7 +129,7 @@ test('<CameraRollAction/>', async () => {
         "node": <CameraRollAction
           label="Cheer again!"
         />,
-        "path": "$#container",
+        "path": "$#b",
         "type": "part",
         "value": {
           "label": "Cheer again!",
@@ -149,7 +148,7 @@ test('<LocationAction/>', async () => {
         "node": <LocationAction
           label="Ok, where are we?"
         />,
-        "path": "$#container",
+        "path": "$#b",
         "type": "part",
         "value": {
           "label": "Ok, where are we?",
@@ -195,7 +194,7 @@ describe('DateTimePickerAction', () => {
             min: '1990-01-01T00:00',
             max: '2020-01-01T00:00',
           },
-          path: '$#container',
+          path: '$#b',
         },
       ]);
     }
@@ -236,7 +235,7 @@ describe('DateTimePickerAction', () => {
             min: '1990-01-01',
             max: '2020-01-01',
           },
-          path: '$#container',
+          path: '$#b',
         },
       ]);
     }
@@ -277,7 +276,7 @@ describe('DateTimePickerAction', () => {
             min: '00:00',
             max: '22:22',
           },
-          path: '$#container',
+          path: '$#b',
         },
       ]);
     }

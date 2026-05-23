@@ -7,6 +7,13 @@ import LineChat from '../Chat.js';
 import LineUser from '../User.js';
 import type { LineSender } from '../Sender.js';
 
+const routing = {
+  originalPath: '/',
+  basePath: '/',
+  matchedPath: '/',
+  trailingPath: '',
+};
+
 const sender = moxy<LineSender>({
   render: async () => ({ jobs: [], tasks: [], results: [] }),
 } as never);
@@ -81,7 +88,7 @@ it.each(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
     const req = createReq({ method });
     const res = createRes();
 
-    await receiver.handleRequest(req, res);
+    await receiver.handleRequest(req, res, routing);
 
     expect(res.statusCode).toBe(405);
     expect(res.finished).toBe(true);
@@ -99,7 +106,7 @@ it('responds 400 if body is empty', async () => {
   const req = createReq({ method: 'POST' });
   const res = createRes();
 
-  await receiver.handleRequest(req, res);
+  await receiver.handleRequest(req, res, routing);
 
   expect(res.statusCode).toBe(400);
   expect(res.finished).toBe(true);
@@ -116,7 +123,7 @@ it('responds 400 if body is not not valid json format', async () => {
   const req = createReq({ method: 'POST', body: "I'm Jason" });
   const res = createRes();
 
-  await receiver.handleRequest(req, res);
+  await receiver.handleRequest(req, res, routing);
 
   expect(res.statusCode).toBe(400);
   expect(res.finished).toBe(true);
@@ -136,7 +143,7 @@ it('responds 400 if body is in invalid format', async () => {
   });
   const res = createRes();
 
-  await receiver.handleRequest(req, res);
+  await receiver.handleRequest(req, res, routing);
 
   expect(res.statusCode).toBe(400);
   expect(res.finished).toBe(true);
@@ -187,7 +194,7 @@ it('respond 200 and pop events received', async () => {
   });
   const res = createRes();
 
-  await receiver.handleRequest(req, res);
+  await receiver.handleRequest(req, res, routing);
 
   expect(res.statusCode).toBe(200);
   expect(res.finished).toBe(true);
@@ -252,6 +259,7 @@ test('reply(message)', async () => {
       body: '{"destination":"xxx","events":[{"replyToken":"_REPLY_TOKEN_","type":"message","timestamp":1462629479859,"source":{"type":"user","userId":"xxx"},"message":{"id":"325708","type":"text","text":"Hello, world"}}]}',
     }),
     createRes(),
+    routing,
   );
 
   const { reply, event } = popEventMock.calls[0].args[0];
@@ -300,7 +308,7 @@ it('validate request', async () => {
   });
   const res = createRes();
 
-  await receiver.handleRequest(req, res);
+  await receiver.handleRequest(req, res, routing);
 
   expect(res.statusCode).toBe(200);
   expect(res.finished).toBe(true);
@@ -342,7 +350,7 @@ it('responds 401 if request validation failed', async () => {
   });
   const res = createRes();
 
-  await receiver.handleRequest(req, res);
+  await receiver.handleRequest(req, res, routing);
 
   expect(res.statusCode).toBe(401);
   expect(res.finished).toBe(true);

@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import { TextParam } from '../TextParam.js';
 import { renderPartElement } from './utils.js';
@@ -17,7 +16,7 @@ test('rendering value', async () => {
         "node": <TextParam>
           FOO
         </TextParam>,
-        "path": "$#container",
+        "path": "$#b",
         "type": "part",
         "value": {
           "text": "FOO",
@@ -43,7 +42,7 @@ test('rendering value', async () => {
             BAZ
           </Sociably.Fragment>
         </TextParam>,
-        "path": "$#container",
+        "path": "$#b",
         "type": "part",
         "value": {
           "text": "FOO BAR BAZ",

@@ -1,9 +1,17 @@
 import moxy from '@moxyjs/moxy';
-import Sociably from '@sociably/core';
+import { type SociablyNode } from '@sociably/core';
 import type StateRepositoryI from '@sociably/core/base/StateRepository.js';
 import { MetaApiAgent } from '@sociably/meta-api';
 import { MessengerAssetsManager } from '../AssetsManager.js';
 import { MessengerSender } from '../../types.js';
+
+declare module '@sociably/core/jsx-runtime' {
+  namespace JSX {
+    interface IntrinsicElements {
+      img: { src?: string };
+    }
+  }
+}
 
 const state = moxy({
   get: async () => null,
@@ -501,20 +509,14 @@ describe('assets management', () => {
     sender.uploadChatAttachment.mock.fake(async () => ({
       attachmentId: '1857777774821032',
     }));
+    const avatar: SociablyNode = <img src="http://foo.bar/avatar" />;
 
     await expect(
-      manager.uploadChatAttachment(
-        agent,
-        'my_avatar',
-        <img src="http://foo.bar/avatar" />,
-      ),
+      manager.uploadChatAttachment(agent, 'my_avatar', avatar),
     ).resolves.toBe('1857777774821032');
 
     expect(sender.uploadChatAttachment).toHaveBeenCalledTimes(1);
-    expect(sender.uploadChatAttachment).toHaveBeenCalledWith(
-      agent,
-      <img src="http://foo.bar/avatar" />,
-    );
+    expect(sender.uploadChatAttachment).toHaveBeenCalledWith(agent, avatar);
 
     expect(state.set).toHaveBeenCalledTimes(1);
     expect(state.set).toHaveBeenCalledWith('my_avatar', '1857777774821032');

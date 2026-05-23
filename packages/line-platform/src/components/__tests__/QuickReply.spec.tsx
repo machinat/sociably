@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import { QuickReply } from '../QuickReply.js';
 import { UriAction } from '../Action.js';
@@ -28,7 +27,7 @@ it('match snapshot', async () => {
             uri="https://..."
           />
         </QuickReply>,
-        "path": "$#container",
+        "path": "$#b",
         "type": "part",
         "value": {
           "action": {

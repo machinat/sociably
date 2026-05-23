@@ -1,5 +1,4 @@
 import moxy from '@moxyjs/moxy';
-import Sociably from '@sociably/core';
 import { UnitSegment, TextSegment } from '@sociably/core/renderer';
 import { MetaApiAgent } from '@sociably/meta-api';
 import { createChatJobs, createUploadChatAttachmentJobs } from '../job.js';

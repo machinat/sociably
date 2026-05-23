@@ -122,9 +122,9 @@ exports[`createDmSegmentValue(chat, segment) jobs from all kinds og segment 1`] 
     "mediaSources": null,
     "refreshTarget": null,
     "request": {
-      "href": "1.1/foo",
       "method": "POST",
       "params": {},
+      "url": "1.1/foo",
     },
     "target": TwitterChat {
       "$$typeofThread": true,
@@ -539,9 +539,9 @@ exports[`createTweetJobs(options)(tweetTarget, segments) with text and media 1`]
     "mediaSources": null,
     "refreshTarget": [Function],
     "request": {
-      "href": "1.1/foo",
       "method": "POST",
       "params": {},
+      "url": "1.1/foo",
     },
     "target": TwitterTweetTarget {
       "$$typeofThread": true,

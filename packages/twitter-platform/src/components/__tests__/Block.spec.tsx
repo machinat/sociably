@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import TweetTarget from '../../TweetTarget.js';
 import { Block } from '../Block.js';

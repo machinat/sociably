@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { TextReply as _TextReply } from '../TextReply.js';
 import { renderPartElement, makeTestComponent } from './utils.js';
 
@@ -13,7 +12,7 @@ it('match snpshot', async () => {
           payload="🥧"
           title="i want a pie"
         />,
-        "path": "$#container",
+        "path": "$#b",
         "type": "part",
         "value": {
           "content_type": "text",
@@ -40,7 +39,7 @@ it('match snpshot', async () => {
           payload="🍰"
           title="a piece of cake"
         />,
-        "path": "$#container",
+        "path": "$#b",
         "type": "part",
         "value": {
           "content_type": "text",

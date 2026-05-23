@@ -1,4 +1,4 @@
-import Sociably from '@sociably/core';
+import type { SociablyNode } from '@sociably/core';
 import Renderer from '@sociably/core/renderer';
 import generalComponentDelegator from '../general.js';
 import { Photo } from '../Media.js';
@@ -6,14 +6,14 @@ import { Photo } from '../Media.js';
 const renderer = new Renderer('twitter', generalComponentDelegator);
 
 it('<br/> renders into line break text', async () => {
-  const [segment] = await renderer.render(<br />, null, null);
+  const [segment] = (await renderer.render(<br />, null, null))!;
 
   expect(segment?.type).toBe('text');
   expect(segment?.value).toBe('\n');
 });
 
 it('<b/> renders plain text', async () => {
-  const [segment] = await renderer.render(<b>foo</b>, null, null);
+  const [segment] = (await renderer.render(<b>foo</b>, null, null))!;
 
   expect(segment?.type).toBe('text');
   expect(segment?.value).toBe('foo');
@@ -60,12 +60,27 @@ it('throw if non-textual node within text children', async () => {
   );
 });
 
-it('throw on invalid general element tags', async () => {
+declare module '@sociably/core/jsx-runtime' {
+  namespace JSX {
+    interface IntrinsicElements {
+      p: { children?: SociablyNode };
+      img: { src?: string };
+      video: { src?: string };
+      audio: { src?: string };
+      file: { src?: string };
+    }
+  }
+}
+
+it('throw on <p/> tag', async () => {
   await expect(
     renderer.render(<p>foo</p>, null, null),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     `""p" is not a valid general component tag on Twitter platform"`,
   );
+});
+
+it('throw on invalid media general element tags', async () => {
   await expect(
     renderer.render(<img src="http://..." />, null, null),
   ).rejects.toThrowErrorMatchingInlineSnapshot(

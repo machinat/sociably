@@ -1,6 +1,9 @@
 import moxy from '@moxyjs/moxy';
 import Sociably from '@sociably/core';
-import { serviceProviderFactory } from '@sociably/core/service';
+import {
+  serviceInterface,
+  serviceProviderFactory,
+} from '@sociably/core/service';
 import BaseSender from '@sociably/core/base/Sender.js';
 import BaseProfiler from '@sociably/core/base/Profiler.js';
 import BaseMarshaler from '@sociably/core/base/Marshaler.js';
@@ -20,6 +23,7 @@ import { WhatsAppSender } from '../Sender.js';
 const agentSettings = {
   phoneNumber: '+1234567890',
   numberId: '1111111111',
+  businessAccountId: '9999999999',
 };
 
 it('export interfaces', () => {
@@ -199,14 +203,14 @@ describe('initModule(configs)', () => {
   test('with configs.multiPageSettings', async () => {
     const businessAccountSettings = [
       {
-        accountId: '9999999999',
+        businessAccountId: '9999999999',
         numbers: [
           { numberId: '1111111111', phoneNumber: '+1234567890' },
           { numberId: '2222222222', phoneNumber: '+9876543210' },
         ],
       },
       {
-        accountId: '8888888888',
+        businessAccountId: '8888888888',
         numbers: [{ numberId: '3333333333', phoneNumber: '+1111111111' }],
       },
     ];
@@ -232,16 +236,19 @@ describe('initModule(configs)', () => {
     const agentSettings1 = {
       numberId: '1111111111',
       phoneNumber: '+1234567890',
+      businessAccountId: '9999999999',
     };
     const agent2 = new WhatsAppAgent('2222222222');
     const agentSettings2 = {
       numberId: '2222222222',
       phoneNumber: '+9876543210',
+      businessAccountId: '9999999999',
     };
     const agent3 = new WhatsAppAgent('3333333333');
     const agentSettings3 = {
       numberId: '3333333333',
       phoneNumber: '+1111111111',
+      businessAccountId: '8888888888',
     };
     const unknownAgent = new WhatsAppAgent('4444444444');
 
@@ -274,6 +281,9 @@ describe('initModule(configs)', () => {
       getAgentSettings: async () => agentSettings,
       getAgentSettingsBatch: async () => [agentSettings, agentSettings],
     };
+    const MyAgentSettingsServiceI = serviceInterface({
+      name: 'MyAgentSettingsService',
+    });
     const myAgentSettingsService = serviceProviderFactory({})(
       () => settingsAccessor,
     );
@@ -285,14 +295,19 @@ describe('initModule(configs)', () => {
       ],
       platforms: [
         WhatsApp.initModule({
-          agentSettingsService: myAgentSettingsService,
+          agentSettingsService: MyAgentSettingsServiceI,
           accessToken: '_ACCESS_TOKEN_',
           appId: '_APP_ID_',
           appSecret: '_APP_SECRET_',
           webhookVerifyToken: '_VERIFY_TOKEN_',
         }),
       ],
-      services: [myAgentSettingsService],
+      services: [
+        {
+          provide: MyAgentSettingsServiceI,
+          withProvider: myAgentSettingsService,
+        },
+      ],
     });
     await app.start();
     const [agentSettingsAccessor] = app.useServices([AgentSettingsAccessorI]);

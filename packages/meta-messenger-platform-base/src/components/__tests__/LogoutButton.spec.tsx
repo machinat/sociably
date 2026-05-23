@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { renderPartElement, makeTestComponent } from './utils.js';
 import { LogoutButton as _LogoutButton } from '../LogoutButton.js';
 
@@ -10,7 +9,7 @@ it('match snapshot', async () => {
     [
       {
         "node": <LogoutButton />,
-        "path": "$#container",
+        "path": "$#b",
         "type": "part",
         "value": {
           "type": "account_unlink",

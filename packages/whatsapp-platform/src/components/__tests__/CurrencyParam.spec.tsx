@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import { CurrencyParam } from '../CurrencyParam.js';
 import { renderPartElement } from './utils.js';
@@ -34,7 +33,7 @@ test('rendering value', async () => {
           code="USD"
           fallbackValue="a lot of money"
         />,
-        "path": "$#container",
+        "path": "$#b",
         "type": "part",
         "value": {
           "currency": {

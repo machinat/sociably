@@ -1,5 +1,5 @@
 import { posix as posixPath } from 'path';
-import Sociably, { serviceContainer, RenderingTarget } from '@sociably/core';
+import { serviceContainer, RenderingTarget } from '@sociably/core';
 import InstagramChat from '../Chat.js';
 import InstagramUser from '../User.js';
 import { UrlButton } from '../components/index.js';

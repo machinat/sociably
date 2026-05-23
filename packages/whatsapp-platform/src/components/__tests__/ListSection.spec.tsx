@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import { ListRow } from '../ListRow.js';
 import { ListSection } from '../ListSection.js';
@@ -31,7 +30,7 @@ test('rendering value', async () => {
             title="BAR"
           />
         </ListSection>,
-        "path": "$#container",
+        "path": "$#b",
         "type": "part",
         "value": {
           "rows": [
@@ -68,7 +67,7 @@ test('rendering value', async () => {
             title="FOO"
           />
         </ListSection>,
-        "path": "$#container",
+        "path": "$#b",
         "type": "part",
         "value": {
           "rows": [

@@ -17,8 +17,8 @@ const baseConfigs = {
           },
           transform: {
             react: {
-              pragma: 'Sociably.createElement',
-              pragmaFrag: 'Sociably.Fragment',
+              runtime: 'automatic',
+              importSource: '@sociably/core',
             },
             decoratorVersion: '2022-03',
           },

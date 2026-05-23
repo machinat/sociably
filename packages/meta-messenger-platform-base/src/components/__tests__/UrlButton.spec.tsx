@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { renderPartElement, makeTestComponent } from './utils.js';
 import { UrlButton as _UrlButton } from '../UrlButton.js';
 
@@ -16,7 +15,7 @@ it('match snapshot', async () => {
           title="my button"
           url="http://sociably.js.org"
         />,
-        "path": "$#container",
+        "path": "$#b",
         "type": "part",
         "value": {
           "fallback_url": undefined,
@@ -53,7 +52,7 @@ it('match snapshot', async () => {
           url="http://sociably.js.org"
           webviewHeightRatio="compact"
         />,
-        "path": "$#container",
+        "path": "$#b",
         "type": "part",
         "value": {
           "fallback_url": "http://...",

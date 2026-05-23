@@ -1,4 +1,5 @@
 import Sociably, { RenderingTarget } from '../../index.js';
+import type { JSX as SociablyJSX } from '../../jsx-runtime.js';
 import { serviceInterface, serviceContainer } from '../../service/index.js';
 import { makeNativeComponent } from '../../renderer/componentHelper.js';
 import {
@@ -16,16 +17,30 @@ import {
   isElementTypeValid,
 } from '../isX.js';
 
+declare module '@sociably/core/jsx-runtime' {
+  namespace JSX {
+    interface IntrinsicElements {
+      a: { id?: number; children?: unknown };
+      b: SociablyJSX.GeneralTextElementProps;
+      bar: { children?: unknown; x?: string };
+      baz: { children?: unknown };
+      foo: { children?: unknown };
+    }
+  }
+}
+
 const Native = makeNativeComponent('test')(function Native() {
   return null;
 });
 
 const fooInterface = serviceInterface({ name: 'Foo' });
 
-const MyComponent = () => <foo />;
-const MyContainer = serviceContainer({ deps: [RenderingTarget] })(() => () => (
-  <bar />
-));
+type TestProps = { children?: string; x?: string };
+
+const MyComponent = (_props: TestProps) => <foo />;
+const MyContainer = serviceContainer({ deps: [RenderingTarget] })(
+  () => (_props: TestProps) => <bar />,
+) as unknown as (props: TestProps) => SociablyJSX.Element;
 
 describe('isEmpty', () => {
   it('return true if empty node passed', () => {

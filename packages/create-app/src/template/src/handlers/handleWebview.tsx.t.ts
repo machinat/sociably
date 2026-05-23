@@ -2,7 +2,7 @@ import { CreateAppContext } from '../../../types.js';
 import { when } from '../../../utils.js';
 
 export default ({ withWebview }: CreateAppContext): string => when(withWebview)`
-import Sociably, { serviceContainer, BaseSender } from '@sociably/core';
+import { serviceContainer, BaseSender } from '@sociably/core';
 import HelloWithMenu from '../components/HelloWithMenu.js';
 import { WebAppEventContext } from '../types.js';
 

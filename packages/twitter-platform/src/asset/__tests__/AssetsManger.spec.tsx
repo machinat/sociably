@@ -1,10 +1,10 @@
 import moxy from '@moxyjs/moxy';
-import Sociably from '@sociably/core';
 import type StateRepositoryI from '@sociably/core/base/StateRepository.js';
 import TwitterUser from '../../User.js';
 import type { TwitterSender } from '../../Sender.js';
 import { Photo } from '../../components/Media.js';
 import { TwitterAssetsManager } from '../AssetsManager.js';
+import { DirectMessage } from '../../components/DirectMessage.js';
 
 const state = moxy({
   get: async () => null,
@@ -298,14 +298,14 @@ test('.createWelcomeMessage(name, message)', async () => {
     manager.createWelcomeMessage(
       agent,
       'my_welcome_message',
-      <p>Hello World!</p>,
+      <DirectMessage>Hello World!</DirectMessage>,
     ),
   ).resolves.toBe('844385345234');
 
   expect(sender.createWelcomeMessage).toHaveBeenCalledWith(
     agent,
     'my_welcome_message',
-    <p>Hello World!</p>,
+    <DirectMessage>Hello World!</DirectMessage>,
   );
 
   expect(

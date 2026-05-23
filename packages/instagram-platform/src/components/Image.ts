@@ -4,6 +4,7 @@ import {
   MediaProps,
 } from '@sociably/meta-messenger-platform-base/components';
 import makeInstagramComponent from '../utils/makeInstagramComponent.js';
+import type { InstagramComponent } from '../types.js';
 
 export type ImageProps = Omit<MediaProps, 'file'>;
 
@@ -15,9 +16,11 @@ export type ImageProps = Omit<MediaProps, 'file'>;
  * @guides Check official send API [doc](https://developers.facebook.com/docs/messenger-platform/send-messages)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/send-api).
  */
-export const Image = makeInstagramComponent(function Image(
-  node: NativeElement<ImageProps, AnyNativeComponent>,
-  path: string,
-) {
-  return MessengerImage(node, path);
-});
+export const Image: InstagramComponent<ImageProps> = makeInstagramComponent(
+  function Image(
+    node: NativeElement<ImageProps, AnyNativeComponent>,
+    path: string,
+  ) {
+    return MessengerImage(node, path);
+  },
+);

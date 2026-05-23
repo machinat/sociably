@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { SOCIABLY_NATIVE_TYPE } from '../../symbol.js';
 import {
   makeNativeComponent,
@@ -8,6 +7,14 @@ import {
   makeUnitSegment,
   makePauseSegment,
 } from '../componentHelper.js';
+
+declare module '@sociably/core/jsx-runtime' {
+  namespace JSX {
+    interface IntrinsicElements {
+      hello: {};
+    }
+  }
+}
 
 describe('makeNativeComponent(platform)(componentOrFn)', () => {
   function ComponentImpl() {

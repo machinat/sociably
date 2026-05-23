@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import LineChat from '../../Chat.js';
 import { ChatActionSegmentValue } from '../../types.js';

@@ -1,5 +1,4 @@
 import moxy from '@moxyjs/moxy';
-import Sociably from '@sociably/core';
 import { createPostJobs, createInteractJobs } from '../job.js';
 import { PATH_FEED, PATH_PHOTOS } from '../constant.js';
 import FacebookPage from '../Page.js';

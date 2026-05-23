@@ -7,6 +7,18 @@ import type Render from '../../renderer/index.js';
 import type Queue from '../../queue/index.js';
 import { ServiceScope, createEmptyScope } from '../../service/index.js';
 import DispatchError from '../error.js';
+import type { SociablyThread } from '../../types.js';
+
+declare module '@sociably/core/jsx-runtime' {
+  namespace JSX {
+    interface IntrinsicElements {
+      a: { id?: number; children?: unknown };
+      bb: { id?: number; children?: unknown };
+      c: { id?: number; children?: unknown };
+      foo: { children?: unknown };
+    }
+  }
+}
 
 const queue = moxy<Queue<unknown, unknown>>({
   executeJobs(jobs) {
@@ -35,6 +47,11 @@ const wrappedDispatchMock = new Mock();
 const dispatchWrapper = moxy((dispatcher) =>
   wrappedDispatchMock.proxify((frame) => dispatcher(frame)),
 );
+const makeThread = (uid: string): SociablyThread => ({
+  $$typeofThread: true,
+  platform: 'test',
+  uid,
+});
 
 beforeEach(() => {
   renderer.mock.reset();
@@ -84,23 +101,23 @@ test('.start() and #stop()', () => {
 });
 
 describe('.render(target, node, createJobs)', () => {
-  const dispatchTarget = {
+  const dispatchTarget: SociablyThread = {
+    $$typeofThread: true,
     platform: 'test',
-    type: 'test',
     uid: 'test',
   };
 
   const message = (
     <>
       <a id={1} />
-      <b id={2} />
+      <bb id={2} />
       <c id={3} />
     </>
   );
 
   const unitSegments = [
     { type: 'unit', node: <a id={1} />, value: { id: 1 } },
-    { type: 'unit', node: <b id={2} />, value: { id: 2 } },
+    { type: 'unit', node: <bb id={2} />, value: { id: 2 } },
     { type: 'unit', node: <c id={3} />, value: { id: 3 } },
     { type: 'unit', node: <c id={4} />, value: { id: 4 } },
   ];
@@ -707,10 +724,7 @@ describe('.dispatchJobs(target, tasks, node)', () => {
     dispatchWrapper,
   );
 
-  const target = {
-    platform: 'test',
-    uid: 'test.foo',
-  };
+  const target = makeThread('test.foo');
   const jobs = [{ id: 1 }, { id: 2 }, { id: 3 }];
 
   it('dispatch jobs', async () => {

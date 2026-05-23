@@ -7,6 +7,13 @@ import TwitterChat from '../Chat.js';
 import TwitterUser from '../User.js';
 import type { TwitterSender } from '../Sender.js';
 
+const routing = {
+  originalPath: '/',
+  basePath: '/',
+  matchedPath: '/',
+  trailingPath: '',
+};
+
 const sender = moxy<TwitterSender>({
   render: async () => ({ tasks: [], results: [], jobs: [] }),
 } as never);
@@ -109,7 +116,7 @@ it.each(['PUT', 'PATCH', 'DELETE', 'HEAD', 'UPDATE', 'UPGRADE'])(
     const req = createReq({ method });
     const res = createRes();
 
-    await receiver.handleRequest(req as never, res);
+    await receiver.handleRequest(req as never, res, routing);
 
     expect(res.statusCode).toBe(405);
     expect(res.writableEnded).toBe(true);
@@ -122,7 +129,7 @@ it('responds 400 if body is empty', async () => {
   const req = createReq({ method: 'POST' });
   const res = createRes();
 
-  await receiver.handleRequest(req, res);
+  await receiver.handleRequest(req, res, routing);
 
   expect(res.statusCode).toBe(400);
   expect(res.writableEnded).toBe(true);
@@ -139,7 +146,7 @@ it('responds 400 if body is not valid json', async () => {
   const req = createReq({ method: 'POST', body: "I'm Jason" });
   const res = createRes();
 
-  await receiver.handleRequest(req, res);
+  await receiver.handleRequest(req, res, routing);
 
   expect(res.statusCode).toBe(400);
   expect(res.writableEnded).toBe(true);
@@ -156,7 +163,7 @@ it('respond 200 and pop events', async () => {
   const req = createReq({ method: 'POST', body: bodyStr });
   const res = createRes();
 
-  await receiver.handleRequest(req, res);
+  await receiver.handleRequest(req, res, routing);
 
   expect(res.statusCode).toBe(200);
   expect(res.writableEnded).toBe(true);
@@ -204,6 +211,7 @@ describe('context.reply(message)', () => {
     await receiver.handleRequest(
       createReq({ method: 'POST', body: JSON.stringify(messageEventBody) }),
       createRes(),
+      routing,
     );
 
     expect(popEventMock).toHaveBeenCalledTimes(1);
@@ -235,6 +243,7 @@ describe('context.reply(message)', () => {
         }),
       }),
       createRes(),
+      routing,
     );
     expect(popEventMock).toHaveBeenCalledTimes(1);
     const [{ reply }] = popEventMock.calls[0].args;
@@ -262,7 +271,7 @@ it('verify request with appSecret', async () => {
     },
   });
   const res1 = createRes();
-  await receiver.handleRequest(req1, res1);
+  await receiver.handleRequest(req1, res1, routing);
 
   expect(res1.statusCode).toBe(200);
   expect(res1.writableEnded).toBe(true);
@@ -273,7 +282,7 @@ it('verify request with appSecret', async () => {
     body: payload,
   });
   const res2 = createRes();
-  await receiver.handleRequest(req2, res2);
+  await receiver.handleRequest(req2, res2, routing);
 
   expect(res2.statusCode).toBe(401);
   expect(res2.writableEnded).toBe(true);
@@ -284,7 +293,7 @@ it('verify request with appSecret', async () => {
     headers: { 'x-twitter-webhooks-signature': 'sha256=__WRONG_SIGNATURE__' },
   });
   const res3 = createRes();
-  await receiver.handleRequest(req3, res3);
+  await receiver.handleRequest(req3, res3, routing);
 
   expect(res3.statusCode).toBe(401);
   expect(res3.writableEnded).toBe(true);
@@ -307,6 +316,7 @@ it('handle webhook challenge', async () => {
       },
     }),
     res1,
+    routing,
   );
 
   expect(res1.statusCode).toBe(200);
@@ -316,7 +326,11 @@ it('handle webhook challenge', async () => {
   );
 
   const res2 = createRes();
-  await receiver.handleRequest(createReq({ method: 'GET', url: '/' }), res2);
+  await receiver.handleRequest(
+    createReq({ method: 'GET', url: '/' }),
+    res2,
+    routing,
+  );
   expect(res2.statusCode).toBe(400);
   expect(res2.writableEnded).toBe(true);
 
@@ -328,6 +342,7 @@ it('handle webhook challenge', async () => {
       headers: { 'x-twitter-webhooks-signature': 'sha256=__WRONG_SIGNATURE__' },
     }),
     res3,
+    routing,
   );
   expect(res3.statusCode).toBe(401);
   expect(res3.writableEnded).toBe(true);

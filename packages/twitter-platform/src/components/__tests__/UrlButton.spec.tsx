@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import { UrlButton } from '../UrlButton.js';
 import { renderPartElement } from './utils.js';
@@ -21,7 +20,7 @@ test('rendering', async () => {
           label="foo"
           url="http://bar.baz"
         />,
-        "path": "$#p",
+        "path": "$#b",
         "type": "part",
         "value": {
           "label": "foo",

@@ -1,4 +1,4 @@
-import Sociably from '@sociably/core';
+import Sociably, { type SociablyNode } from '@sociably/core';
 import Renderer from '@sociably/core/renderer';
 import generalComponentDelegator from '../general.js';
 
@@ -116,6 +116,18 @@ test('render null if content is empty', async () => {
     await expect(renderer.render(element, null, null)).resolves.toEqual(null);
   }
 });
+
+declare module '@sociably/core/jsx-runtime' {
+  namespace JSX {
+    interface IntrinsicElements {
+      p: { children?: SociablyNode };
+      img: { src?: string };
+      video: { src?: string };
+      audio: { src?: string };
+      file: { src?: string };
+    }
+  }
+}
 
 test('throw on invalid general element tags', async () => {
   await expect(

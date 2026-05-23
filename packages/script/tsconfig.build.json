@@ -7,10 +7,10 @@
     "baseUrl": ".",
     "paths": {
       "@sociably/core": ["../core/src/index.js"],
-      "@sociably/core/*": ["../core/src/*/index.js", "../core/src/*.js"]
+      "@sociably/core/*": ["../core/src/*/index.js", "../core/src/*.js"],
+      "@sociably/core/jsx-runtime": ["../core/src/jsx-runtime.ts"],
+      "@sociably/core/jsx-dev-runtime": ["../core/src/jsx-dev-runtime.ts"]
     }
   },
-  "references": [
-    { "path": "../core/tsconfig.build.json" }
-  ]
+  "references": [{ "path": "../core/tsconfig.build.json" }]
 }

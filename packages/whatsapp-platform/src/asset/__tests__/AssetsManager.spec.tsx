@@ -1,6 +1,5 @@
 import moxy from '@moxyjs/moxy';
 import nock from 'nock';
-import Sociably from '@sociably/core';
 import type StateRepositoryI from '@sociably/core/base/StateRepository.js';
 import type { WhatsAppSender } from '../../Sender.js';
 import WhatsAppAgent from '../../Agent.js';

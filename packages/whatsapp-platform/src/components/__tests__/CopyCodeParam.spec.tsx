@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import { CopyCodeParam } from '../CopyCodeParam.js';
 import { renderPartElement } from './utils.js';
@@ -17,7 +16,7 @@ test('rendering value', async () => {
         "node": <CopyCodeParam
           code="HELLO_WORLD"
         />,
-        "path": "$#container",
+        "path": "$#b",
         "type": "part",
         "value": {
           "index": undefined,

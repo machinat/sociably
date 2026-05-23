@@ -1,4 +1,4 @@
-import Sociably from '@sociably/core';
+import type { SociablyNode } from '@sociably/core';
 import {
   createTweetJobs,
   createDirectMessageJobs,
@@ -8,6 +8,16 @@ import createTweetSegmentValue from '../utils/createTweetSegmentValue.js';
 import createDmSegmentValue from '../utils/createDmSegmentValue.js';
 import TweetTarget from '../TweetTarget.js';
 import TwitterChat from '../Chat.js';
+
+declare module '@sociably/core/jsx-runtime' {
+  namespace JSX {
+    interface IntrinsicElements {
+      foo: { children?: unknown };
+      img: { src?: string };
+      p: { children?: SociablyNode };
+    }
+  }
+}
 
 describe('createTweetJobs(options)(tweetTarget, segments)', () => {
   test('with text and media', () => {
@@ -54,7 +64,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
         path: '$:6',
         value: {
           type: 'action',
-          request: { method: 'POST', href: '1.1/foo', params: {} },
+          request: { method: 'POST', url: '1.1/foo', params: {} },
           accomplishRequest: null,
           mediaSources: null,
         },
@@ -158,9 +168,9 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
           "url": "2/tweets",
         },
         {
-          "href": "1.1/foo",
           "method": "POST",
           "params": {},
+          "url": "1.1/foo",
         },
       ]
     `);
@@ -635,7 +645,7 @@ describe('createTweetJobs(options)(tweetTarget, segments)', () => {
             type: 'dm',
             request: {
               method: 'POST',
-              href: '1.1/direct_messages/foo',
+              url: '1.1/direct_messages/foo',
               params: {},
             },
             mediaSources: null,
@@ -678,7 +688,7 @@ describe('createDmSegmentValue(chat, segment)', () => {
         path: '$:4',
         value: {
           type: 'action',
-          request: { method: 'POST', href: '1.1/foo', params: {} },
+          request: { method: 'POST', url: '1.1/foo', params: {} },
           accomplishRequest: null,
           mediaSources: null,
         },
@@ -763,9 +773,9 @@ describe('createDmSegmentValue(chat, segment)', () => {
           "url": "1.1/direct_messages/events/new.json",
         },
         {
-          "href": "1.1/foo",
           "method": "POST",
           "params": {},
+          "url": "1.1/foo",
         },
       ]
     `);
@@ -783,7 +793,7 @@ describe('createDmSegmentValue(chat, segment)', () => {
             type: 'tweet',
             request: {
               method: 'POST',
-              href: '2/tweet',
+              url: '2/tweet',
               params: {},
             },
             mediaSources: null,
@@ -919,7 +929,7 @@ describe('createWelcomeMessageJobs', () => {
             type: 'tweet',
             request: {
               method: 'POST',
-              href: '2/tweets',
+              url: '2/tweets',
               params: { text: 'Foo!' },
             },
             mediaSources: null,
@@ -941,7 +951,7 @@ describe('createWelcomeMessageJobs', () => {
             type: 'action',
             request: {
               method: 'POST',
-              href: '2/foo',
+              url: '2/foo',
               params: { bar: 'baz' },
             },
             mediaSources: null,

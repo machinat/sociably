@@ -1,8 +1,15 @@
-import Sociably from '@sociably/core';
 import moxy from '@moxyjs/moxy';
 import InstagramAgent from '../Agent.js';
 import { createPostJobs } from '../job.js';
 import { ImagePost, CarouselPost } from '../components/index.js';
+
+declare module '@sociably/core/jsx-runtime' {
+  namespace JSX {
+    interface IntrinsicElements {
+      image: {};
+    }
+  }
+}
 
 describe('createPostJobs', () => {
   const userAccessToken = '_USER_ACCESS_TOKEN_';

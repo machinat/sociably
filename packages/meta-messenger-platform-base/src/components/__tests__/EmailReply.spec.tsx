@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { EmailReply as _EmailReply } from '../EmailReply.js';
 import { renderPartElement, makeTestComponent } from './utils.js';
 
@@ -9,7 +8,7 @@ test('EmailReply match snpshot', async () => {
     [
       {
         "node": <EmailReply />,
-        "path": "$#container",
+        "path": "$#b",
         "type": "part",
         "value": {
           "content_type": "user_email",

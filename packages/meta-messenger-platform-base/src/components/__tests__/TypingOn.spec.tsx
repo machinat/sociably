@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { TypingOn as _TypingOn } from '../TypingOn.js';
 import { renderUnitElement, makeTestComponent } from './utils.js';
 

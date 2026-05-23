@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { renderPartElement, makeTestComponent } from './utils.js';
 import { LoginButton as _LoginButton } from '../LoginButton.js';
 
@@ -12,7 +11,7 @@ it('match snapshot', async () => {
         "node": <LoginButton
           url="https://council.elrond"
         />,
-        "path": "$#container",
+        "path": "$#b",
         "type": "part",
         "value": {
           "type": "account_link",

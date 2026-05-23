@@ -1,5 +1,5 @@
 import moxy from '@moxyjs/moxy';
-import Sociably, { RenderingTarget } from '@sociably/core';
+import { RenderingTarget } from '@sociably/core';
 import { isContainerType } from '@sociably/core/utils';
 import ProcessorP from '../Processor.js';
 import build from '../build.js';
@@ -16,6 +16,14 @@ import {
   CALL,
   RETURN,
 } from '../keyword.js';
+
+declare module '@sociably/core/jsx-runtime' {
+  namespace JSX {
+    interface IntrinsicElements {
+      dolore: {};
+    }
+  }
+}
 
 const initVars = moxy(() => ({}));
 

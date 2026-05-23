@@ -3,7 +3,11 @@ import { Readable } from 'stream';
 import jwt from 'jsonwebtoken';
 import moxy, { Moxy } from '@moxyjs/moxy';
 import { AuthController } from '../Controller.js';
-import { AnyServerAuthenticator } from '../types.js';
+import {
+  AnyAuthContext,
+  AnyServerAuthenticator,
+  ServerAuthenticator,
+} from '../types.js';
 import HttpOperator from '../HttpOperator.js';
 import { getCookies } from './utils.js';
 
@@ -34,49 +38,63 @@ const prepareReq = (
   return req as never;
 };
 
-const fooAuthenticator: Moxy<AnyServerAuthenticator> = moxy({
+type FooAuthContext = AnyAuthContext & { foo: string };
+type BarAuthContext = AnyAuthContext & { bar: string };
+type FooAuthenticator = ServerAuthenticator<
+  unknown,
+  { foo: string },
+  FooAuthContext
+>;
+type BarAuthenticator = ServerAuthenticator<unknown, never, BarAuthContext>;
+
+const fooAuthenticator: Moxy<FooAuthenticator> = moxy({
   platform: 'foo',
-  async delegateAuthRequest() {}, // eslint-disable-line no-empty-function
-  async verifyCredential() {
+  async delegateAuthRequest(_req, _res, _routingInfo) {}, // eslint-disable-line no-empty-function
+  async verifyCredential(_credential) {
     return { ok: true, data: { foo: 'data' } };
   },
-  async verifyRefreshment() {
+  async verifyRefreshment(_data) {
     return { ok: true, data: { foo: 'data' } };
   },
-  checkAuthData() {
+  checkAuthData(_data) {
     return {
       ok: true,
       contextDetails: {
-        user: { platform: 'foo', uid: 'john_doe' },
-        thread: { platform: 'foo', uid: 'foo.thread' },
+        agent: null,
+        user: { $$typeofUser: true, platform: 'foo', uid: 'john_doe' },
+        thread: { $$typeofThread: true, platform: 'foo', uid: 'foo.thread' },
         foo: 'foo.data',
       },
     };
   },
 });
 
-const barAuthenticator: Moxy<AnyServerAuthenticator> = moxy({
+const barAuthenticator: Moxy<BarAuthenticator> = moxy({
   platform: 'bar',
-  async delegateAuthRequest() {}, // eslint-disable-line no-empty-function
-  async verifyCredential() {
+  async delegateAuthRequest(_req, _res, _routingInfo) {}, // eslint-disable-line no-empty-function
+  async verifyCredential(_credential) {
     return { ok: false, code: 400, reason: 'bar' };
   },
-  async verifyRefreshment() {
+  async verifyRefreshment(_data: never) {
     return { ok: false, code: 400, reason: 'bar' };
   },
-  checkAuthData() {
+  checkAuthData(_data: never) {
     return {
       ok: true,
       contextDetails: {
-        user: { platform: 'bar', uid: 'jojo_doe' },
-        thread: { platform: 'bar', uid: 'bar.thread' },
+        agent: null,
+        user: { $$typeofUser: true, platform: 'bar', uid: 'jojo_doe' },
+        thread: { $$typeofThread: true, platform: 'bar', uid: 'bar.thread' },
         bar: 'bar.data',
       },
     };
   },
 });
 
-const authenticators = [fooAuthenticator, barAuthenticator];
+const authenticators: AnyServerAuthenticator[] = [
+  fooAuthenticator,
+  barAuthenticator,
+];
 const secret = '__SECRET__';
 const serverUrl = 'https://sociably.io';
 
@@ -1251,15 +1269,18 @@ describe('#verifyAuth(req)', () => {
     ).resolves.toMatchInlineSnapshot(`
       {
         "context": {
+          "agent": null,
           "expireAt": 2019-10-02T09:53:19.000Z,
           "foo": "foo.data",
           "loginAt": 2019-10-02T06:50:01.000Z,
           "platform": "foo",
           "thread": {
+            "$$typeofThread": true,
             "platform": "foo",
             "uid": "foo.thread",
           },
           "user": {
+            "$$typeofUser": true,
             "platform": "foo",
             "uid": "john_doe",
           },
@@ -1293,15 +1314,18 @@ describe('#verifyAuth(req)', () => {
     ).resolves.toMatchInlineSnapshot(`
       {
         "context": {
+          "agent": null,
           "expireAt": 2019-10-02T09:53:19.000Z,
           "foo": "foo.data",
           "loginAt": 2019-10-02T06:50:01.000Z,
           "platform": "foo",
           "thread": {
+            "$$typeofThread": true,
             "platform": "foo",
             "uid": "foo.thread",
           },
           "user": {
+            "$$typeofUser": true,
             "platform": "foo",
             "uid": "john_doe",
           },

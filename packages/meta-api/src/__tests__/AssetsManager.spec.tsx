@@ -1,5 +1,6 @@
 import moxy from '@moxyjs/moxy';
 import type StateRepositoryI from '@sociably/core/base/StateRepository.js';
+import type { MetaApiAgent } from '../types.js';
 import { MetaAssetsManager } from '../AssetsManager.js';
 import { MetaApiSender } from '../types.js';
 
@@ -18,7 +19,7 @@ const stateRepository = moxy<StateRepositoryI>({
   },
 } as never);
 
-const sender = moxy<MetaApiSender>({
+const sender = moxy<MetaApiSender<MetaApiAgent>>({
   uploadChatAttachment() {
     return {};
   },

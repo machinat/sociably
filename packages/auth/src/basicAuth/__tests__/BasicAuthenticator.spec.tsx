@@ -1,7 +1,7 @@
 import { Readable } from 'stream';
 import { IncomingMessage, ServerResponse } from 'http';
 import moxy, { Moxy } from '@moxyjs/moxy';
-import Sociably, {
+import {
   StateRepository,
   SociablySender,
   SociablyThread,
@@ -117,6 +117,7 @@ test('.getAuthUrl()', () => {
 describe('init login flow', () => {
   const routing = {
     originalPath: '/myApp/auth/test/init',
+    basePath: '/myApp/auth/test/',
     matchedPath: '/myApp/auth/test/',
     trailingPath: 'init',
   };
@@ -572,6 +573,7 @@ describe('init login flow', () => {
 describe('login page', () => {
   const routing = {
     originalPath: '/myApp/auth/test/',
+    basePath: '/myApp/auth/test/',
     matchedPath: '/myApp/auth/test/',
     trailingPath: 'login',
   };
@@ -616,10 +618,10 @@ describe('login page', () => {
     const msgElement = sender.render.mock.calls[0].args[1];
     expect(msgElement.type({ ...msgElement.props, code: 123456 }))
       .toMatchInlineSnapshot(`
-      <p>
+      <Sociably.Fragment>
         Your login code is: 
         123456
-      </p>
+      </Sociably.Fragment>
     `);
 
     expect(delegateOptions.checkAuthData).toHaveBeenCalledTimes(1);
@@ -657,7 +659,7 @@ describe('login page', () => {
   });
 
   test('with customized options', async () => {
-    const CodeMessage = ({ code }) => <p>Yo! Check your login code {code}</p>;
+    const CodeMessage = ({ code }) => <>Yo! Check your login code {code}</>;
     const authenticator = new BasicAuthenticator(stateRepository, operator, {
       appName: 'My Test App',
       appIconUrl: 'https://sociably.io/myApp/img/icon.png',
@@ -922,6 +924,7 @@ describe('login page', () => {
 describe('verify code api', () => {
   const routing = {
     originalPath: '/myApp/auth/test/',
+    basePath: '/myApp/auth/test/',
     matchedPath: '/myApp/auth/test/',
     trailingPath: 'verify',
   };

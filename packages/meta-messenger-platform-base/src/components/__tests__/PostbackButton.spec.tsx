@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { renderPartElement, makeTestComponent } from './utils.js';
 import { PostbackButton as _PostbackButton } from '../PostbackButton.js';
 
@@ -16,7 +15,7 @@ it('match snapshot', async () => {
           payload="_MY_PAYLOAD_"
           title="my button"
         />,
-        "path": "$#container",
+        "path": "$#b",
         "type": "part",
         "value": {
           "payload": "_MY_PAYLOAD_",

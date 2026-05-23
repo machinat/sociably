@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import { CatalogParam } from '../CatalogParam.js';
 import { renderPartElement } from './utils.js';
@@ -22,7 +21,7 @@ test('rendering value', async () => {
         "node": <CatalogParam
           thumbnailProductRetailerId="_PRODUCT_ID_"
         />,
-        "path": "$#container",
+        "path": "$#b",
         "type": "part",
         "value": {
           "index": undefined,

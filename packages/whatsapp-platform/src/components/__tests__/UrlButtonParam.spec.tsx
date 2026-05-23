@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import { UrlButtonParam } from '../UrlButtonParam.js';
 import { renderPartElement } from './utils.js';
@@ -18,7 +17,7 @@ test('rendering value', async () => {
         "node": <UrlButtonParam
           urlPostfix="/foo#bar?baz=true"
         />,
-        "path": "$#container",
+        "path": "$#b",
         "type": "part",
         "value": {
           "index": undefined,
@@ -43,7 +42,7 @@ test('rendering value', async () => {
           index={2}
           urlPostfix="/boo"
         />,
-        "path": "$#container",
+        "path": "$#b",
         "type": "part",
         "value": {
           "index": 2,

@@ -21,7 +21,7 @@ describe('Emoji', () => {
             emojiId="bar"
             productId="foo"
           />,
-          "path": "$#container",
+          "path": "$#b",
           "type": "part",
           "value": {
             "emojiId": "bar",

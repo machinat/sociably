@@ -2,7 +2,11 @@ import { readFile } from 'fs/promises';
 import moxy from '@moxyjs/moxy';
 import { MetaApiAgent } from '@sociably/meta-api';
 import createEventFactory from '../factory.js';
-import { TextEvent, QuickReplyEvent, ImageEvent } from '../events.js';
+import {
+  TextMessageEvent,
+  QuickReplyMessageEvent,
+  ImageMessageEvent,
+} from '../events.js';
 import { MessengerChat, MessengerUser } from '../../types.js';
 
 const pageId = '__PAGE_ID__';
@@ -48,7 +52,7 @@ const getFixtures = async (fileName) => {
 
 test('text message event', async () => {
   for (const rawEvent of await getFixtures('text')) {
-    const event = createEvent(pageId, false, rawEvent) as TextEvent<
+    const event = createEvent(pageId, false, rawEvent) as TextMessageEvent<
       any,
       any,
       any
@@ -71,11 +75,11 @@ test('text message event', async () => {
 
 test('quick_reply postback event', async () => {
   for (const rawEvent of await getFixtures('quick_reply')) {
-    const event = createEvent(pageId, false, rawEvent) as QuickReplyEvent<
-      any,
-      any,
-      any
-    >;
+    const event = createEvent(
+      pageId,
+      false,
+      rawEvent,
+    ) as QuickReplyMessageEvent<any, any, any>;
 
     expect(event.platform).toBe('test');
     expect(event.isStandby).toBe(false);
@@ -92,7 +96,7 @@ test('quick_reply postback event', async () => {
 
 test('image message event', async () => {
   for (const rawEvent of await getFixtures('image')) {
-    const event = createEvent(pageId, false, rawEvent) as ImageEvent<
+    const event = createEvent(pageId, false, rawEvent) as ImageMessageEvent<
       any,
       any,
       any

@@ -1,4 +1,4 @@
-import Sociably from '@sociably/core';
+import type { SociablyNode } from '@sociably/core';
 import Renderer from '@sociably/core/renderer';
 import generalComponentDelegator from '../general.js';
 import { Image } from '../Media.js';
@@ -6,14 +6,14 @@ import { Image } from '../Media.js';
 const renderer = new Renderer('whatsapp', generalComponentDelegator);
 
 it('<br/> renders into line break text', async () => {
-  const [segment] = await renderer.render(<br />, null, null);
+  const [segment] = (await renderer.render(<br />, null, null))!;
 
   expect(segment?.type).toBe('text');
   expect(segment?.value).toBe('\n');
 });
 
 it('<b/> renders transformed text', async () => {
-  const [segment] = await renderer.render(<b>foo</b>, null, null);
+  const [segment] = (await renderer.render(<b>foo</b>, null, null))!;
 
   expect(segment?.type).toBe('text');
   expect(segment?.value).toBe('*foo*');
@@ -59,6 +59,18 @@ it('throw if non-textual node within text children', async () => {
     `"non-textual node <Image /> is placed in <pre/>"`,
   );
 });
+
+declare module '@sociably/core/jsx-runtime' {
+  namespace JSX {
+    interface IntrinsicElements {
+      p: { children?: SociablyNode };
+      img: { src?: string };
+      video: { src?: string };
+      audio: { src?: string };
+      file: { src?: string };
+    }
+  }
+}
 
 it('throw on invalid general element tags', async () => {
   await expect(

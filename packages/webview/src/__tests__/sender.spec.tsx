@@ -1,5 +1,5 @@
 import moxy, { Moxy } from '@moxyjs/moxy';
-import Sociably, { SociablyUser, SociablyThread } from '@sociably/core';
+import { SociablyUser, SociablyThread } from '@sociably/core';
 import Queue from '@sociably/core/queue';
 import type { AnyServerAuthenticator } from '@sociably/auth';
 import _Engine from '@sociably/core/engine';

@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { TakeThreadContorl as _TakeThreadContorl } from '../TakeThreadContorl.js';
 import { renderUnitElement, makeTestComponent } from './utils.js';
 
