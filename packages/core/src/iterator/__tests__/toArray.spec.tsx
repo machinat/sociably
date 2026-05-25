@@ -1,4 +1,15 @@
-import toArray from '../toArray';
+import toArray from '../toArray.js';
+
+declare module '@sociably/core/jsx-runtime' {
+  namespace JSX {
+    interface IntrinsicElements {
+      a: { id?: number; children?: unknown };
+      text: { children?: unknown };
+      third: object;
+      seventh: object;
+    }
+  }
+}
 
 it('returns null or undefined if null or undefined passed', () => {
   expect(toArray(null)).toBe(null);

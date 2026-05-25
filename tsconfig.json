@@ -1,6 +1,6 @@
 {
   "extends": "./tsconfig.base.json",
-  "exclude": ["**/lib/**/index.js"],
+  "exclude": ["**/lib/**"],
   "compilerOptions": {
     "types": ["node", "jest"],
     "rootDir": ".",

@@ -4,6 +4,7 @@
   "scripts": {
     "bootstrap": "lerna bootstrap",
     "build": "make",
+    "build:check": "tsc --project tsconfig.json --noEmit",
     "lint": "eslint --ext .js,.ts,.tsx ./packages/*/src",
     "prettier": "prettier -w './packages/*/src/**/*.{ts,tsx}'",
     "test": "jest",
@@ -48,6 +49,7 @@
     "prettier": "^3.0.3",
     "prettier-2": "npm:prettier@2.8.8",
     "prettier-3-plugin-jsdoc": "npm:prettier-plugin-jsdoc@^1.0.1",
+    "tsc-files": "^1.1.4",
     "typedoc": "^0.28.19",
     "typescript": "^6.0.3"
   },
@@ -59,6 +61,9 @@
       "eslint --fix",
       "prettier --write",
       "jest --passWithNoTests --findRelatedTests"
+    ],
+    "**/*.{ts,tsx}": [
+      "tsc-files --project tsconfig.json --noEmit"
     ]
   }
 }

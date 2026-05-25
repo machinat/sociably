@@ -17,10 +17,11 @@ import type { AnyScriptLibrary } from '../types.js';
 declare module '@sociably/core/jsx-runtime' {
   namespace JSX {
     interface IntrinsicElements {
+      a: { id?: number; children?: unknown };
       del: { children?: unknown };
-      dolore: {}; // eslint-disable-line @typescript-eslint/no-empty-object-type
-      eiusmod: {}; // eslint-disable-line @typescript-eslint/no-empty-object-type
-      world: {}; // eslint-disable-line @typescript-eslint/no-empty-object-type
+      dolore: object;
+      eiusmod: object;
+      world: object;
     }
   }
 }

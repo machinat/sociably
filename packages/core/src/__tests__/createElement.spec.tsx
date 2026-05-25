@@ -4,7 +4,7 @@ import { SOCIABLY_ELEMENT_TYPE } from '../symbol.js';
 declare module '@sociably/core/jsx-runtime' {
   namespace JSX {
     interface IntrinsicElements {
-      text: { children?: string };
+      text: { children?: unknown };
     }
   }
 }
