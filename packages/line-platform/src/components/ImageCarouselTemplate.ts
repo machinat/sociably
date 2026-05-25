@@ -29,7 +29,7 @@ export type ImageCarouselItemProps = {
  */
 export const ImageCarouselItem: LineComponent<
   ImageCarouselItemProps,
-  PartSegment<{}>
+  PartSegment<object>
 > = makeLineComponent(async function ImageCarouselItem(node, path, render) {
   const { imageUrl, action } = node.props;
   const actionSegments = await render(action, '.action');
@@ -92,7 +92,7 @@ export const ImageCarouselTemplate: LineComponent<
             ? altText(templateMessage)
             : altText ||
               templateMessage.template.columns
-                .map(({ imageUrl }) => imageUrl)
+                .map(({ imageUrl }: { imageUrl: string }) => imageUrl)
                 .join('\n'),
       },
     }),

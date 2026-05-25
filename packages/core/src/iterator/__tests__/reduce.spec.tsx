@@ -1,11 +1,10 @@
-import Sociably from '../../index.js';
 import reduce from '../reduce.js';
 
 it('returns initial value if null or undefined passed', () => {
   const callback = jest.fn();
   const initial = { foo: 'bar' };
-  expect(reduce(null, callback, initial)).toBe(initial);
-  expect(reduce(undefined, callback, initial)).toBe(initial);
+  expect(reduce(null, callback, initial, '$', undefined)).toBe(initial);
+  expect(reduce(undefined, callback, initial, '$', undefined)).toBe(initial);
   expect(callback).not.toHaveBeenCalled();
 });
 
@@ -47,7 +46,7 @@ it('travers through all elements', () => {
     },
     0,
     '$',
-    _context
+    _context,
   );
   expect(count).toBe(8);
 });

@@ -17,6 +17,10 @@ import { TelegramProfiler } from '../Profiler.js';
 import { TelegramSender } from '../Sender.js';
 import { AgentSettingsAccessorI } from '../interface.js';
 import { TelegramAssetsManager, saveUploadedFile } from '../asset/index.js';
+import type {
+  TelegramDispatchMiddleware,
+  TelegramEventMiddleware,
+} from '../types.js';
 
 it('export interfaces', () => {
   expect(Telegram.Receiver).toBe(TelegramReceiver);
@@ -34,8 +38,9 @@ it('export interfaces', () => {
 
 describe('initModule(configs)', () => {
   it('create module object', () => {
-    const eventMiddleware = (ctx, next) => next(ctx);
-    const dispatchMiddleware = (ctx, next) => next(ctx);
+    const eventMiddleware: TelegramEventMiddleware = (ctx, next) => next(ctx);
+    const dispatchMiddleware: TelegramDispatchMiddleware = (ctx, next) =>
+      next(ctx);
 
     const module = Telegram.initModule({
       webhookPath: 'webhook/telegram',
@@ -75,7 +80,7 @@ describe('initModule(configs)', () => {
       },
       secretToken: '_SECRET_',
       maxRequestConnections: 999,
-      eventMiddlewares: [(ctx, next) => next(ctx)],
+      eventMiddlewares: [((ctx, next) => next(ctx)) as TelegramEventMiddleware],
     };
 
     const app = Sociably.createApp({

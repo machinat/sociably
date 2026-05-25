@@ -14,6 +14,9 @@ import type {
 import { ClientI } from './interface.js';
 
 type CallClientFn = (method: string, ...params: string[]) => Promise<any>;
+type RedisCallbackMethod = (
+  ...args: [...string[], (err: Error | null, value: unknown) => void]
+) => void;
 
 export class RedisStateAccessor implements StateAccessor {
   private _stateKey: string;
@@ -129,7 +132,7 @@ export class RedisStateAccessor implements StateAccessor {
   }
 }
 
-const identity = (x) => x;
+const identity = <T>(x: T): T => x;
 
 /** @category Provider */
 export class RedisStateRepository implements BaseStateRepository {
@@ -188,9 +191,11 @@ export class RedisStateRepository implements BaseStateRepository {
     method: string,
     ...params: (string | number)[]
   ): Promise<any> {
-    const result = await thenifiedly.callMethod(
-      method,
-      this._client,
+    const clientMethod = (
+      this._client as unknown as Record<string, RedisCallbackMethod>
+    )[method];
+    const result = await thenifiedly.call(
+      clientMethod.bind(this._client),
       ...params,
     );
     return result;

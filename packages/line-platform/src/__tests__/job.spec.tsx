@@ -1,8 +1,11 @@
-import moxy from '@moxyjs/moxy';
+import moxy, { Moxy } from '@moxyjs/moxy';
+import type { SociablyNode } from '@sociably/core';
+import type { DispatchableSegment } from '@sociably/core/engine';
 import LineChannel from '../Channel.js';
 import LineChat from '../Chat.js';
 import { Text } from '../components/Text.js';
 import { createChatJobs, createMulticastJobs } from '../job.js';
+import type { ChatActionSegmentValue, LineSegmentValue } from '../types.js';
 
 declare module '@sociably/core/jsx-runtime' {
   namespace JSX {
@@ -13,26 +16,31 @@ declare module '@sociably/core/jsx-runtime' {
   }
 }
 
-const segment = (type: 'text' | 'unit', node, value) => ({
-  type,
-  node,
-  value,
-  path: '?',
-});
+const segment = (
+  type: 'text' | 'unit',
+  node: SociablyNode,
+  value: string | LineSegmentValue,
+): DispatchableSegment<LineSegmentValue> =>
+  ({
+    type,
+    node,
+    value,
+    path: '?',
+  }) as DispatchableSegment<LineSegmentValue>;
 
 const chatActionValue = moxy({
-  type: 'chat_action',
+  type: 'chat_action' as const,
   getChatRequest: () => ({
-    method: 'POST',
+    method: 'POST' as const,
     url: 'some/channel/api',
     params: { do: 'something' },
   }),
   getBulkRequest: () => ({
-    method: 'POST',
+    method: 'POST' as const,
     url: 'some/bulk/api',
     params: { bulk: 'do something' },
   }),
-});
+}) as Moxy<ChatActionSegmentValue>;
 
 const segments = [
   segment('unit', <Text>_</Text>, {

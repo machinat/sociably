@@ -24,7 +24,29 @@ import type {
   ErrorMessage,
 } from './types.js';
 
-const { sign: signJwt, verify: verifyJWT } = JsonWebToken;
+const signJwt = JsonWebToken.sign as <Payload>(
+  payload: Payload,
+  secret: string,
+  options: JsonWebToken.SignOptions | undefined,
+  callback: (err: Error | null, encoded: string) => void,
+) => void;
+const verifyJwt = JsonWebToken.verify as <Payload>(
+  token: string,
+  secret: string,
+  options: JsonWebToken.VerifyOptions | undefined,
+  callback: (err: JsonWebToken.VerifyErrors | null, decoded: Payload) => void,
+) => void;
+
+const signJwtSync = JsonWebToken.sign as <Payload>(
+  payload: Payload,
+  secret: string,
+  options?: JsonWebToken.SignOptions,
+) => string;
+const verifyJwtSync = JsonWebToken.verify as <Payload>(
+  token: string,
+  secret: string,
+  options?: JsonWebToken.VerifyOptions,
+) => Payload;
 
 type OperatorOptions = {
   serverUrl: string;
@@ -130,11 +152,15 @@ export class AuthHttpOperator {
     }
 
     try {
-      const { platform, state }: StateTokenPayload<State> =
-        await thenifiedly.call(verifyJWT, encodedState, this.secret);
+      const { platform, state } = await thenifiedly.call(
+        verifyJwt<StateTokenPayload<State>>,
+        encodedState,
+        this.secret,
+        undefined,
+      );
 
       return platform === platformAsserted ? state : null;
-    } catch (e) {
+    } catch {
       return null;
     }
   }
@@ -145,9 +171,10 @@ export class AuthHttpOperator {
     state: State,
   ): Promise<string> {
     const encodedState = await thenifiedly.call(
-      signJwt,
+      signJwt<StatePayload<State>>,
       { platform, state } as StatePayload<State>,
       this.secret,
+      undefined,
     );
 
     setCookie(res, STATE_COOKIE_KEY, encodedState, {
@@ -184,19 +211,18 @@ export class AuthHttpOperator {
     }
 
     try {
-      const { platform, data, init }: AuthTokenPayload<Data> =
-        await thenifiedly.call(
-          verifyJWT,
-          `${contentVal}.${sigVal}`,
-          this.secret,
-          { ignoreExpiration: acceptRefreshable },
-        );
+      const { platform, data, init } = await thenifiedly.call(
+        verifyJwt<AuthTokenPayload<Data>>,
+        `${contentVal}.${sigVal}`,
+        this.secret,
+        { ignoreExpiration: acceptRefreshable },
+      );
 
       return platform !== platformAsserted ||
         (acceptRefreshable && getSecondNow() - init > this.refreshDuration)
         ? null
         : data;
-    } catch (e) {
+    } catch {
       return null;
     }
   }
@@ -217,11 +243,14 @@ export class AuthHttpOperator {
       },
     };
 
-    const token = await thenifiedly.call(signJwt, payload, this.secret, {
-      expiresIn: this.tokenLifetime,
-    });
+    const token = await thenifiedly.call(
+      signJwt<AuthPayload<Data>>,
+      payload,
+      this.secret,
+      { expiresIn: this.tokenLifetime },
+    );
 
-    const [header, body, signature] = token.split('.');
+    const [header = '', body = '', signature = ''] = token.split('.');
     const tokenContent = `${header}.${body}`;
 
     setCookie(res, SIGNATURE_COOKIE_KEY, signature, {
@@ -259,14 +288,15 @@ export class AuthHttpOperator {
     }
 
     try {
-      const { platform, error }: ErrorTokenPayload = await thenifiedly.call(
-        verifyJWT,
+      const { platform, error } = await thenifiedly.call(
+        verifyJwt<ErrorTokenPayload>,
         errEncoded,
         this.secret,
+        undefined,
       );
 
       return platform === platformAsserted ? error : null;
-    } catch (e) {
+    } catch {
       return null;
     }
   }
@@ -278,7 +308,7 @@ export class AuthHttpOperator {
     reason: string,
   ): Promise<string> {
     const errEncoded = await thenifiedly.call(
-      signJwt,
+      signJwt<ErrorPayload>,
       {
         platform,
         error: { code, reason },
@@ -288,6 +318,7 @@ export class AuthHttpOperator {
         },
       } as ErrorPayload,
       this.secret,
+      undefined,
     );
 
     setCookie(res, ERROR_COOKIE_KEY, errEncoded, {
@@ -359,12 +390,12 @@ export class AuthHttpOperator {
     payload: unknown,
     options?: JsonWebToken.SignOptions,
   ): string {
-    return signJwt({ platform, payload }, this.secret, options);
+    return signJwtSync({ platform, payload }, this.secret, options);
   }
 
   verifyToken<Data>(assertedPlatform: string, token: string): null | Data {
     try {
-      const { platform, payload } = verifyJWT(token, this.secret) as {
+      const { platform, payload } = verifyJwtSync(token, this.secret) as {
         platform: string;
         payload: Data;
       };

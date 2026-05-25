@@ -1,4 +1,3 @@
-import Sociably from '../../index.js';
 import traverse from '../traverse.js';
 
 it('traverse through node tree and pass all non empty element to callback', () => {
@@ -25,8 +24,8 @@ it('traverse through node tree and pass all non empty element to callback', () =
       </>,
       '$',
       context,
-      callback
-    )
+      callback,
+    ),
   ).toBe(8);
 
   expect(callback.mock.calls).toEqual([

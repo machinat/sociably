@@ -10,7 +10,7 @@ export type LoginButtonProps = {
 export function LoginButton(
   node: NativeElement<LoginButtonProps, AnyNativeComponent>,
   path: string,
-): PartSegment<{}>[] {
+): PartSegment<object>[] {
   const { url } = node.props;
   return [
     makePartSegment(node, path, {

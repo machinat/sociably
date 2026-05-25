@@ -27,7 +27,7 @@ const LEAVE_REQUESTER = {
  * @props `{}`
  * @guides Check official [doc](https://developers.line.biz/en/docs/messaging-api/group-chats/).
  */
-export const Leave: LineComponent<{}> = makeLineComponent(
+export const Leave: LineComponent<object> = makeLineComponent(
   function Leave(node, path) {
     return [makeUnitSegment(node, path, LEAVE_REQUESTER)];
   },

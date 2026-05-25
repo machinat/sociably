@@ -1,11 +1,17 @@
 import { Readable } from 'stream';
-import { IncomingMessage, ServerResponse } from 'http';
+import type {
+  IncomingHttpHeaders,
+  IncomingMessage,
+  ServerResponse,
+} from 'http';
 import moxy, { Mock, Moxy } from '@moxyjs/moxy';
+import type { PopEventWrapper } from '@sociably/core';
 
 import { TwitterReceiver } from '../Receiver.js';
 import TwitterChat from '../Chat.js';
 import TwitterUser from '../User.js';
 import type { TwitterSender } from '../Sender.js';
+import type { TwitterEventContext } from '../types.js';
 
 const routing = {
   originalPath: '/',
@@ -14,19 +20,33 @@ const routing = {
   trailingPath: '',
 };
 
+type RequestOptions = {
+  method: string;
+  url?: string;
+  body?: string;
+  headers?: IncomingHttpHeaders;
+};
+
+type TestResponse = ServerResponse & {
+  writableEnded: boolean;
+  statusCode: number;
+};
+
 const sender = moxy<TwitterSender>({
   render: async () => ({ tasks: [], results: [], jobs: [] }),
 } as never);
 
 const popEventMock = new Mock();
-const popEventWrapper = moxy((popEvent) => popEventMock.proxify(popEvent));
+const popEventWrapper = moxy<PopEventWrapper<TwitterEventContext, null>>(
+  (popEvent) => popEventMock.proxify(popEvent) as never,
+);
 
 const createReq = ({
   method,
   url = '/',
   body = '',
   headers = {},
-}): IncomingMessage => {
+}: RequestOptions): IncomingMessage => {
   const req = new Readable({
     read() {
       if (body) req.push(body);
@@ -36,21 +56,22 @@ const createReq = ({
   return Object.assign(req, { method, url, body, headers }) as never;
 };
 
-const createRes = (): Moxy<ServerResponse> =>
-  moxy({
+const createRes = (): Moxy<TestResponse> =>
+  moxy<TestResponse>({
     writableEnded: false,
     statusCode: 200,
-    writeHead(code) {
+    writeHead(this: TestResponse, code: number) {
       this.statusCode = code;
       return this;
     },
-    end(...args) {
+    end(this: TestResponse, ...args: unknown[]) {
       this.writableEnded = true;
       for (let i = args.length - 1; i >= 0; i -= 1) {
-        if (typeof args[i] === 'function') args[i]();
+        const callback = args[i];
+        if (typeof callback === 'function') callback();
       }
     },
-  } as any);
+  } as never);
 
 const messageEventBody = {
   for_user_id: '4337869213',

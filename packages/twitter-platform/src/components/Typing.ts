@@ -12,7 +12,7 @@ import { TwitterSegmentValue, TwitterComponent } from '../types.js';
  * @guides Check official [reference](https://developer.twitter.com/en/docs/twitter-api/v1/direct-messages/typing-indicator-and-read-receipts/api-reference/new-typing-indicator).
  */
 export const Typing: TwitterComponent<
-  {},
+  object,
   UnitSegment<TwitterSegmentValue>
 > = makeTwitterComponent(function Typing(node, path) {
   return [

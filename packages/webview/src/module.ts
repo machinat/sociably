@@ -58,7 +58,7 @@ const nextServerFactory = serviceProviderFactory({
   lifetime: 'singleton',
   deps: [ConfigsI],
 })(({ nextServerOptions }) =>
-  createNextServer((nextServerOptions || {}) as {}),
+  createNextServer((nextServerOptions || {}) as object),
 );
 
 const wsServerFactory = serviceProviderFactory({ lifetime: 'singleton' })(

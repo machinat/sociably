@@ -1,8 +1,16 @@
-import Sociably from '../../index.js';
 import map from '../map.js';
 
+declare module '@sociably/core/jsx-runtime' {
+  namespace JSX {
+    interface IntrinsicElements {
+      third: object;
+      seventh: object;
+    }
+  }
+}
+
 it('maps all elements', () => {
-  const callback = jest.fn((e) => ({ e }));
+  const callback = jest.fn((e, _path, _context) => ({ e }));
   const context = {};
   expect(
     map(
@@ -25,8 +33,8 @@ it('maps all elements', () => {
       </>,
       callback,
       '$',
-      context
-    )
+      context,
+    ),
   ).toEqual([
     { e: 'first' },
     { e: <a>second</a> },
@@ -58,7 +66,7 @@ it('maps all elements', () => {
 
 it('returns null or undefined if null or undefined passed', () => {
   const callback = jest.fn();
-  expect(map(null, callback)).toBe(null);
-  expect(map(undefined, callback)).toBe(undefined);
+  expect(map(null, callback, '$', undefined)).toBe(null);
+  expect(map(undefined, callback, '$', undefined)).toBe(undefined);
   expect(callback).not.toHaveBeenCalled();
 });

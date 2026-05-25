@@ -24,7 +24,7 @@ const minProfileData = {
 const botChannel = new LineChannel(botChannelId);
 
 const sender = moxy<LineSender>({
-  requestApi: async ({ url }) =>
+  requestApi: async ({ url }: { url: string }) =>
     url === `oauth2/v2.1/verify?access_token=${accessToken}`
       ? { scope: 'profile', client_id: loginChannelId, expires_in: 2591659 }
       : url === 'v2/profile'
@@ -39,7 +39,7 @@ const sender = moxy<LineSender>({
 } as never);
 
 const httpOperator = moxy<AuthHttpOperator>({
-  getRedirectUrl: (path) =>
+  getRedirectUrl: (path?: string) =>
     `https://sociably.io/my_app/webview${path ? `/${path}` : ''}`,
 } as never);
 

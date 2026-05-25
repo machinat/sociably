@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "invariant": "^2.2.4",
-    "thenifiedly": "^0.2.1",
+    "thenifiedly": "^0.3.1",
     "typed-emitter": "^2.1.0",
     "uniqid": "^5.2.0",
     "ws": "^8.13.0"

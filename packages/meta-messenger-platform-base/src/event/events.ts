@@ -426,7 +426,16 @@ export class ProductTemplateMessageEvent<
     subtitle: string;
   }[] {
     return this.payload.message.attachments[0].payload.product.elements.map(
-      ({ retailer_id: retailerId, image_url: imageUrl, ...restElement }) => ({
+      ({
+        retailer_id: retailerId,
+        image_url: imageUrl,
+        ...restElement
+      }: {
+        retailer_id: string;
+        image_url: string;
+        title: string;
+        subtitle: string;
+      }) => ({
         ...restElement,
         retailerId,
         imageUrl,

@@ -6,7 +6,7 @@ import { ImagePost, CarouselPost } from '../components/index.js';
 declare module '@sociably/core/jsx-runtime' {
   namespace JSX {
     interface IntrinsicElements {
-      image: {};
+      image: object;
     }
   }
 }

@@ -1,5 +1,7 @@
 import { Pool } from 'pg';
+import type { PoolClient } from 'pg';
 import moxy, { isMoxy } from '@moxyjs/moxy';
+import type { Moxy } from '@moxyjs/moxy';
 import { SociablyThread, SociablyAgent, SociablyUser } from '@sociably/core';
 import { StateAccessor } from '@sociably/core/base/StateRepository.js';
 import {
@@ -15,6 +17,34 @@ import {
 } from '../constants.js';
 import { PostgresStateRepository } from '../PostgresStateRepository.js';
 
+type QueryInput =
+  | string
+  | {
+      text: string;
+      values?: unknown[];
+    };
+
+type QueryCall = {
+  args: unknown[];
+};
+
+type StateEntityRow = {
+  [FIELD_STATE_ID]: string;
+  [FIELD_STATE_KEY]: string;
+  [FIELD_STATE_DATA]: { value: unknown };
+  [FIELD_CREATED_AT]: Date;
+  [FIELD_UPDATED_AT]: Date;
+};
+
+type Marshaler = {
+  marshal: (value: unknown) => unknown;
+  unmarshal: (value: unknown) => unknown;
+};
+
+type MoxiedPoolClient = PoolClient & {
+  query: Moxy<PoolClient['query']>;
+};
+
 const pgPool = moxy(new Pool({ connectionString: process.env.DATABASE_URL }), {
   mockMethod: false,
   includeProperties: ['query', 'connect'],
@@ -23,43 +53,61 @@ afterAll(async () => {
   await pgPool.end();
 });
 
-let usedClients: any[] = [];
+let usedClients: MoxiedPoolClient[] = [];
 pgPool.connect.mock.wrap(
   (connect) =>
-    async function connectWithMoxiedClient(callback) {
+    async function connectWithMoxiedClient(
+      this: Pool,
+      callback?: (
+        err: Error,
+        client: PoolClient,
+        release: (...args: unknown[]) => void,
+      ) => void,
+    ) {
       if (callback) {
         return connect.call(this, callback);
       }
-      const client = await connect.call(this);
-      if (!isMoxy(client.query)) {
-        client.query = moxy(client.query);
+      const client = (await connect.call(this)) as MoxiedPoolClient;
+      const { query } = client;
+      if (!isMoxy(query)) {
+        client.query = moxy(query) as Moxy<PoolClient['query']>;
       } else {
-        client.query.mock.reset();
+        query.mock.reset();
       }
       usedClients.push(client);
       return client;
     },
 );
 
-const marshaler = moxy({
-  marshal: (x) => x,
-  unmarshal: (x) => x,
+const marshaler: Moxy<Marshaler> = moxy({
+  marshal: (x: unknown) => x,
+  unmarshal: (x: unknown) => x,
 });
 
-const getIdenticalQueryCallsText = (queryCalls) =>
-  queryCalls.reduce((queryText, { args: [query] }) => {
+const getQueryInput = ({ args: [query] }: QueryCall): QueryInput =>
+  query as QueryInput;
+
+const getIdenticalQueryCallsText = (queryCalls: QueryCall[]): string | null =>
+  queryCalls.reduce<string | null>((queryText, call) => {
+    const query = getQueryInput(call);
     const text = typeof query === 'string' ? query : query.text;
     if (queryText) {
       expect(text).toBe(queryText);
     }
     return text;
   }, null);
-const getQueryCallsText = (queryCalls) =>
-  queryCalls.map(({ args: [query] }) =>
-    typeof query === 'string' ? query : query.text,
-  );
-const getQueryCallsValues = (queryCalls) =>
-  queryCalls.map(({ args: [{ values }] }) => values);
+const getQueryCallsText = (queryCalls: QueryCall[]): string[] =>
+  queryCalls.map((call) => {
+    const query = getQueryInput(call);
+    return typeof query === 'string' ? query : query.text;
+  });
+const getQueryCallsValues = (
+  queryCalls: QueryCall[],
+): (unknown[] | undefined)[] =>
+  queryCalls.map((call) => {
+    const query = getQueryInput(call);
+    return typeof query === 'string' ? undefined : query.values;
+  });
 
 describe.each<[string, Record<string, string>]>([
   ['default table', {}],
@@ -190,7 +238,7 @@ describe.each<[string, Record<string, string>]>([
         ]),
       });
 
-    const getStateEntities = async () => {
+    const getStateEntities = async (): Promise<StateEntityRow[]> => {
       const result = await pgPool.query({
         text: `
             SELECT * FROM ${tableId} WHERE
@@ -200,7 +248,7 @@ describe.each<[string, Record<string, string>]>([
       });
       return result.rows;
     };
-    const getStateEntityOfKey = async (key) => {
+    const getStateEntityOfKey = async (key: string) => {
       const entities = await getStateEntities();
       return entities.find(
         ({ [FIELD_STATE_KEY]: entityKey }) => key === entityKey,
@@ -300,7 +348,7 @@ describe.each<[string, Record<string, string>]>([
         expect(
           usedClients.map((client) =>
             getQueryCallsValues(client.query.mock.calls).filter(
-              (value) => value,
+              (value: unknown[] | undefined) => value,
             ),
           ),
         ).toMatchSnapshot();
@@ -328,7 +376,9 @@ describe.each<[string, Record<string, string>]>([
         const queryCalls = usedClients[0].query.mock.calls;
         expect(getQueryCallsText(queryCalls)).toMatchSnapshot();
         expect(
-          getQueryCallsValues(queryCalls).filter((value) => value),
+          getQueryCallsValues(queryCalls).filter(
+            (value: unknown[] | undefined) => value,
+          ),
         ).toMatchSnapshot();
 
         await expect(getStateEntityOfKey('key2')).resolves.toBe(undefined);
@@ -344,7 +394,7 @@ describe.each<[string, Record<string, string>]>([
         ] as const;
         await Promise.all(
           cases.map(async ([key, value]) => {
-            const updater = moxy((x) => x);
+            const updater = moxy((x: unknown) => x);
             await expect(state.update(key, updater)).resolves.toEqual(value);
 
             expect(updater.mock).toHaveBeenCalledTimes(1);
@@ -364,7 +414,7 @@ describe.each<[string, Record<string, string>]>([
         expect(
           usedClients.map((client) =>
             getQueryCallsValues(client.query.mock.calls).filter(
-              (value) => value,
+              (value: unknown[] | undefined) => value,
             ),
           ),
         ).toMatchSnapshot();
@@ -468,8 +518,8 @@ describe.each<[string, Record<string, string>]>([
     });
 
     test('custom marshaler', async () => {
-      marshaler.marshal.mock.fake((value) => ({ hello: value }));
-      marshaler.unmarshal.mock.fake(({ hello }) => hello);
+      marshaler.marshal.mock.fake((value: unknown) => ({ hello: value }));
+      marshaler.unmarshal.mock.fake(({ hello }: { hello: unknown }) => hello);
 
       await expect(state.set('key1', 'foo')).resolves.toBe(false);
       await expect(state.get('key1')).resolves.toBe('foo');

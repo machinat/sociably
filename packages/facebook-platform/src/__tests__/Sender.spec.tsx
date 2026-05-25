@@ -34,7 +34,9 @@ jest.mock('@sociably/meta-api', () => {
 });
 
 const initScope = moxy(() => moxy());
-const dispatchWrapper = moxy((x) => x);
+const dispatchWrapper = moxy(function dispatch<T>(x: T): T {
+  return x;
+});
 
 const pageId = '1234567890';
 const accessToken = '_ACCESS_TOKEN_';
@@ -55,7 +57,13 @@ const message = (
   </Expression>
 );
 
-let graphApi;
+type BatchRequest = {
+  body: string;
+  method?: string;
+  relative_url?: string;
+};
+
+let graphApi: nock.Interceptor;
 const bodySpy = moxy(() => true);
 
 beforeEach(() => {
@@ -152,7 +160,7 @@ describe('.message(thread, message, options)', () => {
     appSecret,
   });
 
-  let apiStatus;
+  let apiStatus: nock.Scope;
   beforeEach(() => {
     const messageResult = {
       code: 200,
@@ -199,8 +207,11 @@ describe('.message(thread, message, options)', () => {
     }
 
     expect(body).toMatchSnapshot();
-    expect(JSON.parse(body.batch).map((req) => querystring.decode(req.body)))
-      .toMatchInlineSnapshot(`
+    expect(
+      (JSON.parse(body.batch) as BatchRequest[]).map((req: BatchRequest) =>
+        querystring.decode(req.body),
+      ),
+    ).toMatchInlineSnapshot(`
       [
         {
           "message": "{"text":"Hello World!"}",
@@ -236,8 +247,11 @@ describe('.message(thread, message, options)', () => {
     const body = bodySpy.mock.calls[0].args[0];
 
     expect(body).toMatchSnapshot();
-    expect(JSON.parse(body.batch).map((req) => querystring.decode(req.body)))
-      .toMatchInlineSnapshot(`
+    expect(
+      (JSON.parse(body.batch) as BatchRequest[]).map((req: BatchRequest) =>
+        querystring.decode(req.body),
+      ),
+    ).toMatchInlineSnapshot(`
       [
         {
           "message": "{"text":"Hello World!"}",

@@ -6,7 +6,7 @@ import map from '../map.js';
 
 jest.useFakeTimers({ doNotFake: ['setImmediate', 'nextTick'] });
 
-const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
+const delay = (t: number) => new Promise((resolve) => setTimeout(resolve, t));
 const nextTick = () => new Promise(process.nextTick);
 
 const nextListener = moxy();
@@ -26,7 +26,7 @@ beforeEach(() => {
 });
 
 test('execute each asyncronized mapper one by one', async () => {
-  const mapper = moxy(async (value) => {
+  const mapper = moxy(async (value: string) => {
     await delay(100);
     return `${value}!!!`;
   });
@@ -67,7 +67,7 @@ test('map frames with different keys parallelly', async () => {
   const stream = new Stream();
   stream
     .pipe(
-      map(async (value) => {
+      map(async (value: string) => {
         await delay(100);
         return `${value}!!!`;
       }),
@@ -118,7 +118,7 @@ it('emit error if thrown in mapper', async () => {
   const stream = new Stream();
   stream
     .pipe(
-      map(async (value) => {
+      map(async (value: string) => {
         await delay(100);
         if (value === 'B') {
           throw new Error('noo');

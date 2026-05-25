@@ -12,19 +12,19 @@ import type {
 } from '../../types.js';
 import AuthClient from '../AuthClient.js';
 
-const resolveAfterLoops = (resolve, n) => {
+const resolveAfterLoops = (resolve: () => void, n: number): void => {
   if (n === 0) {
     resolve();
   } else {
     setImmediate(resolveAfterLoops, resolve, n - 1);
   }
 };
-const delayLoops = (n = 1) =>
-  new Promise((resolve) => resolveAfterLoops(resolve, n));
+const delayLoops = (n = 1): Promise<void> =>
+  new Promise((resolve: () => void) => resolveAfterLoops(resolve, n));
 
 const serverEntry = nock('https://sociably.io');
 
-const makeToken = (payload) =>
+const makeToken = (payload: object | string | Buffer): string =>
   jwt.sign(payload, '__SECRET__').split('.').slice(0, 2).join('.');
 
 const fooAgent = {
@@ -123,7 +123,7 @@ const location = moxy<Location>(
 );
 const document = moxy<Document>({ cookie: '' } as never);
 
-const setCookieAuth = (payload) => {
+const setCookieAuth = (payload: object | string | Buffer): string => {
   const token = makeToken(payload);
   document.mock
     .getter('cookie')
@@ -131,7 +131,7 @@ const setCookieAuth = (payload) => {
   return token;
 };
 
-const setCookieError = (payload) => {
+const setCookieError = (payload: object | string | Buffer): string => {
   const token = jwt.sign(payload, '__SECRET__');
   document.mock
     .getter('cookie')

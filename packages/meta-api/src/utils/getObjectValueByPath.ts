@@ -1,9 +1,12 @@
-const getObjectValueByRoutes = (object, routes: string[]) => {
+const getObjectValueByRoutes = (
+  object: unknown,
+  routes: string[],
+): string | null => {
   if (!object) {
     return null;
   }
   if (routes.length === 0) {
-    return object;
+    return typeof object === 'string' ? object : String(object);
   }
 
   const [route, ...restRoutes] = routes;
@@ -26,10 +29,17 @@ const getObjectValueByRoutes = (object, routes: string[]) => {
     return values.join(',');
   }
 
-  return getObjectValueByRoutes(object[route], restRoutes);
+  if (typeof object !== 'object') {
+    return null;
+  }
+
+  return getObjectValueByRoutes(
+    (object as Record<string, unknown>)[route],
+    restRoutes,
+  );
 };
 
-const getObjectValueByPath = (object, path: string): string | null => {
+const getObjectValueByPath = (object: unknown, path: string): string | null => {
   if (!object || !path.startsWith('$')) {
     return null;
   }

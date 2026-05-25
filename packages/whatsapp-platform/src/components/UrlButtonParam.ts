@@ -24,7 +24,7 @@ export type UrlButtonParamProps = {
  */
 export const UrlButtonParam: WhatsAppComponent<
   UrlButtonParamProps,
-  PartSegment<{}>
+  PartSegment<object>
 > = makeWhatsAppComponent(function UrlButtonParam(node, path) {
   const { index, urlPostfix } = node.props;
   return [

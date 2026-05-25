@@ -33,7 +33,7 @@ export type ReceiptItemProps = {
 export function ReceiptItem(
   node: NativeElement<ReceiptItemProps, AnyNativeComponent>,
   path: string,
-): PartSegment<{}>[] {
+): PartSegment<object>[] {
   const { title, subtitle, quantity, price, currency, imageUrl } = node.props;
   return [
     makePartSegment(node, path, {

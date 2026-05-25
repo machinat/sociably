@@ -45,7 +45,7 @@ export default ({
       nodemon: '^3.0.1',
       'ts-node': '^10.9.1',
       typescript: '^5.1.3',
-    },
+    } as Record<string, string>,
     nodemonConfig: {
       exec: './node_modules/.bin/ts-node-esm -r dotenv/config',
       watch: ['./src', './.env'],

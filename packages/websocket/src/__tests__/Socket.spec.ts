@@ -3,7 +3,9 @@ import type Ws from 'ws';
 import moxy from '@moxyjs/moxy';
 import Socket from '../Socket.js';
 
-const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
+type TimeoutId = ReturnType<typeof setTimeout>;
+
+const delay = (t: number) => new Promise((resolve) => setTimeout(resolve, t));
 
 const connId = 'conn#id';
 
@@ -14,11 +16,11 @@ const _ws = Object.defineProperty(new EventEmitter(), 'readyState', {
 const clientWs = moxy(_ws as Ws);
 const serverWs = moxy(_ws as Ws);
 
-let clientTimeoutId;
-let serverTimeoutId;
-let closeTimeoutId;
+let clientTimeoutId: TimeoutId | undefined;
+let serverTimeoutId: TimeoutId | undefined;
+let closeTimeoutId: TimeoutId | undefined;
 
-const _close = moxy((code, reason) => {
+const _close = moxy((code?: number, reason?: string) => {
   clientWs.mock.getter('readyState').fakeReturnValue(2);
   serverWs.mock.getter('readyState').fakeReturnValue(2);
 
@@ -31,16 +33,16 @@ const _close = moxy((code, reason) => {
 });
 
 clientWs.close = _close;
-clientWs.send = moxy((msg, cb) => {
-  cb();
+clientWs.send = moxy(((msg: string, cb?: (err?: Error) => void) => {
+  cb?.();
   clientTimeoutId = setTimeout(() => serverWs.emit('message', msg), 10);
-});
+}) as Ws['send']);
 
 serverWs.close = _close;
-serverWs.send = moxy((msg, cb) => {
-  cb();
+serverWs.send = moxy(((msg: string, cb?: (err?: Error) => void) => {
+  cb?.();
   serverTimeoutId = setTimeout(() => clientWs.emit('message', msg), 10);
-});
+}) as Ws['send']);
 
 const request = {
   method: 'GET',

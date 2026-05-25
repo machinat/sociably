@@ -15,7 +15,12 @@ const nextTick = () => new Promise(process.nextTick);
 
 const ws = new Ws(''); // mocked in __mocks__
 const wsServer = moxy<Ws.Server>({
-  handleUpgrade(req, skt, head, callback) {
+  handleUpgrade(
+    req: IncomingMessage,
+    skt: NetSocket,
+    head: Buffer,
+    callback: (socket: Ws) => void,
+  ) {
     callback(ws);
   },
 } as never);
@@ -58,8 +63,8 @@ const serverId = '_SERVER_ID_';
 let testServer: WebSocketServer<null, null>;
 
 const marshaler = moxy({
-  marshal: (x) => x,
-  unmarshal: (x) => x,
+  marshal: (x: unknown) => x,
+  unmarshal: (x: unknown) => x,
 });
 
 beforeEach(async () => {
@@ -95,7 +100,10 @@ beforeEach(async () => {
   verifyUpgrade.mock.reset();
 });
 
-async function openConnection(server, existedSocket?: Socket) {
+async function openConnection(
+  server: WebSocketServer<null, null>,
+  existedSocket?: Socket,
+) {
   let socket = existedSocket;
   if (!socket) {
     await server.handleUpgrade(req, netSocket, head);
@@ -884,7 +892,7 @@ describe('dispatch()', () => {
     ).resolves.toEqual([]);
     expect(errorSpy).toHaveBeenCalledTimes(3);
 
-    errorSpy.mock.calls.forEach((call) => {
+    errorSpy.mock.calls.forEach((call: { args: [Error] }) => {
       expect(call.args[0]).toEqual(new Error('Wasted!'));
     });
 

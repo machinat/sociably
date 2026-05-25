@@ -46,7 +46,7 @@ export type EmojiProps = {
  */
 export const Emoji: LineComponent<
   EmojiProps,
-  PartSegment<{}>
+  PartSegment<object>
 > = makeLineComponent(function Emoji(node, path) {
   const { productId, emojiId } = node.props;
   return [

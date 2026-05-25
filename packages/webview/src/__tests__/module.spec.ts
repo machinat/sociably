@@ -15,6 +15,10 @@ import WebviewConnection from '../Connection.js';
 import NoneAuthenticator from '../authenticators/none/index.js';
 import { MemoCacheTarget } from '../authenticators/memo/index.js';
 import Webview from '../module.js';
+import type {
+  WebviewEventMiddleware,
+  WebviewDispatchMiddleware,
+} from '../types.js';
 
 const createNextServer = NextJs as unknown as Moxy<typeof NextJs.default>;
 
@@ -47,8 +51,12 @@ it('export interfaces', () => {
 });
 
 test('module object', () => {
-  const eventMiddlewares = [moxy((ctx, next) => next(ctx))];
-  const dispatchMiddlewares = [moxy((ctx, next) => next(ctx))];
+  const eventMiddlewares: WebviewEventMiddleware[] = [
+    moxy((ctx, next) => next(ctx)),
+  ];
+  const dispatchMiddlewares: WebviewDispatchMiddleware[] = [
+    moxy((ctx, next) => next(ctx)),
+  ];
 
   const module = Webview.initModule({
     authSecret: '_SECRET_',

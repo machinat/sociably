@@ -501,7 +501,7 @@ export type RawPlace = {
     type: 'Polygon';
     coordinates: NumberPairs[];
   };
-  attributes?: {};
+  attributes?: object;
 };
 
 export type RawUrlEntity = {

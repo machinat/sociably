@@ -1,4 +1,5 @@
 import moxy, { Moxy } from '@moxyjs/moxy';
+import type { DispatchWrapper } from '@sociably/core';
 import Queue from '@sociably/core/queue';
 import _Engine from '@sociably/core/engine';
 import _Renderer from '@sociably/core/renderer';
@@ -7,6 +8,11 @@ import WebSocketConnection from '../Connection.js';
 import { Event } from '../component.js';
 import { WebSocketSender } from '../Sender.js';
 import type { WebSocketServer } from '../Server.js';
+import type {
+  WebSocketDispatchFrame,
+  WebSocketJob,
+  WebSocketResult,
+} from '../types.js';
 
 const Engine = _Engine as Moxy<typeof _Engine>;
 const Renderer = _Renderer as Moxy<typeof _Renderer>;
@@ -31,7 +37,13 @@ const server = moxy<WebSocketServer<any, unknown>>({
 } as never);
 
 const initScope = moxy();
-const dispatchWrapper = moxy((dispatch) => dispatch);
+const dispatchWrapper = moxy(
+  ((dispatch) => dispatch) as DispatchWrapper<
+    WebSocketJob,
+    WebSocketDispatchFrame,
+    WebSocketResult
+  >,
+);
 
 beforeEach(() => {
   server.mock.reset();

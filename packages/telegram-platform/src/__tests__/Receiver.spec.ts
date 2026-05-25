@@ -1,11 +1,29 @@
 import { Readable } from 'stream';
-import { IncomingMessage, ServerResponse } from 'http';
+import type {
+  IncomingHttpHeaders,
+  IncomingMessage,
+  ServerResponse,
+} from 'http';
 import moxy, { Mock, Moxy } from '@moxyjs/moxy';
+import type { PopEventWrapper } from '@sociably/core';
 
 import { TelegramReceiver } from '../Receiver.js';
 import TelegramChat from '../Chat.js';
 import TelegramUser from '../User.js';
 import type { TelegramSender } from '../Sender.js';
+import type { TelegramEventContext } from '../types.js';
+
+type TestResponse = ServerResponse & {
+  finished: boolean;
+  statusCode: number;
+};
+
+type RequestOptions = {
+  method: string;
+  url?: string;
+  body?: string;
+  headers?: IncomingHttpHeaders;
+};
 
 const botId = 1111111;
 const secretToken = '_SECRET_TOKEN_';
@@ -15,14 +33,16 @@ const sender = moxy<TelegramSender>({
 } as never);
 
 const popEventMock = new Mock();
-const popEventWrapper = moxy((popEvent) => popEventMock.proxify(popEvent));
+const popEventWrapper = moxy<PopEventWrapper<TelegramEventContext, null>>(
+  (popEvent) => popEventMock.proxify(popEvent) as never,
+);
 
 const createReq = ({
   method,
   url = '/',
   body = '',
   headers = {},
-}): IncomingMessage => {
+}: RequestOptions): IncomingMessage => {
   const req = new Readable({
     read() {
       if (body) req.push(body);
@@ -32,18 +52,19 @@ const createReq = ({
   return Object.assign(req, { method, url, body, headers }) as never;
 };
 
-const createRes = (): Moxy<ServerResponse> =>
-  moxy({
+const createRes = (): Moxy<TestResponse> =>
+  moxy<TestResponse>({
     finished: false,
     statusCode: 200,
-    writeHead(code) {
+    writeHead(this: TestResponse, code: number) {
       this.statusCode = code;
       return this;
     },
-    end(...args) {
+    end(this: TestResponse, ...args: unknown[]) {
       this.finished = true;
       for (let i = args.length - 1; i >= 0; i -= 1) {
-        if (typeof args[i] === 'function') args[i]();
+        const callback = args[i];
+        if (typeof callback === 'function') callback();
       }
     },
   } as never);

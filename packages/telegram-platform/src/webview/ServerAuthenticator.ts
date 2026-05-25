@@ -1,6 +1,6 @@
 import { parse as parseUrl, URL } from 'url';
 import type { ParsedUrlQuery } from 'querystring';
-import { createHmac, createHash } from 'crypto';
+import { createHmac, createHash, createSecretKey } from 'crypto';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { serviceProviderClass } from '@sociably/core/service';
 import type { RoutingInfo } from '@sociably/http';
@@ -43,7 +43,9 @@ const verifyTelegramAuthQuery = (botToken: string, query: ParsedUrlQuery) => {
     }
   }
 
-  const secretKey = createHash('sha256').update(botToken).digest();
+  const secretKey = createSecretKey(
+    Uint8Array.from(createHash('sha256').update(botToken).digest()),
+  );
   const paramsHash = createHmac('sha256', secretKey)
     .update(checkingStr)
     .digest('hex');

@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import Renderer from '@sociably/core/renderer';
 import generalComponentDelegator from '../general';
 import { Photo } from '../media';

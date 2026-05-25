@@ -26,7 +26,13 @@ import type {
   WithHeaders,
 } from './types.js';
 
-const { verify: verifyJwt, decode: decodeJwt } = JsonWebToken;
+const { decode: decodeJwt } = JsonWebToken;
+const verifyJwt = JsonWebToken.verify as <Payload>(
+  token: string,
+  secret: string,
+  options: JsonWebToken.VerifyOptions | undefined,
+  callback: (err: JsonWebToken.VerifyErrors | null, decoded: Payload) => void,
+) => void;
 
 const getSignature = (req: WithHeaders) => {
   const cookies = getCookies(req);
@@ -375,8 +381,8 @@ export class AuthController<Authenticator extends AnyServerAuthenticator> {
     jwtVerifyOptions?: JsonWebToken.VerifyOptions,
   ): Promise<[null | AuthError, AuthTokenPayload<unknown>]> {
     try {
-      const payload: AuthTokenPayload<unknown> = await thenifiedly.call(
-        verifyJwt,
+      const payload = await thenifiedly.call(
+        verifyJwt<AuthTokenPayload<unknown>>,
         `${token}.${signature}`,
         this.secret,
         jwtVerifyOptions,

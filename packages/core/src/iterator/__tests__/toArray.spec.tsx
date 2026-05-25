@@ -1,4 +1,3 @@
-import Sociably from '../..';
 import toArray from '../toArray';
 
 it('returns null or undefined if null or undefined passed', () => {
@@ -15,8 +14,8 @@ it('returns list of children as array', () => {
           <a>second</a>
           <third />
         </text>
-      ).props.children
-    )
+      ).props.children,
+    ),
   ).toEqual(['first', <a>second</a>, <third />]);
 });
 
@@ -31,8 +30,8 @@ it("returns fragment's children as array", () => {
             <third />
           </>
         </text>
-      ).props.children
-    )
+      ).props.children,
+    ),
   ).toEqual(['first', <a>second</a>, <third />]);
 });
 
@@ -43,8 +42,8 @@ it('returns array of children if only single element contained', () => {
         <text>
           <a>bcb</a>
         </text>
-      ).props.children
-    )
+      ).props.children,
+    ),
   ).toEqual([<a>bcb</a>]);
 });
 
@@ -69,8 +68,8 @@ it('flatten nested list of elements', () => {
           {true}
           {false}
         </text>
-      ).props.children
-    )
+      ).props.children,
+    ),
   ).toEqual([
     'first',
     <a>second</a>,

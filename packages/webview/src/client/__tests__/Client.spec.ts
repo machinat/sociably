@@ -61,13 +61,19 @@ jest.mock('@sociably/websocket/client/Connector', () => ({
 
 jest.mock('@sociably/auth/client', () => ({
   __esModule: true,
-  default: moxy(function FakeAuthClient({ authenticators }) {
+  default: moxy(function FakeAuthClient({
+    authenticators,
+  }: {
+    authenticators: AnyClientAuthenticator[];
+  }) {
     return moxy({
       bootstrap: async () => {},
       signIn: async () => ({ context: {}, token: '_TOKEN_' }),
       getAuthContext: () => authContext,
       getAuthenticator: () =>
-        authenticators.find(({ platform }) => platform === 'test'),
+        authenticators.find(
+          ({ platform }: AnyClientAuthenticator) => platform === 'test',
+        ),
     });
   }),
 }));

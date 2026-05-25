@@ -6,7 +6,7 @@ import tap from '../tap.js';
 
 jest.useFakeTimers({ doNotFake: ['setImmediate', 'nextTick'] });
 
-const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
+const delay = (t: number) => new Promise((resolve) => setTimeout(resolve, t));
 const nextTick = () => new Promise(process.nextTick);
 
 const nextListener = moxy();
@@ -110,7 +110,7 @@ it('emit error if thrown in tap function', async () => {
   const stream = new Stream();
   stream
     .pipe(
-      tap(async (value) => {
+      tap(async (value: string) => {
         await delay(100);
         if (value === 'B') {
           throw new Error('no');

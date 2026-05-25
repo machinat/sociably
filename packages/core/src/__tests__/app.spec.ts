@@ -874,7 +874,7 @@ describe('dispatchWrapper', () => {
       try {
         const response = await next(frame);
         return response;
-      } catch (err) {
+      } catch {
         return newResponse;
       }
     });

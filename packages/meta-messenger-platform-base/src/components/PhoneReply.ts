@@ -5,8 +5,8 @@ import { makePartSegment, PartSegment } from '@sociably/core/renderer';
 const PHONE_QUICK_REPLY_VALUES = { content_type: 'user_phone_number' };
 
 export function PhoneReply(
-  node: NativeElement<{}, AnyNativeComponent>,
+  node: NativeElement<object, AnyNativeComponent>,
   path: string,
-): PartSegment<{}>[] {
+): PartSegment<object>[] {
   return [makePartSegment(node, path, PHONE_QUICK_REPLY_VALUES)];
 }

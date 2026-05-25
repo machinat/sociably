@@ -39,7 +39,9 @@ jest.mock('@sociably/meta-api', () => {
 });
 
 const initScope = moxy(() => moxy());
-const dispatchWrapper = moxy((x) => x);
+const dispatchWrapper = moxy(function identity<Value>(x: Value): Value {
+  return x;
+});
 
 const accountId = '1234567890';
 const pageId = '1111111111';
@@ -63,8 +65,14 @@ const agentSettingsAccessor = moxy({
 
 const agent = new InstagramAgent(accountId);
 
-let graphApi;
+let graphApi: nock.Interceptor;
 const bodySpy = moxy(() => true);
+
+type BatchRequest = {
+  body: string;
+  method?: string;
+  relative_url?: string;
+};
 
 beforeEach(() => {
   graphApi = nock('https://graph.facebook.com').post('/v17.0/', bodySpy);
@@ -167,7 +175,7 @@ describe('.message(thread, content)', () => {
     </Expression>
   );
 
-  let apiStatus;
+  let apiStatus: nock.Scope;
   beforeEach(() => {
     const messageResult = {
       code: 200,
@@ -214,8 +222,11 @@ describe('.message(thread, content)', () => {
     }
 
     expect(body).toMatchSnapshot();
-    expect(JSON.parse(body.batch).map((req) => querystring.decode(req.body)))
-      .toMatchInlineSnapshot(`
+    expect(
+      (JSON.parse(body.batch) as BatchRequest[]).map((req: BatchRequest) =>
+        querystring.decode(req.body),
+      ),
+    ).toMatchInlineSnapshot(`
       [
         {
           "message": "{"text":"Hello World!"}",
@@ -251,8 +262,11 @@ describe('.message(thread, content)', () => {
     const body = bodySpy.mock.calls[0].args[0];
 
     expect(body).toMatchSnapshot();
-    expect(JSON.parse(body.batch).map((req) => querystring.decode(req.body)))
-      .toMatchInlineSnapshot(`
+    expect(
+      (JSON.parse(body.batch) as BatchRequest[]).map((req: BatchRequest) =>
+        querystring.decode(req.body),
+      ),
+    ).toMatchInlineSnapshot(`
       [
         {
           "message": "{"text":"Hello World!"}",
@@ -284,7 +298,7 @@ describe('.post(agent, content)', () => {
     appSecret,
   });
 
-  let apiStatus;
+  let apiStatus: nock.Scope;
   beforeEach(() => {
     apiStatus = graphApi.reply(200, [
       { code: 200, body: '{"id":1111111111}' },

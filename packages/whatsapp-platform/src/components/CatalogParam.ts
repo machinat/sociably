@@ -24,7 +24,7 @@ export type CatalogParamProps = {
  */
 export const CatalogParam: WhatsAppComponent<
   CatalogParamProps,
-  PartSegment<{}>
+  PartSegment<object>
 > = makeWhatsAppComponent(function CatalogParam(node, path) {
   const { index, thumbnailProductRetailerId } = node.props;
   return [

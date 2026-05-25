@@ -4,7 +4,7 @@ import { STREAMING_KEY_I } from '../interface.js';
 import injectMaybe from '../injectMaybe.js';
 
 const scope = moxy<ServiceScope>({
-  injectContainer(container) {
+  injectContainer(container: (serviceName: string) => unknown) {
     return container('foo');
   },
 } as never);
@@ -15,7 +15,7 @@ beforeEach(() => {
 });
 
 it('inject container with frame.scope', () => {
-  const containedFn = moxy((..._args) => 'baz');
+  const containedFn = moxy((..._args: string[]) => 'baz');
   const myContainer = moxy(serviceContainer({})(() => containedFn));
 
   expect(injectMaybe(myContainer)(frame)('bar')).toBe('baz');
@@ -32,7 +32,13 @@ it('inject container with frame.scope', () => {
   expect(containedFn).toHaveBeenCalledTimes(1);
   expect(containedFn).toHaveBeenCalledWith('bar');
 
-  expect(injectMaybe(myContainer)(frame)('bar', 'beer', 'bacon')).toBe('baz');
+  expect(
+    (
+      injectMaybe(myContainer)(frame) as unknown as (
+        ...args: string[]
+      ) => string
+    )('bar', 'beer', 'bacon'),
+  ).toBe('baz');
 
   expect(scope.injectContainer).toHaveBeenCalledTimes(2);
   expect(myContainer).toHaveBeenCalledTimes(2);
@@ -41,14 +47,16 @@ it('inject container with frame.scope', () => {
 });
 
 it('return a thunk if target is normal function', () => {
-  const fn = moxy((v) => `${v}!!!`);
+  const fn = moxy((v: string) => `${v}!!!`);
   expect(injectMaybe(fn)(frame)('foo')).toBe('foo!!!');
 
   expect(scope.injectContainer).not.toHaveBeenCalled();
   expect(fn).toHaveBeenCalledTimes(1);
   expect(fn).toHaveBeenCalledWith('foo');
 
-  const multiParamFn = moxy((...args) => args.map((v) => `${v}!`).join(' '));
+  const multiParamFn = moxy((...args: string[]) =>
+    args.map((v) => `${v}!`).join(' '),
+  );
   expect(injectMaybe(multiParamFn)(frame)('bar', 'beer', 'bacon')).toBe(
     'bar! beer! bacon!',
   );

@@ -5,30 +5,35 @@ import {
   serviceContainer,
   serviceInterface,
 } from '../../service/index.js';
+import type { GeneralElement, SociablyNode } from '../../types.js';
 import Renderer from '../renderer.js';
 import { makeNativeComponent } from '../componentHelper.js';
-import type { TextSegment } from '../types.js';
+import type { InnerRenderFn, TextSegment } from '../types.js';
 
 declare module '@sociably/core/jsx-runtime' {
   namespace JSX {
     interface IntrinsicElements {
       a: { id?: number; children?: unknown };
       c: { id?: number; children?: unknown };
-      dolor: {};
-      consectetur: {};
-      elit: {};
-      justo: {};
-      aliquam: {};
-      nec_odio: {};
-      ultricies: {};
-      pretium: {};
-      invalid: {};
+      dolor: object;
+      consectetur: object;
+      elit: object;
+      justo: object;
+      aliquam: object;
+      nec_odio: object;
+      ultricies: object;
+      pretium: object;
+      invalid: object;
     }
   }
 }
 
 const generalElementDelegate = moxy(
-  (node, path, _render): Promise<TextSegment[]> =>
+  (
+    node: GeneralElement,
+    path: string,
+    _render: InnerRenderFn,
+  ): Promise<TextSegment[]> =>
     Promise.resolve(
       node.type === 'a'
         ? [
@@ -59,7 +64,7 @@ describe('.render()', () => {
       }),
     );
 
-    const Custom = moxy(function Custom(props) {
+    const Custom = moxy(function Custom(props: { a: string; b: number }) {
       return (
         <>
           wrapped head
@@ -487,7 +492,7 @@ describe('.render()', () => {
           { require: BazI, optional: true },
         ],
       })(function Container(foo, bar, baz) {
-        return componentMock.proxify(({ n }) => (
+        return componentMock.proxify(({ n }: { n: number }) => (
           <Sociably.Raw
             value={`#${n} foo:${foo || 'x'} bar:${bar || 'x'} baz:${
               baz || 'x'
@@ -500,14 +505,14 @@ describe('.render()', () => {
     const renderer = new Renderer('test', generalElementDelegate);
 
     const Native = makeNativeComponent('test')(function Native(
-      { props }: any,
-      path,
-      render,
+      { props }: { props: { children?: SociablyNode } },
+      path: string,
+      render: InnerRenderFn,
     ) {
       return render(props.children, '.children');
     });
 
-    const Wrapper = ({ children }) => (
+    const Wrapper = ({ children }: { children?: SociablyNode }) => (
       <Sociably.Provider provide={BarI} value={1}>
         <Container n={3} />
         {children}

@@ -1,11 +1,16 @@
 import moxy from '@moxyjs/moxy';
-import Sociably, { SociablyThread } from '@sociably/core';
+import Sociably, {
+  type SociablyNode,
+  type SociablyThread,
+  type ThunkElement,
+} from '@sociably/core';
 import { ServiceScope } from '@sociably/core/service';
 import { traverse as traverseMessage } from '@sociably/core/iterator';
 import { InMemoryStateRepository } from '@sociably/dev-tools/InMemoryState';
 import { ScriptProcessor } from '../Processor.js';
 import build from '../build.js';
 import { SCRIPT_RUNTIME_STATE_KEY } from '../constant.js';
+import type { ScriptCircs } from '../types.js';
 import {
   IF,
   ELSE,
@@ -17,27 +22,49 @@ import {
   RETURN,
 } from '../keyword.js';
 
+type ScriptVars = Record<string, unknown> & {
+  foo?: unknown;
+  i?: number;
+};
+type ScriptMeta = { hello: string };
+type YieldCounter = { n: number };
+
 const scope = moxy<ServiceScope>({
-  injectContainer(container) {
+  injectContainer(container: (serviceName: string) => unknown) {
     return container('FOO_SERVICE');
   },
 } as never);
 
-const promptSetFn = moxy(({ vars }) => vars);
-const effectYieldFn = moxy((_, prev = { n: 0 }) => ({ n: prev.n + 1 }));
+const promptSetFn = moxy(
+  ({ vars }: ScriptCircs<ScriptVars, ScriptMeta>) => vars,
+);
+const effectYieldFn = moxy(
+  (_: ScriptCircs<ScriptVars, ScriptMeta>, prev: YieldCounter = { n: 0 }) => ({
+    n: prev.n + 1,
+  }),
+);
 
-const findThunkElementInMessage = (message) => {
-  let thunk;
+const findThunkElementInMessage = (message: SociablyNode): ThunkElement => {
+  let thunk: ThunkElement | undefined;
   traverseMessage(message, '$', {}, (node) => {
-    if (typeof node === 'object' && node.type === (Sociably.Thunk as unknown)) {
-      thunk = node;
+    if (
+      typeof node === 'object' &&
+      node !== null &&
+      node.type === (Sociably.Thunk as unknown)
+    ) {
+      thunk = node as ThunkElement;
     }
   });
+
+  if (!thunk) {
+    throw new Error('Thunk element not found in message');
+  }
+
   return thunk;
 };
 
 const AnotherScript = moxy(
-  build<{}, {}, {}, void, void, { hello: string }>(
+  build<object, object, object, void, void, { hello: string }>(
     {
       name: 'AnotherScript',
       initVars: (input) => input,
@@ -55,7 +82,7 @@ const AnotherScript = moxy(
 );
 
 const MyScript = moxy(
-  build<{}, {}, {}, void, void, { hello: string }>(
+  build<object, object, object, void, void, { hello: string }>(
     { name: 'MyScript', initVars: (input) => input, meta: { hello: 'there' } },
     <>
       {() => 'Lorem '}
@@ -93,7 +120,7 @@ const MyScript = moxy(
       <EFFECT set={({ vars }) => ({ ...vars, i: 0 })} yield={effectYieldFn} />
       <WHILE condition={({ vars: { i } }) => i < 5}>
         <EFFECT
-          set={({ vars }) => ({ ...vars, i: vars.i + 1 })}
+          set={({ vars }) => ({ ...vars, i: (vars.i ?? 0) + 1 })}
           yield={effectYieldFn}
         />
 

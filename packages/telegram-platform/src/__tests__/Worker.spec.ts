@@ -6,7 +6,7 @@ import TelegramWorker from '../Worker.js';
 
 nock.disableNetConnect();
 
-const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
+const delay = (t: number) => new Promise((resolve) => setTimeout(resolve, t));
 
 const botId1 = 1111111;
 const botId2 = 2222222;
@@ -14,7 +14,7 @@ const botToken1 = '1111111:_BOT_TOKEN_';
 const botToken2 = '2222222:_BOT_TOKEN_';
 
 const agentSettingsAccessor = moxy({
-  getAgentSettings: async (botUser) => ({
+  getAgentSettings: async (botUser: TelegramUser) => ({
     botToken: botUser.id === botId1 ? botToken1 : botToken2,
     botName: 'MyBot',
     secretToken: '_SECRET_TOKEN_',

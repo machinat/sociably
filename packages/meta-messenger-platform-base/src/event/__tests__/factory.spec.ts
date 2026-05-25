@@ -44,7 +44,7 @@ const createEvent = createEventFactory({
   createUser,
 });
 
-const getFixtures = async (fileName) => {
+const getFixtures = async (fileName: string) => {
   const file = `${__dirname}/../__fixtures__/${fileName}.json`;
   const content = await readFile(file, 'utf8');
   return JSON.parse(content);

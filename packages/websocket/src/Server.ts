@@ -395,7 +395,11 @@ export class WebSocketServer<
     }
   }
 
-  private _handleLoginCallback = (body, seq, socket) => {
+  private _handleLoginCallback = (
+    body: LoginBody,
+    seq: number,
+    socket: Socket,
+  ) => {
     this._handleLogin(body, seq, socket).catch(this._handleErrorCallback);
   };
 
@@ -431,7 +435,11 @@ export class WebSocketServer<
     }
   }
 
-  private _handleConnectCallback = (body, seq, socket) => {
+  private _handleConnectCallback = (
+    body: ConnectBody,
+    seq: number,
+    socket: Socket,
+  ) => {
     this._handleConnect(body, seq, socket).catch(this._handleErrorCallback);
   };
 
@@ -457,7 +465,11 @@ export class WebSocketServer<
     this._connectionStates.delete(connId);
   }
 
-  private _handleEventsCallback = (body, seq, socket) => {
+  private _handleEventsCallback = (
+    body: EventsBody,
+    seq: number,
+    socket: Socket,
+  ) => {
     this._handleEvents(body, seq, socket).catch(this._handleErrorCallback);
   };
 

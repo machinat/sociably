@@ -12,7 +12,7 @@ export type PostbackButtonProps = {
 export function PostbackButton(
   node: NativeElement<PostbackButtonProps, AnyNativeComponent>,
   path: string,
-): PartSegment<{}>[] {
+): PartSegment<object>[] {
   const { title, payload } = node.props;
   return [
     makePartSegment(node, path, {

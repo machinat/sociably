@@ -24,14 +24,6 @@
       ],
       "@sociably/http": ["./packages/http/src/index.js"],
       "@sociably/http/*": ["./packages/http/src/*/index.js"],
-      "@sociably/jsx-runtime": ["./packages/jsx-runtime/src/index.ts"],
-      "@sociably/jsx-runtime/jsx-runtime": [
-        "./packages/jsx-runtime/src/jsx-runtime.ts"
-      ],
-      "@sociably/jsx-runtime/jsx-dev-runtime": [
-        "./packages/jsx-runtime/src/jsx-dev-runtime.ts"
-      ],
-      "@sociably/jsx-runtime/*": ["./packages/jsx-runtime/src/*"],
       "@sociably/instagram-platform": [
         "./packages/instagram-platform/src/index.js"
       ],

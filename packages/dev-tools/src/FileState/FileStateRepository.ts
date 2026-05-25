@@ -23,7 +23,7 @@ type FileHandle = fsPromises.FileHandle;
 const { O_RDWR, O_CREAT } = fsConstants;
 const openFile = fsPromises.open;
 
-const objectHasOwnProperty = (obj, prop) =>
+const objectHasOwnProperty = (obj: object, prop: PropertyKey): boolean =>
   Object.prototype.hasOwnProperty.call(obj, prop);
 
 export class FileStateAccessor implements StateAccessor {
@@ -113,12 +113,15 @@ export class FileStateAccessor implements StateAccessor {
 type StorageObj = Record<string, Record<string, unknown>>;
 
 type StorageData = {
+  agentStates: StorageObj;
   threadStates: StorageObj;
   userStates: StorageObj;
   globalStates: StorageObj;
 };
 
-const identity = (x) => x;
+type StorageType = keyof StorageData;
+
+const identity = <T>(x: T): T => x;
 /** @category Provider */
 export class FileStateRepository implements BaseStateRepository {
   path: string;
@@ -181,7 +184,7 @@ export class FileStateRepository implements BaseStateRepository {
     );
   }
 
-  private _getDataCallback(type: string, id: string) {
+  private _getDataCallback(type: StorageType, id: string) {
     return async () => {
       await this._readingJob;
 
@@ -194,7 +197,7 @@ export class FileStateRepository implements BaseStateRepository {
     };
   }
 
-  private _updateDataCallback(type: string, id: string) {
+  private _updateDataCallback(type: StorageType, id: string) {
     return (data: Record<string, unknown>) => {
       if (Object.keys(data).length > 0) {
         this._storages[type][id] = data;
@@ -222,6 +225,7 @@ export class FileStateRepository implements BaseStateRepository {
     const content = await this._fileHandle.readFile('utf8');
     if (content === '') {
       this._storages = {
+        agentStates: {},
         threadStates: {},
         userStates: {},
         globalStates: {},

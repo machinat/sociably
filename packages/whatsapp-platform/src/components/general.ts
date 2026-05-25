@@ -1,37 +1,65 @@
-import invariant from 'invariant';
+import type { GeneralElement, SociablyNode } from '@sociably/core';
+import {
+  makeTextSegment,
+  type InnerRenderFn,
+  type TextSegment,
+} from '@sociably/core/renderer';
 import { formatNode } from '@sociably/core/utils';
-import { makeTextSegment } from '@sociably/core/renderer';
+import invariant from 'invariant';
 
-const br = (node, path) => [makeTextSegment(node, path, '\n')];
+type GeneralComponentRenderer = (
+  node: GeneralElement,
+  path: string,
+  render: InnerRenderFn,
+) => null | TextSegment[] | Promise<null | TextSegment[]>;
 
-const transormText = (tag, transformer) => async (node, path, render) => {
-  const childrenSegments = await render(node.props.children);
-  if (!childrenSegments) {
-    return null;
-  }
+const br: GeneralComponentRenderer = (
+  node: GeneralElement,
+  path: string,
+): TextSegment[] => [makeTextSegment(node, path, '\n')];
 
-  for (const segment of childrenSegments) {
-    if (segment.type !== 'text') {
-      throw new TypeError(
-        `non-textual node ${formatNode(segment.node)} is placed in <${tag}/>`,
-      );
+const transormText =
+  (
+    tag: string,
+    transformer: (value: string) => string,
+  ): GeneralComponentRenderer =>
+  async (
+    node: GeneralElement,
+    path: string,
+    render: InnerRenderFn,
+  ): Promise<null | TextSegment[]> => {
+    const childrenSegments = await render(
+      node.props.children as SociablyNode,
+      '.children',
+    );
+    if (!childrenSegments) {
+      return null;
     }
-  }
 
-  return [makeTextSegment(node, path, transformer(childrenSegments[0].value))];
-};
+    for (const segment of childrenSegments) {
+      if (segment.type !== 'text') {
+        throw new TypeError(
+          `non-textual node ${formatNode(segment.node)} is placed in <${tag}/>`,
+        );
+      }
+    }
 
-const b = transormText('b', (v) => `*${v}*`);
+    return [
+      makeTextSegment(node, path, transformer(childrenSegments[0].value)),
+    ];
+  };
 
-const i = transormText('i', (v) => `_${v}_`);
+const b = transormText('b', (value: string) => `*${value}*`);
 
-const s = transormText('s', (v) => `~${v}~`);
+const i = transormText('i', (value: string) => `_${value}_`);
 
-const u = transormText('u', (v) => v);
+const s = transormText('s', (value: string) => `~${value}~`);
 
-const code = transormText('code', (v) => `\`\`\`${v}\`\`\``);
+const u = transormText('u', (value: string) => value);
 
-const pre = transormText('pre', (v) => `\`\`\`\n${v}\n\`\`\``);
+const code = transormText('code', (value: string) => `\`\`\`${value}\`\`\``);
+
+const pre = transormText('pre', (value: string) => `\`\`\`\n${value}\n\`\`\``);
 
 const generalComponents = {
   b,
@@ -43,16 +71,24 @@ const generalComponents = {
   br,
 };
 
-const { hasOwnProperty } = Object.prototype;
+const objectHasOwnProperty = (obj: object, prop: PropertyKey): boolean =>
+  Object.prototype.hasOwnProperty.call(obj, prop);
 
-const generalComponentDelegator = async (element, render, path) => {
+const generalComponentDelegator = async (
+  element: GeneralElement,
+  path: string,
+  render: InnerRenderFn,
+): Promise<null | TextSegment[]> => {
   const { type } = element;
+
   invariant(
-    hasOwnProperty.call(generalComponents, type),
+    objectHasOwnProperty(generalComponents, type),
     `"${type}" is not valid general component tag on WhatsApp platform`,
   );
 
-  const segments = await generalComponents[type](element, render, path);
+  const segments = await generalComponents[
+    type as keyof typeof generalComponents
+  ](element, path, render);
   return segments;
 };
 

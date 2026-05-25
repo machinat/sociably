@@ -12,21 +12,51 @@ import {
 
 const ATTACHMENT = 'attachment';
 
-const mapLocaleInstancesToRecord = (values) =>
-  Object.fromEntries(values.map((value) => [value.locale, value]));
+type LocaleInstance = {
+  locale: string;
+};
 
-const deepCompareLocaleInstances = (a, b) =>
+type MessengerProfileSettings = {
+  get_started?: NonNullable<SetMessengerProfileOptions['getStarted']>;
+  greeting?: NonNullable<SetMessengerProfileOptions['greeting']>;
+  ice_breakers?: snakecaseKeys.SnakeCaseKeys<
+    NonNullable<SetMessengerProfileOptions['iceBreakers']>
+  >;
+  persistent_menu?: snakecaseKeys.SnakeCaseKeys<
+    NonNullable<SetMessengerProfileOptions['persistentMenu']>
+  >;
+  whitelisted_domains?: NonNullable<
+    SetMessengerProfileOptions['whitelistedDomains']
+  >;
+  account_linking_url?: NonNullable<
+    SetMessengerProfileOptions['accountLinkingUrl']
+  >;
+};
+
+type MessengerProfileField = keyof MessengerProfileSettings;
+
+const mapLocaleInstancesToRecord = <Value extends LocaleInstance>(
+  values: Value[],
+) => Object.fromEntries(values.map((value) => [value.locale, value]));
+
+const deepCompareLocaleInstances = <Value extends LocaleInstance>(
+  a: Value[],
+  b: Value[],
+): boolean =>
   deepEqual(mapLocaleInstancesToRecord(a), mapLocaleInstancesToRecord(b));
 
-const MESSENGER_PROFILE_FIELDS_COMPARATERS: Record<string, (a, b) => boolean> =
-  {
-    get_started: deepEqual,
-    greeting: deepCompareLocaleInstances,
-    ice_breakers: deepCompareLocaleInstances,
-    persistent_menu: deepCompareLocaleInstances,
-    whitelisted_domains: (a, b) => deepEqual(a.sort(), b.sort()),
-    account_linking_url: (a, b) => a === b,
-  };
+const MESSENGER_PROFILE_FIELDS_COMPARATERS: Record<
+  MessengerProfileField,
+  (a: unknown, b: unknown) => boolean
+> = {
+  get_started: deepEqual,
+  greeting: deepCompareLocaleInstances,
+  ice_breakers: deepCompareLocaleInstances,
+  persistent_menu: deepCompareLocaleInstances,
+  whitelisted_domains: (a, b) =>
+    deepEqual([...(a as string[])].sort(), [...(b as string[])].sort()),
+  account_linking_url: (a, b) => a === b,
+};
 
 /**
  * MessengerAssetsManager manage assets of Messenger platform.
@@ -85,11 +115,11 @@ export class MessengerAssetsManager<
     agent: string | Agent,
     { platform, accessToken, ...profileData }: SetMessengerProfileOptions,
   ): Promise<void> {
-    const newSettings = snakecaseKeys(profileData);
+    const newSettings = snakecaseKeys(profileData) as MessengerProfileSettings;
 
     const {
-      data: [currentSettings = {}],
-    } = await this.sender.requestApi({
+      data: [currentSettings = {} as MessengerProfileSettings],
+    } = await this.sender.requestApi<{ data: MessengerProfileSettings[] }>({
       agent,
       accessToken,
       method: 'GET',
@@ -101,18 +131,23 @@ export class MessengerAssetsManager<
     });
 
     const deletedKeys: string[] = [];
-    const changedSettings: Record<string, unknown> = {};
+    const changedSettings: MessengerProfileSettings = {};
 
-    for (const key of Object.keys(currentSettings)) {
+    for (const key of Object.keys(currentSettings) as MessengerProfileField[]) {
       if (newSettings[key] === undefined) {
         deletedKeys.push(key);
       }
     }
-    for (const [key, value] of Object.entries(newSettings)) {
-      const comparator = MESSENGER_PROFILE_FIELDS_COMPARATERS[key] || deepEqual;
-      const currentValue = currentSettings[key];
-      if (currentValue === undefined || !comparator(currentValue, value)) {
-        changedSettings[key] = value;
+
+    for (const key of Object.keys(newSettings) as MessengerProfileField[]) {
+      const value = newSettings[key];
+      if (value !== undefined) {
+        const comparator =
+          MESSENGER_PROFILE_FIELDS_COMPARATERS[key] || deepEqual;
+        const currentValue = currentSettings[key];
+        if (currentValue === undefined || !comparator(currentValue, value)) {
+          (changedSettings as Record<string, unknown>)[key] = value;
+        }
       }
     }
 

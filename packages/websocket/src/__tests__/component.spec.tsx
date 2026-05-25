@@ -1,7 +1,10 @@
+import type { NativeElement } from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import { Event } from '../component.js';
+import type { EventInput } from '../types.js';
 
-const render = (element) => element.type.$$render(element, '$', () => null);
+const render = (element: NativeElement<EventInput, typeof Event>) =>
+  element.type.$$render(element, '$', async () => null);
 
 it('is valid Component', () => {
   expect(isNativeType(<Event type="foo" />)).toBe(true);
@@ -9,7 +12,7 @@ it('is valid Component', () => {
   expect(Event.$$name).toBe('Event');
 });
 
-it('render to valid value', () => {
+it('render to valid value', async () => {
   expect(render(<Event type="foo" />)).toEqual([
     {
       type: 'unit',

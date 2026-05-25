@@ -5,9 +5,14 @@ import Engine from '../engine.js';
 import RenderingTargetI from '../../base/RenderingTarget.js';
 import type Render from '../../renderer/index.js';
 import type Queue from '../../queue/index.js';
+import type {
+  AnyDispatchFrame,
+  DispatchResponse,
+  DispatchableSegment,
+} from '../types.js';
 import { ServiceScope, createEmptyScope } from '../../service/index.js';
 import DispatchError from '../error.js';
-import type { SociablyThread } from '../../types.js';
+import type { DispatchWrapper, SociablyThread } from '../../types.js';
 
 declare module '@sociably/core/jsx-runtime' {
   namespace JSX {
@@ -20,14 +25,21 @@ declare module '@sociably/core/jsx-runtime' {
   }
 }
 
-const queue = moxy<Queue<unknown, unknown>>({
-  executeJobs(jobs) {
+type Job = { id: number | string };
+type Result = string;
+type Frame = AnyDispatchFrame;
+type Response = DispatchResponse<Job, Result>;
+type Dispatcher = (frame: Frame) => Promise<Response>;
+
+const queue = moxy<Queue<Job, Result>>({
+  executeJobs(jobs: Job[]) {
     return Promise.resolve({
-      success: true,
+      success: true as const,
       batch: jobs.map((job) => ({
         job,
-        success: true,
+        success: true as const,
         result: `result#${job.id}`,
+        error: undefined,
       })),
     });
   },
@@ -44,8 +56,9 @@ const scope = moxy(createEmptyScope());
 const initScope = moxy(() => scope);
 
 const wrappedDispatchMock = new Mock();
-const dispatchWrapper = moxy((dispatcher) =>
-  wrappedDispatchMock.proxify((frame) => dispatcher(frame)),
+const dispatchWrapper = moxy<DispatchWrapper<Job, Frame, Result>>(
+  (dispatcher: Dispatcher) =>
+    wrappedDispatchMock.proxify((frame: Frame) => dispatcher(frame)),
 );
 const makeThread = (uid: string): SociablyThread => ({
   $$typeofThread: true,
@@ -122,8 +135,9 @@ describe('.render(target, node, createJobs)', () => {
     { type: 'unit', node: <c id={4} />, value: { id: 4 } },
   ];
 
-  const createJobs = moxy((target, segemnts) =>
-    segemnts.map(({ value: { id } }) => ({ id })),
+  const createJobs = moxy(
+    (_target: SociablyThread, segemnts: DispatchableSegment<unknown>[]) =>
+      segemnts.map((segment) => ({ id: (segment.value as Job).id })),
   );
 
   const engine = new Engine(
@@ -548,11 +562,15 @@ describe('.render(target, node, createJobs)', () => {
     renderer.render.mock.fake(async () => segments);
     createJobs.mock.fakeReturnValue([{ id: 'foo' }]);
 
-    const originalTasks = [{ type: 'dispatch', payload: [{ id: 'foo' }] }];
-    const modifiedTasks = [{ type: 'dispatch', payload: [{ id: 'bar' }] }];
+    const originalTasks = [
+      { type: 'dispatch' as const, payload: [{ id: 'foo' }] },
+    ];
+    const modifiedTasks = [
+      { type: 'dispatch' as const, payload: [{ id: 'bar' }] },
+    ];
 
-    dispatchWrapper.mock.fake((dispatch) =>
-      wrappedDispatchMock.proxify((frame) =>
+    dispatchWrapper.mock.fake((dispatch: Dispatcher) =>
+      wrappedDispatchMock.proxify((frame: Frame) =>
         dispatch({ ...frame, tasks: modifiedTasks }),
       ),
     );
@@ -593,12 +611,12 @@ describe('.render(target, node, createJobs)', () => {
   });
 
   test('wrapper can modify response resolved from dispatcher', async () => {
-    dispatchWrapper.mock.fake((dispatch) =>
-      wrappedDispatchMock.proxify(async (frame) => {
+    dispatchWrapper.mock.fake((dispatch: Dispatcher) =>
+      wrappedDispatchMock.proxify(async (frame: Frame) => {
         const response = await dispatch(frame);
         return {
           ...response,
-          results: response.results.map((r) => `${r}👍`),
+          results: response.results.map((r: Result) => `${r}👍`),
           hello: 'world',
         };
       }),
@@ -796,9 +814,11 @@ describe('.dispatchJobs(target, tasks, node)', () => {
   });
 
   test('wrapper can modify tasks of frame', async () => {
-    const modifiedTasks = [{ type: 'dispatch', payload: [{ id: 'bar' }] }];
-    dispatchWrapper.mock.fake((dispatch) =>
-      wrappedDispatchMock.proxify((frame) =>
+    const modifiedTasks = [
+      { type: 'dispatch' as const, payload: [{ id: 'bar' }] },
+    ];
+    dispatchWrapper.mock.fake((dispatch: Dispatcher) =>
+      wrappedDispatchMock.proxify((frame: Frame) =>
         dispatch({
           ...frame,
           tasks: modifiedTasks,
@@ -839,12 +859,12 @@ describe('.dispatchJobs(target, tasks, node)', () => {
   });
 
   test('wrapper can modify response resolved from dispatcher', async () => {
-    dispatchWrapper.mock.fake((dispatch) =>
-      wrappedDispatchMock.proxify(async (frame) => {
+    dispatchWrapper.mock.fake((dispatch: Dispatcher) =>
+      wrappedDispatchMock.proxify(async (frame: Frame) => {
         const response = await dispatch(frame);
         return {
           ...response,
-          results: response.results.map((r) => `${r}👍`),
+          results: response.results.map((r: Result) => `${r}👍`),
           hello: 'world',
         };
       }),

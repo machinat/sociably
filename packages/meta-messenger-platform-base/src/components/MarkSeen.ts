@@ -11,7 +11,7 @@ const MARK_SEEN_VALUE = {
 };
 
 export function MarkSeen(
-  node: NativeElement<{}, AnyNativeComponent>,
+  node: NativeElement<object, AnyNativeComponent>,
   path: string,
 ): UnitSegment<SenderActionValue>[] {
   return [makeUnitSegment(node, path, MARK_SEEN_VALUE)];

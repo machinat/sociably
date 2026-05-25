@@ -5,9 +5,10 @@ import { HttpConnector } from '../Connector.js';
 
 const FakeServer = class FakeServer extends EventEmitter {
   // eslint-disable-next-line
-  listen(...args) {
+  listen(...args: unknown[]) {
     for (let i = args.length - 1; i >= 0; i -= 1) {
-      if (typeof args[i] === 'function') args[i]();
+      const callback = args[i];
+      if (typeof callback === 'function') callback();
     }
   }
 } as typeof Server;
@@ -16,13 +17,14 @@ const createRes = () =>
   moxy({
     finished: false,
     statusCode: 200,
-    writeHead(code) {
+    writeHead(code: number) {
       this.statusCode = code;
     },
-    end(...args) {
+    end(...args: unknown[]) {
       this.finished = true;
       for (let i = args.length - 1; i >= 0; i -= 1) {
-        if (typeof args[i] === 'function') args[i]();
+        const callback = args[i];
+        if (typeof callback === 'function') callback();
       }
     },
   });

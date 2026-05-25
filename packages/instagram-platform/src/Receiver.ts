@@ -5,7 +5,7 @@ import SenderP from './Sender.js';
 import eventFactory from './event/factory.js';
 import { ConfigsI, PlatformUtilitiesI } from './interface.js';
 import { INSTAGRAM } from './constant.js';
-import type { InstagramEventContext } from './types.js';
+import type { InstagramEventContext, InstagramRawEvent } from './types.js';
 
 type InstagramReceiverOptions = {
   sender: SenderP;
@@ -40,13 +40,18 @@ export class InstagramReceiver extends MetaWebhookReceiver<InstagramEventContext
           platform: INSTAGRAM,
           sender,
           objectType: 'instagram',
-          makeEventsFromUpdate: (updateData) => {
+          makeEventsFromUpdate: (updateData: {
+            id: string;
+            messaging?: InstagramRawEvent[];
+            stanby?: InstagramRawEvent[];
+          }) => {
             const { id: agentId, messaging, stanby } = updateData;
             const isStandby = stanby !== undefined;
-            const rawEvents = isStandby ? stanby : messaging;
+            const rawEvents = (isStandby ? stanby : messaging) ?? [];
 
-            return rawEvents.map((rawEvent) =>
-              eventFactory(agentId, isStandby, rawEvent),
+            return rawEvents.map(
+              (rawEvent: Parameters<typeof eventFactory>[2]) =>
+                eventFactory(agentId, isStandby, rawEvent),
             );
           },
           popEvent: popEventWrapper(async () => null),

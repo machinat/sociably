@@ -18,9 +18,9 @@ declare module '@sociably/core/jsx-runtime' {
   namespace JSX {
     interface IntrinsicElements {
       del: { children?: unknown };
-      dolore: {};
-      eiusmod: {};
-      world: {};
+      dolore: {}; // eslint-disable-line @typescript-eslint/no-empty-object-type
+      eiusmod: {}; // eslint-disable-line @typescript-eslint/no-empty-object-type
+      world: {}; // eslint-disable-line @typescript-eslint/no-empty-object-type
     }
   }
 }
@@ -294,7 +294,10 @@ describe('parse <EFFECT/>', () => {
 
 describe('parse <PROMPT/>', () => {
   it('parse ok', () => {
-    const answerSetter = (_, { event: { text } }) => ({ answer: text });
+    const answerSetter = (
+      _: unknown,
+      { event: { text } }: { event: { text: string } },
+    ) => ({ answer: text });
 
     expect(
       parse(
@@ -482,7 +485,7 @@ test('parse <RETURN/>', () => {
     { type: 'content', getContent: expect.any(Function) },
   ]);
 
-  const getValue = ({ vars }) => vars.foo;
+  const getValue = ({ vars }: { vars: { foo: unknown } }) => vars.foo;
   expect(parse(<RETURN value={getValue} />)).toEqual([
     { type: 'return', getValue },
   ]);

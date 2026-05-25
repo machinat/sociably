@@ -48,7 +48,7 @@ export type CarouselItemProps = {
  */
 export const CarouselItem: LineComponent<
   CarouselItemProps,
-  PartSegment<{}>
+  PartSegment<object>
 > = makeLineComponent(async function CarouselItem(node, path, render) {
   const {
     actions,
@@ -142,7 +142,10 @@ export const CarouselTemplate: LineComponent<
             ? altText(templateMessage)
             : altText ||
               templateMessage.template.columns
-                .map((column) => `${column.title}\n${column.text}\n`)
+                .map(
+                  (column: { title?: string; text: string }) =>
+                    `${column.title}\n${column.text}\n`,
+                )
                 .join('\n'),
       },
     }),

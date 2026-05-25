@@ -126,7 +126,7 @@ test('.issueState(res, data)', async () => {
     const stateToken = await operator.issueState(res, 'foo', { foo: 'state' });
     const cookies = getCookies(res);
 
-    expect(cookies.get('sociably_auth_state').value).toBe(stateToken);
+    expect(cookies.get('sociably_auth_state')!.value).toBe(stateToken);
     const payload = jwt.verify(stateToken, '__SECRET__');
     return [cookies, payload];
   }
@@ -195,11 +195,11 @@ test('.issueAuth(data, options)', async () => {
     );
 
     const cookies = getCookies(res);
-    expect(cookies.get('sociably_auth_state').value).toBe('');
-    expect(cookies.get('sociably_auth_error').value).toBe('');
-    expect(cookies.get('sociably_auth_token').value).toBe(token);
+    expect(cookies.get('sociably_auth_state')!.value).toBe('');
+    expect(cookies.get('sociably_auth_error')!.value).toBe('');
+    expect(cookies.get('sociably_auth_token')!.value).toBe(token);
 
-    const signature = cookies.get('sociably_auth_signature').value;
+    const signature = cookies.get('sociably_auth_signature')!.value;
     const payload = jwt.verify(`${token}.${signature}`, '__SECRET__');
     return [cookies, payload];
   }
@@ -343,7 +343,7 @@ test('.issueError(code, reason)', async () => {
     );
     const cookies = getCookies(res);
 
-    expect(cookies.get('sociably_auth_error').value).toBe(errEncoded);
+    expect(cookies.get('sociably_auth_error')!.value).toBe(errEncoded);
     const payload = jwt.verify(errEncoded, '__SECRET__');
     return [cookies, payload];
   }
@@ -490,12 +490,14 @@ test('.getState()', async () => {
 });
 
 test('.getAuth()', async () => {
-  function createTokenAndSig(payload) {
+  function createTokenAndSig(
+    payload: object | string | Buffer,
+  ): [string, string] {
     const [headerEncoded, payloadEncoded, signature] = jwt
       .sign(payload, '__SECRET__')
       .split('.');
 
-    return [`${headerEncoded}.${payloadEncoded}`, signature];
+    return [`${headerEncoded}.${payloadEncoded}`, signature!];
   }
 
   const operator = new HttpOperator({ secret, serverUrl, apiPath: '/auth' });

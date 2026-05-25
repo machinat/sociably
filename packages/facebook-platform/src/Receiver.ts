@@ -5,7 +5,7 @@ import SenderP from './Sender.js';
 import eventFactory from './event/factory.js';
 import { ConfigsI, PlatformUtilitiesI } from './interface.js';
 import { FACEBOOK } from './constant.js';
-import type { FacebookEventContext } from './types.js';
+import type { FacebookEventContext, FacebookRawEvent } from './types.js';
 
 type FacebookReceiverOptions = {
   sender: SenderP;
@@ -40,13 +40,18 @@ export class FacebookReceiver extends MetaWebhookReceiver<FacebookEventContext> 
           platform: FACEBOOK,
           sender,
           objectType: 'page',
-          makeEventsFromUpdate: (updateData) => {
+          makeEventsFromUpdate: (updateData: {
+            id: string;
+            messaging?: FacebookRawEvent[];
+            stanby?: FacebookRawEvent[];
+          }) => {
             const { id: pageId, messaging, stanby } = updateData;
             const isStandby = stanby !== undefined;
-            const rawEvents = isStandby ? stanby : messaging;
+            const rawEvents = (isStandby ? stanby : messaging) ?? [];
 
-            return rawEvents.map((rawEvent) =>
-              eventFactory(pageId, isStandby, rawEvent),
+            return rawEvents.map(
+              (rawEvent: Parameters<typeof eventFactory>[2]) =>
+                eventFactory(pageId, isStandby, rawEvent),
             );
           },
           popEvent: popEventWrapper(async () => null),

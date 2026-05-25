@@ -16,6 +16,10 @@ import { TwitterProfiler } from '../Profiler.js';
 import { TwitterSender } from '../Sender.js';
 import { AgentSettingsAccessorI } from '../interface.js';
 import { TwitterAssetsManager, saveUploadedMedia } from '../asset/index.js';
+import type {
+  TwitterDispatchMiddleware,
+  TwitterEventMiddleware,
+} from '../types.js';
 
 const basicConfigs = {
   agentSettings: {
@@ -44,8 +48,9 @@ it('export interfaces', () => {
 
 describe('initModule(configs)', () => {
   it('create module object', () => {
-    const eventMiddleware = (ctx, next) => next(ctx);
-    const dispatchMiddleware = (ctx, next) => next(ctx);
+    const eventMiddleware: TwitterEventMiddleware = (ctx, next) => next(ctx);
+    const dispatchMiddleware: TwitterDispatchMiddleware = (ctx, next) =>
+      next(ctx);
 
     const module = Twitter.initModule({
       ...basicConfigs,
@@ -77,7 +82,7 @@ describe('initModule(configs)', () => {
       ...basicConfigs,
       webhookPath: 'webhook/twitter',
       maxRequestConnections: 999,
-      eventMiddlewares: [(ctx, next) => next(ctx)],
+      eventMiddlewares: [((ctx, next) => next(ctx)) as TwitterEventMiddleware],
     };
 
     const app = Sociably.createApp({

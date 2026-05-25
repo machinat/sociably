@@ -1,13 +1,16 @@
 import nock from 'nock';
 import moxy, { Moxy } from '@moxyjs/moxy';
 import _Engine from '@sociably/core/engine';
+import type { DispatchResponse } from '@sociably/core/engine';
 import _Renderer from '@sociably/core/renderer';
 import Queue from '@sociably/core/queue';
+import type { DispatchWrapper } from '@sociably/core';
 import { LineSender } from '../Sender.js';
 import LineChannel from '../Channel.js';
 import LineChat from '../Chat.js';
 import _Worker from '../Worker.js';
 import LineApiError from '../error.js';
+import type { LineDispatchFrame, LineJob, LineResult } from '../types.js';
 import {
   Expression,
   Image,
@@ -33,7 +36,15 @@ jest.mock('../Worker.js', () =>
 nock.disableNetConnect();
 
 const initScope = moxy(() => moxy());
-const dispatchWrapper = moxy((x) => x);
+const dispatchWrapper = moxy(
+  (
+    dispatch: (
+      frame: LineDispatchFrame,
+    ) => Promise<DispatchResponse<LineJob, LineResult>>,
+  ): ReturnType<DispatchWrapper<LineJob, LineDispatchFrame, LineResult>> =>
+    (frame) =>
+      dispatch(frame),
+);
 
 const agentSettings = {
   providerId: '_PROVIDER_ID_',
@@ -50,7 +61,7 @@ const agentSettingsAccessor = moxy({
   getLineLoginChannelSettings: async () => null,
 });
 
-let lineApi;
+let lineApi: nock.Scope;
 beforeEach(() => {
   Engine.mock.reset();
   Renderer.mock.reset();

@@ -23,7 +23,7 @@ export type QuickReplyProps = {
  */
 export const QuickReply: LineComponent<
   QuickReplyProps,
-  PartSegment<{}>
+  PartSegment<object>
 > = makeLineComponent(async function QuickReply(node, path, render) {
   const { imageUrl, children } = node.props;
 

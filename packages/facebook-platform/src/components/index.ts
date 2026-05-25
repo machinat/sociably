@@ -125,8 +125,10 @@ export type LoginButtonProps = Messenger.LoginButtonProps;
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#game_play)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/buttons/game-play).
  */
-export const LogoutButton: NativeComponent<{}, FacebookIntermediateSegment> =
-  makeFacebookComponent(Messenger.LogoutButton);
+export const LogoutButton: NativeComponent<
+  object,
+  FacebookIntermediateSegment
+> = makeFacebookComponent(Messenger.LogoutButton);
 
 /**
  * The game play button launches an Instant Game that is associated with the
@@ -168,7 +170,7 @@ export type TextReplyProps = Messenger.TextReplyProps;
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/buttons/quick-replies).
  */
-export const EmailReply: NativeComponent<{}, FacebookIntermediateSegment> =
+export const EmailReply: NativeComponent<object, FacebookIntermediateSegment> =
   makeFacebookComponent(Messenger.EmailReply);
 
 /**
@@ -179,7 +181,7 @@ export const EmailReply: NativeComponent<{}, FacebookIntermediateSegment> =
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/buttons/quick-replies).
  */
-export const PhoneReply: NativeComponent<{}, FacebookIntermediateSegment> =
+export const PhoneReply: NativeComponent<object, FacebookIntermediateSegment> =
   makeFacebookComponent(Messenger.PhoneReply);
 
 // handover protocols
@@ -210,7 +212,7 @@ export type PassThreadControlProps = Messenger.PassThreadControlProps;
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/handover-protocol/request-thread-control).
  */
 export const RequestThreadControl: NativeComponent<
-  {},
+  object,
   FacebookIntermediateSegment
 > = makeFacebookComponent(Messenger.RequestThreadControl);
 
@@ -240,7 +242,7 @@ export type TakeThreadContorlProps = Messenger.TakeThreadContorlProps;
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/sender-actions)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/send-api/).
  */
-export const MarkSeen: NativeComponent<{}, FacebookIntermediateSegment> =
+export const MarkSeen: NativeComponent<object, FacebookIntermediateSegment> =
   makeFacebookComponent(Messenger.MarkSeen);
 
 /**
@@ -251,7 +253,7 @@ export const MarkSeen: NativeComponent<{}, FacebookIntermediateSegment> =
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/sender-actions)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/send-api/).
  */
-export const TypingOn: NativeComponent<{}, FacebookIntermediateSegment> =
+export const TypingOn: NativeComponent<object, FacebookIntermediateSegment> =
   makeFacebookComponent(Messenger.TypingOn);
 
 /**
@@ -262,7 +264,7 @@ export const TypingOn: NativeComponent<{}, FacebookIntermediateSegment> =
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/sender-actions)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/send-api/).
  */
-export const TypingOff: NativeComponent<{}, FacebookIntermediateSegment> =
+export const TypingOff: NativeComponent<object, FacebookIntermediateSegment> =
   makeFacebookComponent(Messenger.TypingOff);
 
 // templates

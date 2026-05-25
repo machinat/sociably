@@ -3,10 +3,16 @@ import moxy from '@moxyjs/moxy';
 import { serviceContainer, ServiceScope } from '@sociably/core/service';
 import execute from '../execute.js';
 
-const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
+type AnyVars = Record<string, any>;
+type VarsContext<TVars extends AnyVars = AnyVars> = { vars: TVars };
+type AnswerInput = { answer: string };
+type DescInput = { desc: string };
+type YieldCounter = { n: number };
+
+const delay = (t: number) => new Promise((resolve) => setTimeout(resolve, t));
 
 const scope: ServiceScope = moxy<ServiceScope>({
-  injectContainer(containerFn) {
+  injectContainer(containerFn: (serviceName: string) => unknown) {
     return containerFn('FOO_SERVICE');
   },
 } as never);
@@ -14,11 +20,11 @@ const scope: ServiceScope = moxy<ServiceScope>({
 const thread = { platform: 'test', uid: '_MY_THREAD_' } as SociablyThread;
 
 const mockScript = (
-  commands,
-  stopPoints = {},
+  commands: any[],
+  stopPoints: Record<string, number> = {},
   name = 'MockScript',
-  initVars = (input) => input || {},
-  meta = null,
+  initVars = (input?: AnyVars) => input || {},
+  meta: any = null,
 ) =>
   moxy<any>(
     {
@@ -196,7 +202,10 @@ describe('execute content command', () => {
 describe('execute prompt command', () => {
   const promptCommand = moxy({
     type: 'prompt',
-    setVars: ({ vars }, { answer }) => ({ ...vars, answer }),
+    setVars: ({ vars }: VarsContext, { answer }: AnswerInput) => ({
+      ...vars,
+      answer,
+    }),
     key: 'prompt#0',
   });
 
@@ -204,7 +213,11 @@ describe('execute prompt command', () => {
     [
       { type: 'content', getContent: () => 'foo' },
       promptCommand,
-      { type: 'content', getContent: ({ vars: { answer } }) => answer },
+      {
+        type: 'content',
+        getContent: ({ vars: { answer } }: VarsContext<{ answer: string }>) =>
+          answer,
+      },
     ],
     { 'prompt#0': 1 },
   );
@@ -262,10 +275,12 @@ describe('execute prompt command', () => {
   });
 
   test('continue with async setVars', async () => {
-    promptCommand.setVars.mock.fake(async ({ vars }, { answer }) => ({
-      ...vars,
-      answer,
-    }));
+    promptCommand.setVars.mock.fake(
+      async ({ vars }: VarsContext, { answer }: AnswerInput) => ({
+        ...vars,
+        answer,
+      }),
+    );
 
     await expect(
       execute(
@@ -296,7 +311,12 @@ describe('execute prompt command', () => {
   });
 
   test('continue with async container setVars', async () => {
-    const setVars = moxy(async ({ vars }, { answer }) => ({ ...vars, answer }));
+    const setVars = moxy(
+      async ({ vars }: VarsContext, { answer }: AnswerInput) => ({
+        ...vars,
+        answer,
+      }),
+    );
     const setVarsContainer = moxy(serviceContainer({})(() => setVars));
     promptCommand.mock.getter('setVars').fake(() => setVarsContainer);
 
@@ -386,7 +406,10 @@ describe('execute call command', () => {
       type: 'call',
       script: subScript,
       withParams: () => ({ hello: 'from top' }),
-      setVars: ({ vars }, returnedValue) => ({ ...vars, ...returnedValue }),
+      setVars: ({ vars }: VarsContext, returnedValue: AnyVars) => ({
+        ...vars,
+        ...returnedValue,
+      }),
     });
     const script = mockScript([
       callCommand,
@@ -445,10 +468,12 @@ describe('execute call command', () => {
       callCommand.withParams.mock.fake(async () => ({
         hello: 'async from top',
       }));
-      callCommand.setVars.mock.fake(async ({ vars }, returnedValue) => ({
-        ...vars,
-        ...returnedValue,
-      }));
+      callCommand.setVars.mock.fake(
+        async ({ vars }: VarsContext, returnedValue: AnyVars) => ({
+          ...vars,
+          ...returnedValue,
+        }),
+      );
 
       await expect(
         execute(
@@ -489,10 +514,12 @@ describe('execute call command', () => {
       const withParamsContainer = moxy(
         serviceContainer({})(() => withParamsFn),
       );
-      const setVarsFn = moxy(async ({ vars }, returnedValue) => ({
-        ...vars,
-        ...returnedValue,
-      }));
+      const setVarsFn = moxy(
+        async ({ vars }: VarsContext, returnedValue: AnyVars) => ({
+          ...vars,
+          ...returnedValue,
+        }),
+      );
       const setVarsContainer = moxy(serviceContainer({})(() => setVarsFn));
 
       callCommand.mock.getter('setVars').fake(() => setVarsContainer);
@@ -801,7 +828,7 @@ describe('execute return command', () => {
 
   const returnCommand = moxy({
     type: 'return',
-    getValue: ({ vars }) => vars.foo,
+    getValue: ({ vars }: VarsContext) => vars.foo,
   });
 
   const script = mockScript([
@@ -839,7 +866,7 @@ describe('execute return command', () => {
   });
 
   test('return with async getValue function', async () => {
-    returnCommand.getValue.mock.fake(async ({ vars }) => vars.foo);
+    returnCommand.getValue.mock.fake(async ({ vars }: VarsContext) => vars.foo);
     await expect(
       execute(
         scope,
@@ -863,7 +890,7 @@ describe('execute return command', () => {
   });
 
   test('return with async getValue container', async () => {
-    const valueFn = moxy(async ({ vars }) => vars.foo);
+    const valueFn = moxy(async ({ vars }: VarsContext) => vars.foo);
     const valueContainer = moxy(serviceContainer({})(() => valueFn));
     returnCommand.mock.getter('getValue').fake(() => valueContainer);
 
@@ -903,7 +930,7 @@ describe('execute effect command', () => {
     const script = mockScript([
       effectCommand,
       { type: 'content', getContent: () => 'hello' },
-      { type: 'return', getValue: ({ vars }) => vars },
+      { type: 'return', getValue: ({ vars }: VarsContext) => vars },
     ]);
 
     await expect(
@@ -930,13 +957,13 @@ describe('execute effect command', () => {
   });
 
   test('async setVars container', async () => {
-    const setVarsFn = moxy(async (_) => ({ foo: 'EFFECT!' }));
+    const setVarsFn = moxy(async (_: unknown) => ({ foo: 'EFFECT!' }));
     const setVarsContainer = moxy(serviceContainer({})(() => setVarsFn));
     const effectCommand = moxy({ type: 'effect', setVars: setVarsContainer });
     const script = mockScript([
       effectCommand,
       { type: 'content', getContent: () => 'hello' },
-      { type: 'return', getValue: ({ vars }) => vars },
+      { type: 'return', getValue: ({ vars }: VarsContext) => vars },
     ]);
 
     await expect(
@@ -966,7 +993,9 @@ describe('execute effect command', () => {
   });
 
   test('yield a value at the end of script', async () => {
-    const yieldFn = moxy((_, prev = { n: 0 }) => ({ n: prev.n + 1 }));
+    const yieldFn = moxy((_: unknown, prev: YieldCounter = { n: 0 }) => ({
+      n: prev.n + 1,
+    }));
     const script = mockScript([
       { type: 'effect', yieldValue: yieldFn },
       { type: 'content', getContent: () => 'hello' },
@@ -1009,7 +1038,9 @@ describe('execute effect command', () => {
   });
 
   test('yield with async container yieldValue', async () => {
-    const yieldFn = moxy(async (_, prev = { n: 0 }) => ({ n: prev.n + 1 }));
+    const yieldFn = moxy(async (_: unknown, prev: YieldCounter = { n: 0 }) => ({
+      n: prev.n + 1,
+    }));
     const yieldContainer = moxy(serviceContainer({})(() => yieldFn));
     const script = mockScript([
       { type: 'effect', yieldValue: yieldContainer },
@@ -1053,7 +1084,9 @@ describe('execute effect command', () => {
   });
 
   test('yield a value when prompting', async () => {
-    const yieldFn = moxy((_, prev = { n: 0 }) => ({ n: prev.n + 1 }));
+    const yieldFn = moxy((_: unknown, prev: YieldCounter = { n: 0 }) => ({
+      n: prev.n + 1,
+    }));
     const script = mockScript(
       [
         { type: 'effect', yieldValue: yieldFn },
@@ -1118,7 +1151,9 @@ describe('execute effect command', () => {
   });
 
   test('yield values with subscript', async () => {
-    const yieldFn = moxy((_, prev = { n: 0 }) => ({ n: prev.n + 1 }));
+    const yieldFn = moxy((_: unknown, prev: YieldCounter = { n: 0 }) => ({
+      n: prev.n + 1,
+    }));
     const subscript = mockScript(
       [
         { type: 'effect', yieldValue: yieldFn },
@@ -1205,7 +1240,9 @@ describe('execute effect command', () => {
   });
 
   test('yield values with no-prompt subscript', async () => {
-    const yieldFn = moxy((_, prev = { n: 0 }) => ({ n: prev.n + 1 }));
+    const yieldFn = moxy((_: unknown, prev: YieldCounter = { n: 0 }) => ({
+      n: prev.n + 1,
+    }));
     const subscript = mockScript(
       [
         { type: 'effect', yieldValue: yieldFn },
@@ -1263,14 +1300,20 @@ describe('execute effect command', () => {
 describe('run whole script', () => {
   const ChildScript = mockScript(
     [
-      { type: 'content', getContent: ({ vars: { desc } }) => desc },
+      {
+        type: 'content',
+        getContent: ({ vars: { desc } }: VarsContext<{ desc: string }>) => desc,
+      },
       { type: 'jump_cond', condition: () => true, isNot: false, offset: 2 },
       {
         type: 'prompt',
-        setVars: ({ vars }, input) => ({ ...vars, ...input }),
+        setVars: ({ vars }: VarsContext, input: AnyVars) => ({
+          ...vars,
+          ...input,
+        }),
         key: 'CHILD_PROMPT',
       },
-      { type: 'return', getValue: ({ vars }) => vars },
+      { type: 'return', getValue: ({ vars }: VarsContext) => vars },
     ],
     { BEGIN: 0, CHILD_PROMPT: 2 },
     'ChildScript',
@@ -1282,28 +1325,39 @@ describe('run whole script', () => {
       { type: 'content', getContent: () => 'hello' },
       { type: 'jump', offset: 3 },
       { type: 'content', getContent: () => 'bye' },
-      { type: 'return', getValue: ({ vars }) => vars },
+      { type: 'return', getValue: ({ vars }: VarsContext) => vars },
       { type: 'jump_cond', condition: () => true, isNot: true, offset: 5 },
       {
         type: 'effect',
-        setVars: ({ vars }) => ({ ...vars, t: (vars.t || 0) + 1 }),
+        setVars: ({ vars }: VarsContext<AnyVars & { t?: number }>) => ({
+          ...vars,
+          t: (vars.t || 0) + 1,
+        }),
       },
       {
         type: 'prompt',
-        setVars: ({ vars }, { desc }) => ({ ...vars, desc }),
+        setVars: ({ vars }: VarsContext, { desc }: DescInput) => ({
+          ...vars,
+          desc,
+        }),
         key: 'PROMPT',
       },
       {
         type: 'call',
         script: ChildScript,
-        withParams: ({ vars: { desc } }) => ({ desc }),
-        setVars: ({ vars }, returnedValue) => ({ ...vars, ...returnedValue }),
+        withParams: ({ vars: { desc } }: VarsContext<{ desc: string }>) => ({
+          desc,
+        }),
+        setVars: ({ vars }: VarsContext, returnedValue: AnyVars) => ({
+          ...vars,
+          ...returnedValue,
+        }),
         goto: 'BEGIN',
         key: 'CALL',
       },
       { type: 'jump', offset: -4 },
       { type: 'content', getContent: () => 'world' },
-      { type: 'return', getValue: ({ vars }) => vars },
+      { type: 'return', getValue: ({ vars }: VarsContext) => vars },
     ],
     { BEGIN: 0, PROMPT: 7, CALL: 8 },
     'MockScript',

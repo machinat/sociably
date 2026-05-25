@@ -1,20 +1,25 @@
 import moxy from '@moxyjs/moxy';
 import { SociablyApp } from '@sociably/core';
+import type { AnyEventContext, AnySociablyPlatform } from '@sociably/core';
 import {
   isServiceContainer,
   serviceContainer,
   ServiceScope,
 } from '@sociably/core/service';
+import type { Interfaceable } from '@sociably/core/service';
 import { STREAMING_KEY_I } from '../interface.js';
 import fromApp from '../fromApp.js';
 
 const scope = moxy({
-  injectContainer(container, provisions) {
-    return container(provisions.get(STREAMING_KEY_I));
+  injectContainer(
+    container: (key: undefined | string) => unknown,
+    provisions: Map<Interfaceable<unknown>, unknown>,
+  ) {
+    return container(provisions.get(STREAMING_KEY_I) as undefined | string);
   },
 });
 
-const app = moxy<SociablyApp<any, any>>({
+const app = moxy<SociablyApp<AnySociablyPlatform, AnyEventContext>>({
   onError() {
     return undefined;
   },

@@ -8,6 +8,10 @@ import { WebSocketServer } from '../Server.js';
 import { WebSocketReceiver } from '../Receiver.js';
 import { WebSocketSender } from '../Sender.js';
 import WebSocket from '../module.js';
+import type {
+  WebSocketDispatchMiddleware,
+  WebSocketEventMiddleware,
+} from '../types.js';
 
 it('export interfaces', () => {
   expect(WebSocket.Sender).toBe(WebSocketSender);
@@ -57,8 +61,12 @@ it('export interfaces', () => {
 
 describe('initModule()', () => {
   test('module object', () => {
-    const eventMiddlewares = [moxy((ctx, next) => next(ctx))];
-    const dispatchMiddlewares = [moxy((ctx, next) => next(ctx))];
+    const eventMiddleware: WebSocketEventMiddleware<null, null> = (ctx, next) =>
+      next(ctx);
+    const dispatchMiddleware: WebSocketDispatchMiddleware = (ctx, next) =>
+      next(ctx);
+    const eventMiddlewares = [moxy(eventMiddleware)];
+    const dispatchMiddlewares = [moxy(dispatchMiddleware)];
 
     const module = WebSocket.initModule({
       eventMiddlewares,

@@ -24,7 +24,7 @@ export type QuickReplyParamProps = {
  */
 export const QuickReplyParam: WhatsAppComponent<
   QuickReplyParamProps,
-  PartSegment<{}>
+  PartSegment<object>
 > = makeWhatsAppComponent(function QuickReplyParam(node, path) {
   const { index, payload } = node.props;
   return [

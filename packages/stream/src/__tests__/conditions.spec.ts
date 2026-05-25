@@ -23,9 +23,9 @@ it('split source stream and transmit by the first condtion the value match', asy
   );
 
   const [foo$, bar$, baz$] = conditions(source, [
-    (val) => val === 'foo',
-    (val) => val === 'bar',
-    (val) => val.startsWith('b'),
+    (val: string) => val === 'foo',
+    (val: string) => val === 'bar',
+    (val: string) => val.startsWith('b'),
   ]);
   foo$.subscribe(eventContainerFoo);
   bar$.subscribe(eventContainerBar);
@@ -108,11 +108,11 @@ it('transmit error thrown in condition predocator to the corresponded destinatio
   const source = new Stream<string>();
 
   const [a$, b$, c$] = conditions(source, [
-    (val) => val.startsWith('a'),
+    (val: string) => val.startsWith('a'),
     () => {
       throw new Error('boo');
     },
-    (val) => val.startsWith('c'),
+    (val: string) => val.startsWith('c'),
   ]);
   a$.catch(errorContainerA);
   b$.catch(errorContainerB);
@@ -141,9 +141,9 @@ it('transmit error from source to all branches', () => {
   const source = new Stream<string>();
 
   const [a$, b$, c$] = conditions(source, [
-    (val) => val.startsWith('a'),
-    (val) => val.startsWith('b'),
-    (val) => val.startsWith('c'),
+    (val: string) => val.startsWith('a'),
+    (val: string) => val.startsWith('b'),
+    (val: string) => val.startsWith('c'),
   ]);
   a$.catch(errorContainerA);
   b$.catch(errorContainerB);

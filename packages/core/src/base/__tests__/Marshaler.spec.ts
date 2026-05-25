@@ -3,12 +3,12 @@ import { BaseMarshaler } from '../Marshaler.js';
 
 class Foo {
   static typeName = 'Foo';
-  static fromJSONValue(value) {
+  static fromJSONValue(value: { foo: number }) {
     return new Foo(value.foo);
   }
 
   _foo: any;
-  constructor(foo) {
+  constructor(foo: number) {
     this._foo = foo;
   }
 
@@ -23,12 +23,12 @@ class Foo {
 
 class Bar {
   static typeName = 'Bar';
-  static fromJSONValue(value) {
+  static fromJSONValue(value: { bar: number }) {
     return new Bar(value.bar);
   }
 
   _bar: any;
-  constructor(bar) {
+  constructor(bar: number) {
     this._bar = bar;
   }
 

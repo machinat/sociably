@@ -29,7 +29,7 @@ import {
   UnknownEvent,
 } from './events.js';
 
-const hasOwnProperty = (obj, prop) =>
+const hasOwnProperty = (obj: object, prop: PropertyKey): boolean =>
   Object.prototype.hasOwnProperty.call(obj, prop);
 
 const createEventFactory =

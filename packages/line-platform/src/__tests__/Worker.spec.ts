@@ -6,7 +6,7 @@ import LineWorker from '../Worker.js';
 
 nock.disableNetConnect();
 
-const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
+const delay = (t: number) => new Promise((resolve) => setTimeout(resolve, t));
 
 const agentSettingsAccessor = moxy({
   getAgentSettings: async (channel: LineChannel) => ({
@@ -22,7 +22,7 @@ const agentSettingsAccessor = moxy({
 });
 
 let lineApi: nock.Scope;
-let queue;
+let queue: Queue<any, any>;
 beforeEach(() => {
   lineApi = nock('https://api.line.me', {
     reqheaders: {

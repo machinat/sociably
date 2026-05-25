@@ -88,7 +88,7 @@ export type ListeningPlatformOptions<Context extends MetaApiEventContext> = {
   sender: Context['sender'];
   platform: Context['platform'];
   objectType: string;
-  makeEventsFromUpdate: (raw) => Context['event'][];
+  makeEventsFromUpdate: (raw: unknown) => Context['event'][];
   popEvent: (ctx: Context) => Promise<null>;
 };
 

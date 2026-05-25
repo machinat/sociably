@@ -31,7 +31,7 @@ jest.mock('../Worker.js', () =>
 nock.disableNetConnect();
 
 const initScope = moxy(() => moxy());
-const dispatchWrapper = moxy((x) => x);
+const dispatchWrapper = moxy(<Value,>(x: Value) => x);
 
 const appKey = '__APP_KEY__';
 const appSecret = '__APP_SECRET__';

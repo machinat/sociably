@@ -23,7 +23,7 @@ export const createSingleStaticAgentSettingsAccessor = (
     botUserId: agentSettings?.botUserId || '',
   };
 
-  const getChannelSettings = (channel) =>
+  const getChannelSettings = (channel: { id: string }) =>
     channel.id === agentSettings.channelId ? polishedChannelSettings : null;
 
   return {

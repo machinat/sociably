@@ -1,9 +1,11 @@
 import Sociably from '@sociably/core';
+import type { UnitSegment } from '@sociably/core/renderer/types.js';
 import { isNativeType } from '@sociably/core/utils';
 import TweetTarget from '../../TweetTarget.js';
 import { Tweet } from '../Tweet.js';
 import { Photo } from '../Media.js';
 import { renderUnitElement } from './utils.js';
+import type { TweetSegmentValue } from '../../types.js';
 
 it('is a valid Component', () => {
   expect(isNativeType(<Tweet />)).toBe(true);
@@ -304,14 +306,15 @@ test('spliting long content into tweet thread', async () => {
   );
   expect(segments).toMatchSnapshot();
   expect(
-    (segments as any).map(({ value: { request, accomplishRequest } }, i) =>
-      accomplishRequest(
-        i === 0
-          ? new TweetTarget('12345')
-          : new TweetTarget('12345', String(11111 * i)),
-        request,
-        null,
-      ),
+    (segments as UnitSegment<TweetSegmentValue>[]).map(
+      ({ value: { request, accomplishRequest } }, i: number) =>
+        accomplishRequest!(
+          i === 0
+            ? new TweetTarget('12345')
+            : new TweetTarget('12345', String(11111 * i)),
+          request,
+          null,
+        ),
     ),
   ).toMatchInlineSnapshot(`
     [

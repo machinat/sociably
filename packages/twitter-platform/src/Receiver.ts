@@ -87,7 +87,7 @@ const handleWebhook = ({
     let body: any;
     try {
       body = BigIntJSON.parse(rawBody);
-    } catch (e) {
+    } catch {
       return { code: 400 };
     }
 

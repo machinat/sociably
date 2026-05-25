@@ -1,5 +1,5 @@
 import invariant from 'invariant';
-import type { SociablyNode } from '@sociably/core';
+import type { NativeComponentFn, SociablyNode } from '@sociably/core';
 import {
   makeUnitSegment,
   makePartSegment,
@@ -711,11 +711,20 @@ type BlockStyle = {
   separatorColor?: string;
 };
 
+type BubbleSection = 'header' | 'hero' | 'body' | 'footer';
+
 type BubbleBlock = {
-  name: string;
+  name: BubbleSection;
   content: SociablyNode;
   style?: BlockStyle;
 };
+
+type BubbleContainerValue = {
+  type: 'bubble';
+  direction: 'rtl' | 'ltr';
+  action: unknown;
+  styles?: Partial<Record<BubbleSection, BlockStyle>>;
+} & Partial<Record<BubbleSection, SociablyNode>>;
 
 /** @category Props */
 export type FlexBlockProps = {
@@ -729,10 +738,16 @@ export type FlexBlockProps = {
   separatorColor?: string;
 };
 
-const createBlockComponent = (section, _childrenType) => {
+const createBlockComponent = (
+  section: BubbleSection,
+  _childrenType: unknown,
+): LineComponent<FlexBlockProps, PartSegment<BubbleBlock>> => {
   const tagName = `Flex${section[0].toUpperCase()}${section.slice(1)}`;
 
-  const wrapper = {
+  const wrapper: Record<
+    string,
+    NativeComponentFn<FlexBlockProps, PartSegment<BubbleBlock>>
+  > = {
     [tagName]: async (node, path, render) => {
       const { children, backgroundColor, separator, separatorColor } =
         node.props;
@@ -843,7 +858,7 @@ export const FlexBubbleContainer: LineComponent<
   const actionSegments = await render(action, '.action');
   const sectionSegments = await render(children, '.children');
 
-  const bubbleObject = (sectionSegments || []).reduce(
+  const bubbleObject = (sectionSegments || []).reduce<BubbleContainerValue>(
     (bubble, { value: section }: PartSegment<BubbleBlock>) => {
       /* eslint-disable no-param-reassign */
       bubble[section.name] = section.content;
@@ -861,7 +876,7 @@ export const FlexBubbleContainer: LineComponent<
       type: 'bubble',
       direction: direction || rightToLeft ? 'rtl' : 'ltr',
       action: actionSegments?.[0].value,
-      styles: undefined as undefined | Record<string, BlockStyle>,
+      styles: undefined,
     },
   );
 

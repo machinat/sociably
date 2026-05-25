@@ -97,8 +97,10 @@ export type LoginButtonProps = Messenger.LoginButtonProps;
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#game_play)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/buttons/game-play).
  */
-export const LogoutButton: NativeComponent<{}, MessengerIntermediateSegment> =
-  makeInstagramComponent(Messenger.LogoutButton);
+export const LogoutButton: NativeComponent<
+  object,
+  MessengerIntermediateSegment
+> = makeInstagramComponent(Messenger.LogoutButton);
 
 /**
  * The game play button launches an Instant Game that is associated with the
@@ -140,7 +142,7 @@ export type TextReplyProps = Messenger.TextReplyProps;
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/buttons/quick-replies).
  */
-export const EmailReply: NativeComponent<{}, MessengerIntermediateSegment> =
+export const EmailReply: NativeComponent<object, MessengerIntermediateSegment> =
   makeInstagramComponent(Messenger.EmailReply);
 
 /**
@@ -151,7 +153,7 @@ export const EmailReply: NativeComponent<{}, MessengerIntermediateSegment> =
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/buttons/quick-replies).
  */
-export const PhoneReply: NativeComponent<{}, MessengerIntermediateSegment> =
+export const PhoneReply: NativeComponent<object, MessengerIntermediateSegment> =
   makeInstagramComponent(Messenger.PhoneReply);
 
 // handover protocols
@@ -182,7 +184,7 @@ export type PassThreadControlProps = Messenger.PassThreadControlProps;
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/handover-protocol/request-thread-control).
  */
 export const RequestThreadControl: NativeComponent<
-  {},
+  object,
   MessengerIntermediateSegment
 > = makeInstagramComponent(Messenger.RequestThreadControl);
 
@@ -212,7 +214,7 @@ export type TakeThreadContorlProps = Messenger.TakeThreadContorlProps;
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/sender-actions)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/send-api/).
  */
-export const MarkSeen: NativeComponent<{}, MessengerIntermediateSegment> =
+export const MarkSeen: NativeComponent<object, MessengerIntermediateSegment> =
   makeInstagramComponent(Messenger.MarkSeen);
 
 /**
@@ -223,7 +225,7 @@ export const MarkSeen: NativeComponent<{}, MessengerIntermediateSegment> =
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/sender-actions)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/send-api/).
  */
-export const TypingOn: NativeComponent<{}, MessengerIntermediateSegment> =
+export const TypingOn: NativeComponent<object, MessengerIntermediateSegment> =
   makeInstagramComponent(Messenger.TypingOn);
 
 /**
@@ -234,7 +236,7 @@ export const TypingOn: NativeComponent<{}, MessengerIntermediateSegment> =
  * @guides Check official [doc](https://developers.facebook.com/docs/messenger-platform/send-messages/sender-actions)
  *   and [reference](https://developers.facebook.com/docs/messenger-platform/reference/send-api/).
  */
-export const TypingOff: NativeComponent<{}, MessengerIntermediateSegment> =
+export const TypingOff: NativeComponent<object, MessengerIntermediateSegment> =
   makeInstagramComponent(Messenger.TypingOff);
 
 // templates

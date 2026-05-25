@@ -65,7 +65,7 @@ const handleWebhook = ({
     let body: TelegramRawEvent;
     try {
       body = JSON.parse(rawBody);
-    } catch (e) {
+    } catch {
       return { code: 400 };
     }
 

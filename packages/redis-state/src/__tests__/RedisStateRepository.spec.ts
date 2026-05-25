@@ -4,9 +4,13 @@ import moxy from '@moxyjs/moxy';
 import { RedisStateRepository } from '../RedisStateRepository.js';
 
 const resolveCallback =
-  (result) =>
-  (...args) => {
-    args[args.length - 1](null, result);
+  (result: unknown) =>
+  (...args: unknown[]) => {
+    const callback = args[args.length - 1] as (
+      err: null,
+      value: unknown,
+    ) => void;
+    callback(null, result);
   };
 
 const client = moxy<RedisClient>({
@@ -22,8 +26,8 @@ const client = moxy<RedisClient>({
 } as never);
 
 const marshaler = moxy({
-  marshal: (x) => x,
-  unmarshal: (x) => x,
+  marshal: <T>(x: T) => x,
+  unmarshal: <T>(x: T) => x,
 });
 
 beforeEach(() => {
@@ -208,7 +212,7 @@ describe.each([
     });
 
     it('make no change if the new value is the identical', async () => {
-      const updator = moxy((oldValue) => oldValue);
+      const updator = moxy((oldValue: string | undefined) => oldValue);
       client.hget.mock.fake(resolveCallback('{"foo":"bar"}'));
 
       await expect(barState.update('key1', updator)).resolves.toEqual({

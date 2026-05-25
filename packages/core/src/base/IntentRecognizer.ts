@@ -7,13 +7,12 @@ export type RecognitionData<
 > = {
   defaultLanguage: Language;
   languages: Language[];
-  intents: {
-    [Name in Intent]: {
-      trainingPhrases: {
-        [Code in Language]: string[];
-      };
-    };
-  };
+  intents: Record<
+    Intent,
+    {
+      trainingPhrases: Record<Language, string[]>;
+    }
+  >;
 };
 
 export type DetectIntentResult<

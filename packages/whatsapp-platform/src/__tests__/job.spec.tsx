@@ -9,8 +9,8 @@ declare module '@sociably/core/jsx-runtime' {
       audio: { src?: string };
       bar: { children?: unknown; x?: string };
       baz: { children?: unknown };
-      image: {};
-      media: {};
+      image: object;
+      media: object;
     }
   }
 }

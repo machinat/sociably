@@ -1,18 +1,38 @@
-import type { IncomingMessage, ServerResponse } from 'http';
+import type {
+  IncomingHttpHeaders,
+  IncomingMessage,
+  ServerResponse,
+} from 'http';
 import { Readable } from 'stream';
 import moxy, { Mock } from '@moxyjs/moxy';
+import type { PopEventWrapper } from '@sociably/core';
 import InstagramChat from '../Chat.js';
 import InstagramUser from '../User.js';
 import { InstagramReceiver } from '../Receiver.js';
 import type { InstagramSender } from '../Sender.js';
+import type { InstagramEventContext } from '../types.js';
+
+type TestResponse = ServerResponse & {
+  finished: boolean;
+  statusCode: number;
+};
+
+type RequestOptions = {
+  method: string;
+  url?: string;
+  body?: string;
+  headers?: IncomingHttpHeaders;
+};
 
 const sender = moxy<InstagramSender>({
   render: () => ({ jobs: [], results: [], tasks: [] }),
 } as never);
 
 const popEventMock = new Mock();
-const popEventWrapper = moxy((finalHandler) =>
-  popEventMock.proxify((ctx) => finalHandler(ctx)),
+const popEventWrapper = moxy<PopEventWrapper<InstagramEventContext, null>>(
+  (finalHandler) =>
+    popEventMock.proxify(((ctx: InstagramEventContext) =>
+      finalHandler(ctx)) as never) as never,
 );
 
 const createReq = ({
@@ -20,7 +40,7 @@ const createReq = ({
   url = '/',
   body = '',
   headers = {},
-}): IncomingMessage => {
+}: RequestOptions): IncomingMessage => {
   const req = new Readable({
     read() {
       if (body) req.push(body);
@@ -31,16 +51,17 @@ const createReq = ({
 };
 
 const createRes = () =>
-  moxy<ServerResponse>({
+  moxy<TestResponse>({
     finished: false,
     statusCode: 200,
-    writeHead(code) {
+    writeHead(this: TestResponse, code: number) {
       this.statusCode = code;
     },
-    end(...args) {
+    end(this: TestResponse, ...args: unknown[]) {
       this.finished = true;
       for (let i = args.length - 1; i >= 0; i -= 1) {
-        if (typeof args[i] === 'function') args[i]();
+        const callback = args[i];
+        if (typeof callback === 'function') callback();
       }
     },
   } as never);

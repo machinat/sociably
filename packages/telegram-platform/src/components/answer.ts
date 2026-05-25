@@ -1,5 +1,6 @@
-import { SociablyNode } from '@sociably/core';
+import type { SociablyNode } from '@sociably/core';
 import {
+  type InnerRenderFn,
   makeUnitSegment,
   makePartSegment,
   UnitSegment,
@@ -91,7 +92,10 @@ export type InlineQueryResultProps = {
   inputMessageContent?: SociablyNode;
 };
 
-const renderInputMessageContent = async (node, render) => {
+const renderInputMessageContent = async (
+  node: SociablyNode,
+  render: InnerRenderFn,
+): Promise<Record<string, unknown> | undefined> => {
   const segments = await render(node, '.inputMessageContent');
   if (!segments) {
     return undefined;

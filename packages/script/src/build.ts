@@ -17,9 +17,9 @@ type ScriptBuildOtions<Params, Vars, Meta> = {
 } & (Meta extends void ? { meta?: void } : { meta: Meta });
 
 const build = <
-  Vars extends {},
+  Vars extends object,
   Input = AnyEventContext,
-  Params = {},
+  Params = object,
   Return = void,
   Yield = void,
   Meta = void,

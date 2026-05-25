@@ -11,7 +11,7 @@ import {
 declare module '@sociably/core/jsx-runtime' {
   namespace JSX {
     interface IntrinsicElements {
-      hello: {};
+      hello: object;
     }
   }
 }

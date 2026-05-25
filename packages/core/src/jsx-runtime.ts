@@ -55,11 +55,11 @@ export namespace JSX {
     | ContainerComponent<any>;
 
   export type ElementAttributesProperty = {
-    $$typeof: {};
+    $$typeof: object;
   };
 
   export type ElementChildrenAttribute = {
-    children: {};
+    children: object;
   };
 
   export type LibraryManagedAttributes<C, P> = C extends NativeComponent<
@@ -80,7 +80,7 @@ export namespace JSX {
   };
 
   export interface IntrinsicElements {
-    br: {};
+    br: object;
     b: GeneralTextElementProps;
     i: GeneralTextElementProps;
     s: GeneralTextElementProps;

@@ -68,7 +68,10 @@ module.exports = {
       'error',
       { varsIgnorePattern: '^_', argsIgnorePattern: '^_', args: 'after-used' },
     ],
-    '@typescript-eslint/ban-types': ['error', { types: { '{}': false } }],
+    '@typescript-eslint/no-empty-object-type': [
+      'error',
+      { allowInterfaces: 'with-single-extends' },
+    ],
     'no-useless-constructor': 'off',
     '@typescript-eslint/no-useless-constructor': 'error',
   },

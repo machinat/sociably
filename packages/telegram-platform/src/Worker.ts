@@ -34,10 +34,17 @@ const requestBotApi = async (
     });
 
     files.forEach(({ fieldName, source }) => {
-      if (typeof source.data === 'string' || Buffer.isBuffer(source.data)) {
+      if (typeof source.data === 'string') {
         form.buffer(
           fieldName,
           Buffer.from(source.data),
+          source.fileName as string,
+          source.contentType,
+        );
+      } else if (Buffer.isBuffer(source.data)) {
+        form.buffer(
+          fieldName,
+          source.data,
           source.fileName as string,
           source.contentType,
         );

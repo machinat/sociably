@@ -7,7 +7,9 @@ function useClient<
   Authenticator extends AnyClientAuthenticator,
   Value extends EventValue = EventValue,
 >(options: ClientOptions<Authenticator>): WebviewClient<Authenticator, Value> {
-  const [client, setClient] = useState(() => new WebviewClient(options));
+  const [client, setClient] = useState<WebviewClient<Authenticator, Value>>(
+    () => new WebviewClient<Authenticator, Value>(options),
+  );
   const [isInitial, setIsInitial] = useState(true);
 
   useEffect(() => {
@@ -17,7 +19,7 @@ function useClient<
     }
 
     // refresh the client while hot reloading in dev mode.
-    const newClient = new WebviewClient(options);
+    const newClient = new WebviewClient<Authenticator, Value>(options);
     setClient(newClient);
     return () => newClient.close();
   }, []);

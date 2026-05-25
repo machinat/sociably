@@ -1,9 +1,11 @@
 import { EventEmitter } from 'events';
 import moxy, { Mock } from '@moxyjs/moxy';
+import type { PopEventWrapper } from '@sociably/core';
 import type { WebSocketServer } from '../Server.js';
 import { WebSocketReceiver } from '../Receiver.js';
 import WebSocketConnection from '../Connection.js';
 import type { WebSocketSender } from '../Sender.js';
+import type { WebSocketEventContext } from '../types.js';
 
 const sender = moxy<WebSocketSender>({
   render: async () => ({ jobs: [], results: [], tasks: [] }),
@@ -14,9 +16,9 @@ server.id = '_SERVER_ID_';
 server.handleUpgrade = (async () => {}) as never;
 
 const popEventMock = new Mock();
-const popEventWrapper = moxy((finalHandler) =>
-  popEventMock.proxify(finalHandler),
-);
+const popEventWrapper = moxy<
+  PopEventWrapper<WebSocketEventContext<any, unknown>, null>
+>((finalHandler) => popEventMock.proxify(finalHandler) as never);
 const popError = moxy();
 
 const user = { platform: 'test', uid: 'john_doe' };

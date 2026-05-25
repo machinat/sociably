@@ -4,6 +4,13 @@ import Queue from '@sociably/core/queue';
 import TwitterWorker from '../Worker.js';
 import TwitterChat from '../Chat.js';
 import TweetTarget from '../TweetTarget.js';
+import type { AgentSettingsAccessorI } from '../interface.js';
+import type {
+  TwitterAgentSettings,
+  TwitterApiRequest,
+  TwitterThread,
+} from '../types.js';
+import type TwitterUser from '../User.js';
 
 nock.disableNetConnect();
 jest.mock('nanoid', () => ({
@@ -42,22 +49,22 @@ const chatThread = new TwitterChat('1111111111', '9876543210');
 const chatThread2 = new TwitterChat('2222222222', '3333333333');
 const tweetTargetThread = new TweetTarget('1111111111', '9999999999');
 
-const agentSettings = {
+const agentSettings: TwitterAgentSettings = {
   userId: '1111111111',
   accessToken: '__ACCESS_TOKEN__',
   tokenSecret: '__ACCESS_SECRET__',
 };
 
-const agentSettings2 = {
+const agentSettings2: TwitterAgentSettings = {
   userId: '2222222222',
   accessToken: '__ACCESS_TOKEN_2__',
   tokenSecret: '__ACCESS_SECRET_2__',
 };
 
-const agentSettingsAccessor = moxy({
-  getAgentSettings: async (agent) =>
+const agentSettingsAccessor = moxy<AgentSettingsAccessorI>({
+  getAgentSettings: async (agent: TwitterUser) =>
     agent.id === '1111111111' ? agentSettings : agentSettings2,
-  getAgentSettingsBatch: async (agents) =>
+  getAgentSettingsBatch: async (agents: TwitterUser[]) =>
     agents.map((agent) =>
       agent.id === '1111111111' ? agentSettings : agentSettings2,
     ),
@@ -534,10 +541,12 @@ it('throw if api error happen', async () => {
 });
 
 test('with target & accomplishRequest', async () => {
-  const accomplishRequest = moxy((target, request) => ({
-    ...request,
-    params: { ...request.params, target: target.uid },
-  }));
+  const accomplishRequest = moxy(
+    (target: TwitterThread, request: TwitterApiRequest) => ({
+      ...request,
+      params: { ...request.params, target: target.uid },
+    }),
+  );
 
   const bodySpy = moxy(() => true);
   const scope = twitterApi
@@ -613,12 +622,15 @@ test('with target & accomplishRequest', async () => {
 });
 
 test('with target & refreshTarget & accomplishRequest', async () => {
-  const accomplishRequest = moxy((target, request) => ({
-    ...request,
-    params: { ...request.params, id: target.tweetId },
-  }));
+  const accomplishRequest = moxy(
+    (target: TweetTarget, request: TwitterApiRequest) => ({
+      ...request,
+      params: { ...request.params, id: target.tweetId },
+    }),
+  );
   const refreshTarget = moxy(
-    (target, body) => new TweetTarget(target.agentId, body.id),
+    (target: TweetTarget, body: { id: string }) =>
+      new TweetTarget(target.agentId, body.id),
   );
 
   const bodySpy = moxy(() => true);
@@ -839,10 +851,16 @@ test('with mediaSources & accomplishRequest', async () => {
       'content-length': '34',
     });
 
-  const accomplishRequest = moxy((_, request, mediaIds) => ({
-    ...request,
-    params: { ...request.params, media: mediaIds },
-  }));
+  const accomplishRequest = moxy(
+    (
+      _target: TwitterThread,
+      request: TwitterApiRequest,
+      mediaIds: null | string[],
+    ) => ({
+      ...request,
+      params: { ...request.params, media: mediaIds },
+    }),
+  );
 
   const jobs = [
     {

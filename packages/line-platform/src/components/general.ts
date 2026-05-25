@@ -1,26 +1,45 @@
-import { makeTextSegment } from '@sociably/core/renderer';
+import type { GeneralElement, SociablyNode } from '@sociably/core';
+import {
+  makeTextSegment,
+  type InnerRenderFn,
+  type TextSegment,
+} from '@sociably/core/renderer';
 import { formatNode } from '@sociably/core/utils';
 
-const br = (node, path) => [makeTextSegment(node, path, '\n')];
+type GeneralComponentTag = 'br' | 'b' | 'i' | 's' | 'u' | 'code' | 'pre';
+type GeneralComponentFn = (
+  node: GeneralElement,
+  path: string,
+  render: InnerRenderFn,
+) => TextSegment[] | Promise<null | TextSegment[]>;
 
-const plainText = (tag) => async (node, path, render) => {
-  const contentSegments = await render(node.props.children, '.children');
-  if (!contentSegments) {
-    return null;
-  }
+const br: GeneralComponentFn = (node, path) => [
+  makeTextSegment(node, path, '\n'),
+];
 
-  for (const segment of contentSegments) {
-    if (segment.type !== 'text') {
-      throw new TypeError(
-        `non-textual node ${formatNode(segment.node)} is placed in <${tag}/>`,
-      );
+const plainText =
+  (tag: Exclude<GeneralComponentTag, 'br'>): GeneralComponentFn =>
+  async (node, path, render) => {
+    const contentSegments = await render(
+      node.props.children as SociablyNode,
+      '.children',
+    );
+    if (!contentSegments) {
+      return null;
     }
-  }
 
-  return [makeTextSegment(node, path, contentSegments[0].value)];
-};
+    for (const segment of contentSegments) {
+      if (segment.type !== 'text') {
+        throw new TypeError(
+          `non-textual node ${formatNode(segment.node)} is placed in <${tag}/>`,
+        );
+      }
+    }
 
-const generalComponents = {
+    return [makeTextSegment(node, path, contentSegments[0].value)];
+  };
+
+const generalComponents: Record<GeneralComponentTag, GeneralComponentFn> = {
   br,
   b: plainText('b'),
   i: plainText('i'),
@@ -30,10 +49,16 @@ const generalComponents = {
   pre: plainText('pre'),
 };
 
-const objectHasOwnProperty = (obj, prop) =>
-  Object.prototype.hasOwnProperty.call(obj, prop);
+const objectHasOwnProperty = <Obj extends object, Prop extends PropertyKey>(
+  obj: Obj,
+  prop: Prop,
+): prop is Prop & keyof Obj => Object.prototype.hasOwnProperty.call(obj, prop);
 
-const generalComponentDelegator = async (node, path, render) => {
+const generalComponentDelegator = async (
+  node: GeneralElement,
+  path: string,
+  render: InnerRenderFn,
+) => {
   const { type } = node;
 
   if (!objectHasOwnProperty(generalComponents, type)) {
@@ -42,8 +67,7 @@ const generalComponentDelegator = async (node, path, render) => {
     );
   }
 
-  const segments = await generalComponents[type](node, path, render);
-  return segments;
+  return generalComponents[type](node, path, render);
 };
 
 export default generalComponentDelegator;

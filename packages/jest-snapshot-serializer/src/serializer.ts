@@ -1,9 +1,10 @@
 const sociablyElementSerializer = {
   print(
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    element: { type?: symbol | Function | Record<string, unknown> },
-    serialize,
-    indent,
+    element: {
+      type?: symbol | ((...args: never[]) => unknown) | Record<string, unknown>;
+    },
+    serialize: (value: unknown, indentation: unknown) => string,
+    indent: unknown,
   ) {
     const type =
       element.type === Symbol.for('fragment.element.sociably')

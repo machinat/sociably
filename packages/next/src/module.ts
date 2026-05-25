@@ -16,7 +16,7 @@ const createNextServer = NextJs as unknown as typeof NextJs.default;
 const nextServerFactory = serviceProviderFactory({
   lifetime: 'singleton',
   deps: [ConfigsI],
-})(({ serverOptions }) => createNextServer((serverOptions || {}) as {}));
+})(({ serverOptions }) => createNextServer((serverOptions || {}) as object));
 
 const requestRouteFactory = serviceProviderFactory({
   lifetime: 'transient',

@@ -4,6 +4,7 @@ import TelegramUser from '../User.js';
 import type {
   TelegramDispatchMiddleware,
   TelegramJob,
+  RawPhotoSize,
   TelegramResult,
 } from '../types.js';
 import AssetsManagerP from './AssetsManager.js';
@@ -11,8 +12,8 @@ import AssetsManagerP from './AssetsManager.js';
 const SINGLE_MEDIA_MESSAGE_METHODS_PATTERN =
   /^send(Audio|Document|Animation|Video|VideoNote|Voice|Sticker)$/;
 
-const getLargestFileIdOfPhotoMessage = (message) => {
-  const photos = message.photo;
+const getLargestFileIdOfPhotoMessage = (message: Record<string, unknown>) => {
+  const photos = message.photo as RawPhotoSize[];
   return photos[photos.length - 1].file_id;
 };
 
@@ -57,7 +58,9 @@ const updateAssetsFromSuccessfulJobs = async (
                 )[inputIdx];
                 fileId =
                   input.type === 'photo'
-                    ? getLargestFileIdOfPhotoMessage(result[inputIdx])
+                    ? getLargestFileIdOfPhotoMessage(
+                        result[inputIdx] as Record<string, unknown>,
+                      )
                     : input.type === 'video'
                     ? (result[inputIdx] as { video: { file_id: string } }).video
                         .file_id

@@ -21,7 +21,7 @@ export type CopyCodeParamProps = {
  */
 export const CopyCodeParam: WhatsAppComponent<
   CopyCodeParamProps,
-  PartSegment<{}>
+  PartSegment<object>
 > = makeWhatsAppComponent(function CopyCodeParam(node, path) {
   const { index, code } = node.props;
   return [

@@ -296,17 +296,19 @@ export default class SociablyApp<
         return dispatch;
       }
 
-      const execute = (idx: number, scope: ServiceScope) => async (frame) => {
-        let middleware = middlewares[idx];
-        if (isServiceContainer(middleware)) {
-          middleware = scope.injectContainer(middleware);
-        }
+      const execute =
+        (idx: number, scope: ServiceScope) =>
+        async (frame: AnyDispatchFrame) => {
+          let middleware = middlewares[idx];
+          if (isServiceContainer(middleware)) {
+            middleware = scope.injectContainer(middleware);
+          }
 
-        return middleware(
-          frame,
-          idx + 1 < middlewares.length ? execute(idx + 1, scope) : dispatch,
-        );
-      };
+          return middleware(
+            frame,
+            idx + 1 < middlewares.length ? execute(idx + 1, scope) : dispatch,
+          );
+        };
 
       return (frame: AnyDispatchFrame, scope?: ServiceScope) =>
         execute(0, scope || this.serviceSpace.createScope())(frame);

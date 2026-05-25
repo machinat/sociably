@@ -1,9 +1,26 @@
 import moxy from '@moxyjs/moxy';
 import nock from 'nock';
+import type { Scope } from 'nock';
+import type { SociablyAgent } from '@sociably/core';
 import Queue from '@sociably/core/queue';
 import MetaApiWorker from '../Worker.js';
+import type {
+  AccomplishRequestFn,
+  MetaApiJob,
+  MetaApiJobRequest,
+  MetaApiResult,
+  MetaBatchRequest,
+} from '../types.js';
 
-const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
+type Agent = { uid: string };
+type Job = MetaApiJob;
+
+const delay = (t: number) => new Promise((resolve) => setTimeout(resolve, t));
+const createAgent = (uid: string, platform?: string) =>
+  (platform ? { platform, uid } : { uid }) as {
+    uid: string;
+    platform?: string;
+  } & SociablyAgent;
 
 nock.disableNetConnect();
 
@@ -11,16 +28,16 @@ const appId = '_APP_ID_';
 const appSecret = '_APP_SECRET_';
 
 const agentSettingsAccessor = moxy({
-  getAgentSettings: async (agent) => ({
+  getAgentSettings: async (agent: Agent) => ({
     accessToken: `access_token_${agent.uid}`,
   }),
-  getAgentSettingsBatch: async (agents) =>
+  getAgentSettingsBatch: async (agents: Agent[]) =>
     agents.map((agent) => ({
       accessToken: `access_token_${agent.uid}`,
     })),
 });
 
-const jobs = [
+const jobs: Job[] = [
   {
     key: 'facebook.id.foo.john',
     request: {
@@ -28,7 +45,7 @@ const jobs = [
       url: 'me/messages',
       params: { recipient: { id: 'john' }, id: 1 },
     },
-    agent: { platform: 'test', uid: 'foo' },
+    agent: createAgent('foo', 'test'),
   },
   {
     key: 'facebook.id.foo.john',
@@ -37,7 +54,7 @@ const jobs = [
       url: 'some/api',
       params: { recipient: { id: 'john' }, id: 2 },
     },
-    agent: { platform: 'test', uid: 'foo' },
+    agent: createAgent('foo', 'test'),
   },
   {
     key: 'facebook.id.bar.jane',
@@ -46,7 +63,7 @@ const jobs = [
       url: 'me/messages',
       params: { recipient: { id: 'jane' }, id: 3 },
     },
-    agent: { platform: 'test', uid: 'bar' },
+    agent: createAgent('bar', 'test'),
   },
   {
     key: 'facebook.id.baz.jojo',
@@ -55,17 +72,17 @@ const jobs = [
       url: 'another/api',
       params: { recipient: { id: 'jojo' }, id: 4 },
     },
-    agent: { platform: 'test', uid: 'baz' },
+    agent: createAgent('baz', 'test'),
   },
 ];
 
 const bodySpy = moxy(() => true);
 
-let graphApi;
-let queue;
+let graphApi: Scope;
+let queue: Queue<Job, MetaApiResult>;
 beforeEach(() => {
   graphApi = nock('https://graph.facebook.com');
-  queue = new Queue();
+  queue = new Queue<Job, MetaApiResult>();
   bodySpy.mock.clear();
   agentSettingsAccessor.mock.reset();
 });
@@ -209,7 +226,7 @@ it('upload files with form data if binary attached on job', async () => {
 
   worker.start(queue);
 
-  const jobsWithFiles = [
+  const jobsWithFiles: Job[] = [
     { ...jobs[0], file: { data: '_file0_' } },
     jobs[1],
     {
@@ -537,14 +554,14 @@ it('use querystring params for GET request', async () => {
 
   worker.start(queue);
 
-  const job = {
+  const job: Job = {
     key: undefined,
     request: {
       method: 'GET',
       url: '1234567890',
       params: { fields: ['id', 'name', 'email'] },
     },
-    agent: { uid: 'foo' },
+    agent: createAgent('foo'),
   };
 
   await expect(queue.executeJobs([job])).resolves.toEqual({
@@ -597,14 +614,14 @@ it('use querystring params for DELETE request', async () => {
 
   worker.start(queue);
 
-  const job = {
+  const job: Job = {
     key: undefined,
     request: {
       method: 'DELETE',
       url: 'me/messenger_profile',
       params: { fields: ['whitelisted_domains'] },
     },
-    agent: { uid: 'foo' },
+    agent: createAgent('foo'),
   };
 
   await expect(queue.executeJobs([job])).resolves.toEqual({
@@ -663,7 +680,7 @@ test('asApp job', async () => {
           params: { some: 'app settings' },
         },
         asApp: true,
-      },
+      } as Job,
     ]),
   ).resolves.toMatchSnapshot();
 
@@ -707,14 +724,14 @@ test('job with accessToken', async () => {
   await expect(
     queue.executeJobs([
       {
-        agent: { platform: 'test', uid: 'foo' },
+        agent: createAgent('foo', 'test'),
         accessToken: '__MY_SPECIAL_ACCESS_TOKEN__',
         request: {
           method: 'POST',
           url: 'settins/api',
           params: { some: 'app settings' },
         },
-      },
+      } as Job,
     ]),
   ).resolves.toMatchSnapshot();
 
@@ -747,23 +764,26 @@ it('skip job when no access token available', async () => {
     graphApiVersion: 'v17.0',
     consumeInterval: 0,
   });
-  agentSettingsAccessor.getAgentSettingsBatch.mock.fake(async (agents) =>
-    agents.map((agent) =>
-      agent.uid === 'foo' ? { accessToken: `access_token_foo` } : null,
-    ),
+  agentSettingsAccessor.getAgentSettingsBatch.mock.fake(
+    async (agents: Agent[]) =>
+      agents.map((agent: Agent) =>
+        agent.uid === 'foo' ? { accessToken: `access_token_foo` } : null,
+      ),
   );
-  const scope = graphApi.post('/v17.0/', bodySpy).reply(200, (_, { batch }) =>
-    JSON.stringify(
-      JSON.parse(batch).map((_r, i) => ({
-        code: 200,
-        body: JSON.stringify({ id: i + 1 }),
-      })),
-    ),
-  );
+  const scope = graphApi
+    .post('/v17.0/', bodySpy)
+    .reply(200, (_uri: string, { batch }: { batch: string }) =>
+      JSON.stringify(
+        JSON.parse(batch).map((_request: unknown, i: number) => ({
+          code: 200,
+          body: JSON.stringify({ id: i + 1 }),
+        })),
+      ),
+    );
 
   worker.start(queue);
 
-  const jobasApp = {
+  const jobasApp: Job = {
     request: {
       method: 'POST',
       url: 'settins/api',
@@ -771,7 +791,7 @@ it('skip job when no access token available', async () => {
     },
     asApp: true,
   };
-  const jobWithAccessToken = {
+  const jobWithAccessToken: Job = {
     request: {
       method: 'POST',
       url: 'settins/api',
@@ -834,8 +854,8 @@ it('skip request when fail to get access token for all the jobs', async () => {
     graphApiVersion: 'v17.0',
     consumeInterval: 0,
   });
-  agentSettingsAccessor.getAgentSettingsBatch.mock.fake(async (agents) =>
-    agents.map(() => null),
+  agentSettingsAccessor.getAgentSettingsBatch.mock.fake(
+    async (agents: Agent[]) => agents.map(() => null),
   );
 
   worker.start(queue);
@@ -849,7 +869,7 @@ it('skip request when fail to get access token for all the jobs', async () => {
           url: 'settins/api',
           params: { some: 'app settings' },
         },
-      },
+      } as Job,
     ]),
   ).resolves.toMatchInlineSnapshot(`
     {
@@ -919,23 +939,26 @@ test('with defaultAccessTokenOption', async () => {
     graphApiVersion: 'v17.0',
     consumeInterval: 0,
   });
-  agentSettingsAccessor.getAgentSettingsBatch.mock.fake(async (agents) =>
-    agents.map((agent) =>
-      agent.uid === 'bar' ? { accessToken: `access_token_bar` } : null,
-    ),
+  agentSettingsAccessor.getAgentSettingsBatch.mock.fake(
+    async (agents: Agent[]) =>
+      agents.map((agent: Agent) =>
+        agent.uid === 'bar' ? { accessToken: `access_token_bar` } : null,
+      ),
   );
-  const scope = graphApi.post('/v17.0/', bodySpy).reply(200, (_, { batch }) =>
-    JSON.stringify(
-      JSON.parse(batch).map((_r, i) => ({
-        code: 200,
-        body: JSON.stringify({ id: i + 1 }),
-      })),
-    ),
-  );
+  const scope = graphApi
+    .post('/v17.0/', bodySpy)
+    .reply(200, (_uri: string, { batch }: { batch: string }) =>
+      JSON.stringify(
+        JSON.parse(batch).map((_request: unknown, i: number) => ({
+          code: 200,
+          body: JSON.stringify({ id: i + 1 }),
+        })),
+      ),
+    );
 
   worker.start(queue);
 
-  const asAppJob = {
+  const asAppJob: Job = {
     request: {
       method: 'POST',
       url: 'settins/api',
@@ -999,15 +1022,21 @@ test('with defaultAccessTokenOption', async () => {
 });
 
 describe('using API result in following request', () => {
-  const accomplishRequest = moxy((request, keys, getResult) => ({
-    ...request,
-    params: {
-      ...request.params,
-      images: keys.map((k) => ({ id: getResult(k, '$.id') })),
-    },
-  }));
+  const accomplishRequest = moxy<AccomplishRequestFn>(
+    (
+      request: MetaApiJobRequest,
+      keys: string[],
+      getResult: (key: string, path: string) => string | null,
+    ) => ({
+      ...request,
+      params: {
+        ...request.params,
+        images: keys.map((key) => ({ id: getResult(key, '$.id') })),
+      },
+    }),
+  );
 
-  const continuousJobs = [
+  const continuousJobs: Job[] = [
     {
       key: 'foo_thread',
       request: {
@@ -1019,7 +1048,7 @@ describe('using API result in following request', () => {
         },
       },
       registerResultKey: 'image_1',
-      agent: { uid: 'foo' },
+      agent: createAgent('foo'),
     },
     {
       key: 'foo_thread',
@@ -1032,7 +1061,7 @@ describe('using API result in following request', () => {
         },
       },
       registerResultKey: 'image_2',
-      agent: { uid: 'foo' },
+      agent: createAgent('foo'),
     },
     {
       key: 'foo_thread',
@@ -1049,7 +1078,7 @@ describe('using API result in following request', () => {
         keys: ['image_1', 'image_2'],
         accomplishRequest,
       },
-      agent: { uid: 'foo' },
+      agent: createAgent('foo'),
     },
   ];
 
@@ -1068,9 +1097,11 @@ describe('using API result in following request', () => {
     accomplishRequest.mock.clear();
   });
 
-  const decodeBatchedRequest = (request) => ({
+  const decodeBatchedRequest = (
+    request: MetaBatchRequest,
+  ): MetaBatchRequest => ({
     ...request,
-    body: decodeURIComponent(request.body),
+    body: request.body ? decodeURIComponent(request.body) : request.body,
   });
 
   test('registerResultKey & consumeResult in the same batch', async () => {
@@ -1146,7 +1177,7 @@ describe('using API result in following request', () => {
     worker.start(queue);
     await expect(
       queue.executeJobs(
-        continuousJobs.map((job) => ({ ...job, key: undefined })),
+        continuousJobs.map((job): Job => ({ ...job, key: undefined })),
       ),
     ).resolves.toMatchSnapshot();
 
@@ -1214,8 +1245,8 @@ describe('using API result in following request', () => {
       queue.executeJobs([
         ...new Array(49).fill({
           request: { method: 'GET', url: '1234567890' },
-          agent: { uid: 'foo' },
-        }),
+          agent: createAgent('foo'),
+        } as Job),
         ...continuousJobs,
       ]),
     ).resolves.toMatchSnapshot();

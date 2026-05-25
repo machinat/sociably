@@ -166,6 +166,20 @@ export type EditMediaProps = {
   children: SociablyNode;
 } & EditMessageProps;
 
+type EditableMediaInput = {
+  type: 'photo' | 'video' | 'animation' | 'audio' | 'document';
+  media: unknown;
+  caption?: unknown;
+  parse_mode?: unknown;
+  thumb?: unknown;
+  duration?: unknown;
+  width?: unknown;
+  height?: unknown;
+  supports_streaming?: unknown;
+  performer?: unknown;
+  title?: unknown;
+};
+
 /**
  * Edit a animation, audio, document, photo, or video messages. If a message is
  * a part of a message album, then it can be edited only to a photo or a video.
@@ -189,7 +203,7 @@ export const EditMedia: TelegramComponent<
   }
 
   const { method, params, files } = mediaSegments[0].value;
-  let mediaInput;
+  let mediaInput: EditableMediaInput | undefined;
 
   if (method === 'sendPhoto') {
     mediaInput = {
@@ -240,6 +254,14 @@ export const EditMedia: TelegramComponent<
       parse_mode: params.parse_mode,
       thumb: params.thumb,
     };
+  }
+
+  if (!mediaInput) {
+    throw new TypeError(
+      `non-media element ${formatNode(
+        mediaSegments[0].node,
+      )} received in <EditMedia/>`,
+    );
   }
 
   if (files) {

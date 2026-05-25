@@ -46,7 +46,7 @@ export type ThumbnailProps = {
 };
 
 /** @category Props */
-export type PhotoProps = {} & MessageProps & FileProps & CaptionProps;
+export type PhotoProps = object & MessageProps & FileProps & CaptionProps;
 
 /**
  * Send a photo by a `file_id` alreay uploaded, a external url or uploading a
@@ -183,7 +183,8 @@ export const Audio: TelegramComponent<
 });
 
 /** @category Props */
-export type DocumentProps = {} & MessageProps &
+export type DocumentProps = object &
+  MessageProps &
   FileProps &
   CaptionProps &
   ThumbnailProps;
@@ -666,7 +667,7 @@ export const MediaGroup: TelegramComponent<
 });
 
 /** @category Props */
-export type StickerProps = {} & MessageProps & FileProps;
+export type StickerProps = object & MessageProps & FileProps;
 
 /**
  * Send static .WEBP or animated .TGS stickers

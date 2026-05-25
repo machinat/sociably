@@ -16,7 +16,7 @@ export type GamePlayButtonProps = {
 export function GamePlayButton(
   node: NativeElement<GamePlayButtonProps, AnyNativeComponent>,
   path: string,
-): PartSegment<{}>[] {
+): PartSegment<object>[] {
   const { title, payload, playerId, contextId } = node.props;
   return [
     makePartSegment(node, path, {

@@ -138,7 +138,7 @@ class LineWorker implements SociablyWorker<LineJob, LineResult> {
   ) {
     try {
       await queue.acquireAt(idx, 1, this._executeJobCallback);
-    } catch (e) {
+    } catch {
       // NOTE: leave the error to the request side
     } finally {
       this.connectionCount -= 1;

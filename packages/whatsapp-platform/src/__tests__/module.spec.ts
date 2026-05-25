@@ -19,6 +19,10 @@ import WhatsAppUserProfile from '../UserProfile.js';
 import { WhatsAppProfiler } from '../Profiler.js';
 import { WhatsAppReceiver } from '../Receiver.js';
 import { WhatsAppSender } from '../Sender.js';
+import type {
+  WhatsAppDispatchMiddleware,
+  WhatsAppEventMiddleware,
+} from '../types.js';
 
 const agentSettings = {
   phoneNumber: '+1234567890',
@@ -42,8 +46,9 @@ it('export interfaces', () => {
 
 describe('initModule(configs)', () => {
   it('create module object', () => {
-    const eventMiddleware = (ctx, next) => next(ctx);
-    const dispatchMiddleware = (ctx, next) => next(ctx);
+    const eventMiddleware: WhatsAppEventMiddleware = (ctx, next) => next(ctx);
+    const dispatchMiddleware: WhatsAppDispatchMiddleware = (ctx, next) =>
+      next(ctx);
 
     const module = WhatsApp.initModule({
       agentSettings,
@@ -80,7 +85,7 @@ describe('initModule(configs)', () => {
       appSecret: '_APP_SECRET_',
       webhookVerifyToken: '_VERIFY_TOKEN_',
       webhookPath: 'webhook/whatsapp',
-      eventMiddlewares: [(ctx, next) => next(ctx)],
+      eventMiddlewares: [((ctx, next) => next(ctx)) as WhatsAppEventMiddleware],
     };
 
     const app = Sociably.createApp({

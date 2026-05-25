@@ -6,7 +6,7 @@ import filter from '../filter.js';
 
 jest.useFakeTimers({ doNotFake: ['setImmediate', 'nextTick'] });
 
-const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
+const delay = (t: number) => new Promise((resolve) => setTimeout(resolve, t));
 const nextTick = () => new Promise(process.nextTick);
 
 const nextListener = moxy();
@@ -26,7 +26,7 @@ beforeEach(() => {
 });
 
 test('execute each asyncronized filterFn one by one', async () => {
-  const filterFn = moxy(async (value) => {
+  const filterFn = moxy(async (value: number) => {
     await delay(100);
     return value % 2 === 1;
   });
@@ -73,7 +73,7 @@ test('execute each asyncronized filterFn one by one', async () => {
 });
 
 test('filter frames with different keys parallelly', async () => {
-  const filterFn = moxy(async (value) => {
+  const filterFn = moxy(async (value: number) => {
     await delay(100);
     return value % 2 === 1;
   });
@@ -126,7 +126,7 @@ test('filter frames with different keys parallelly', async () => {
 });
 
 it('emit error if thrown in filterFn', async () => {
-  const filterFn = moxy(async (value) => {
+  const filterFn = moxy(async (value: number) => {
     await delay(100);
     if (value === 2) {
       throw new Error('no');
@@ -166,7 +166,7 @@ it('emit error if thrown in filterFn', async () => {
 });
 
 test('use service container as filterer', async () => {
-  const filterFn = moxy(async (value) => {
+  const filterFn = moxy(async (value: number) => {
     await delay(100);
     return value % 2 === 1;
   });

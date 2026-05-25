@@ -85,7 +85,7 @@ export const parseJsonBody = async (req: IncomingMessage): Promise<any> => {
     const body = JSON.parse(rawBody);
 
     return typeof body === 'object' ? body : null;
-  } catch (err) {
+  } catch {
     return null;
   }
 };

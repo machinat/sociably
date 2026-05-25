@@ -298,7 +298,7 @@ export type InvoiceProps = {
    * payment provider. A detailed description of required fields should be
    * provided by the payment provider.
    */
-  providerData?: string | object; // eslint-disable-line @typescript-eslint/ban-types
+  providerData?: string | object;
   /**
    * URL of the product photo for the invoice. Can be a photo of the goods or a
    * marketing image for a service. People like it better when they see what

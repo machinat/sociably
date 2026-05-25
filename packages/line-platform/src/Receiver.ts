@@ -65,7 +65,7 @@ const handleWebhook = ({
     let parsedBody: LineWebhookRequestBody;
     try {
       parsedBody = JSON.parse(body);
-    } catch (e) {
+    } catch {
       return { code: 400 };
     }
 

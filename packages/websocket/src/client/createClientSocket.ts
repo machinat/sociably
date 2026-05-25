@@ -37,7 +37,7 @@ class WrappedWebSocket extends EventEmitter {
     return this._ws.binaryType;
   }
 
-  set binaryType(t) {
+  set binaryType(t: BinaryType) {
     this._ws.binaryType = t;
   }
 
@@ -61,12 +61,12 @@ class WrappedWebSocket extends EventEmitter {
     return this._ws.url;
   }
 
-  send(data, callback) {
+  send(data: Parameters<WebSocket['send']>[0], callback: () => void) {
     this._ws.send(data);
     callback();
   }
 
-  close(code, reason) {
+  close(code?: number, reason?: string) {
     this._ws.close(code, reason);
   }
 
@@ -96,16 +96,21 @@ const createClientSocket = async (url: string): Promise<Socket> => {
   const socket = new Socket(webSocket);
 
   return new Promise((resolve, reject) => {
-    let errorListener;
-    const openListener = () => {
-      resolve(socket);
+    let errorListener: ((err: Error) => void) | undefined;
+    let openListener: () => void;
+    const cleanup = () => {
       socket.removeListener('open', openListener);
-      socket.removeListener('error', errorListener);
+      if (errorListener) {
+        socket.removeListener('error', errorListener);
+      }
     };
-    errorListener = (err) => {
+    openListener = () => {
+      resolve(socket);
+      cleanup();
+    };
+    errorListener = (err: Error) => {
       reject(err);
-      socket.removeListener('open', openListener);
-      socket.removeListener('error', errorListener);
+      cleanup();
     };
     socket.on('open', openListener);
     socket.on('error', errorListener);

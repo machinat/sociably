@@ -1,4 +1,4 @@
-export type NoneAuthData = {};
+export type NoneAuthData = object;
 
 export type NoneAuthContext = {
   platform: 'none';

@@ -3,7 +3,7 @@ import moxy from '@moxyjs/moxy';
 import { tmpNameSync } from 'tmp';
 import { FileStateRepository } from '../FileStateRepository.js';
 
-const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
+const delay = (t: number) => new Promise((resolve) => setTimeout(resolve, t));
 
 const initialContent = `
 {
@@ -91,6 +91,7 @@ describe('.get(key)', () => {
     await delay(50);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
       {
+        "agentStates": {},
         "globalStates": {},
         "threadStates": {},
         "userStates": {},
@@ -157,6 +158,7 @@ describe('.getAll()', () => {
     await delay(50);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
       {
+        "agentStates": {},
         "globalStates": {},
         "threadStates": {},
         "userStates": {},
@@ -242,6 +244,7 @@ describe('.keys()', () => {
     await delay(50);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
       {
+        "agentStates": {},
         "globalStates": {},
         "threadStates": {},
         "userStates": {},
@@ -332,6 +335,7 @@ describe('.set()', () => {
     await delay(50);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
       {
+        "agentStates": {},
         "globalStates": {},
         "threadStates": {
           "test.foo": {
@@ -410,6 +414,7 @@ describe('.delete()', () => {
     await delay(50);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
       {
+        "agentStates": {},
         "globalStates": {},
         "threadStates": {},
         "userStates": {},
@@ -470,6 +475,7 @@ describe('.clear()', () => {
     await delay(50);
     expect(JSON.parse(fs.readFileSync(tmpPath, 'utf8'))).toMatchInlineSnapshot(`
       {
+        "agentStates": {},
         "globalStates": {},
         "threadStates": {},
         "userStates": {},
@@ -518,8 +524,8 @@ test('reflect content changes on storage file', async () => {
 
 test('custom marshaler', async () => {
   const marshaler = moxy({
-    marshal: (obj) => ({ hello: 'world', value: obj }),
-    unmarshal: ({ value }) => value,
+    marshal: (obj: unknown) => ({ hello: 'world', value: obj }),
+    unmarshal: ({ value }: { value: unknown }) => value,
   });
 
   const tmpPath = tmpNameSync();

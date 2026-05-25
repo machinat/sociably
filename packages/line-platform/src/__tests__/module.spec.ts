@@ -17,7 +17,11 @@ import { LineSender } from '../Sender.js';
 import LineChannel from '../Channel.js';
 import LineUser from '../User.js';
 import LineChat from '../Chat.js';
-import { LineChatChannelSettings } from '../types.js';
+import type {
+  LineChatChannelSettings,
+  LineDispatchMiddleware,
+  LineEventMiddleware,
+} from '../types.js';
 
 it('export interfaces', () => {
   expect(Line.Receiver).toBe(LineReceiver);
@@ -35,8 +39,8 @@ it('export interfaces', () => {
 
 describe('initModule(configs)', () => {
   it('create module object', () => {
-    const eventMiddleware = (ctx, next) => next(ctx);
-    const dispatchMiddleware = (ctx, next) => next(ctx);
+    const eventMiddleware: LineEventMiddleware = (ctx, next) => next(ctx);
+    const dispatchMiddleware: LineDispatchMiddleware = (ctx, next) => next(ctx);
 
     const module = Line.initModule({
       agentSettings: {
@@ -73,7 +77,7 @@ describe('initModule(configs)', () => {
         accessToken: '_ACCESS_TOKEN_',
       },
       webhookPath: 'webhook/line',
-      eventMiddlewares: [(ctx, next) => next(ctx)],
+      eventMiddlewares: [((ctx, next) => next(ctx)) as LineEventMiddleware],
     };
 
     const app = Sociably.createApp({

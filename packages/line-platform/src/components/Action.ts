@@ -29,7 +29,7 @@ export type PostbackActionProps = {
  */
 export const PostbackAction: LineComponent<
   PostbackActionProps,
-  PartSegment<{}>
+  PartSegment<object>
 > = makeLineComponent(function PostbackAction(node, path) {
   const { label, data, displayText } = node.props;
   return [
@@ -60,7 +60,7 @@ export type MessageActionProps = {
  */
 export const MessageAction: LineComponent<
   MessageActionProps,
-  PartSegment<{}>
+  PartSegment<object>
 > = makeLineComponent(function MessageAction(node, path) {
   const { label, text } = node.props;
   return [
@@ -93,7 +93,7 @@ export type UriActionProps = {
  */
 export const UriAction: LineComponent<
   UriActionProps,
-  PartSegment<{}>
+  PartSegment<object>
 > = makeLineComponent(function UriAction(node, path) {
   const { label, uri } = node.props;
   return [
@@ -105,14 +105,18 @@ export const UriAction: LineComponent<
   ];
 });
 
-const pad2 = (n) => (n < 10 ? `0${n}` : n);
+const pad2 = (n: number) => (n < 10 ? `0${n}` : n);
 
-const fullDate = (d) =>
+const fullDate = (d: Date) =>
   `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
 
-const fullHourMinute = (d) => `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+const fullHourMinute = (d: Date) =>
+  `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
 
-const dateToStringByMode = (mode, d) =>
+const dateToStringByMode = (
+  mode: NonNullable<DateTimePickerActionProps['mode']>,
+  d?: string | Date,
+) =>
   !(d instanceof Date)
     ? d
     : mode === 'datetime'
@@ -158,7 +162,7 @@ export type DateTimePickerActionProps = {
  */
 export const DateTimePickerAction: LineComponent<
   DateTimePickerActionProps,
-  PartSegment<{}>
+  PartSegment<object>
 > = makeLineComponent(function DateTimePickerAction(node, path) {
   const { label, data, mode = 'datetime', initial, min, max } = node.props;
 
@@ -191,7 +195,7 @@ export type CameraActionProps = {
  */
 export const CameraAction: LineComponent<
   CameraActionProps,
-  PartSegment<{}>
+  PartSegment<object>
 > = makeLineComponent(function CameraAction(node, path) {
   return [
     makePartSegment(node, path, {
@@ -218,7 +222,7 @@ export type CameraRollActionProps = {
  */
 export const CameraRollAction: LineComponent<
   CameraRollActionProps,
-  PartSegment<{}>
+  PartSegment<object>
 > = makeLineComponent(function CameraRollAction(node, path) {
   return [
     makePartSegment(node, path, {
@@ -245,7 +249,7 @@ export type LocationActionProps = {
  */
 export const LocationAction: LineComponent<
   LocationActionProps,
-  PartSegment<{}>
+  PartSegment<object>
 > = makeLineComponent(function LocationAction(node, path) {
   return [
     makePartSegment(node, path, {

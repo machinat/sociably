@@ -20,7 +20,11 @@ const BazServiceI = {
 
 describe('serviceProviderFactory({ deps, lifetime })(factory)', () => {
   it('annotate metadatas', () => {
-    const factoryFn = moxy(function factoryFn(foo, bar, baz) {
+    const factoryFn = moxy(function factoryFn(
+      foo: number,
+      bar: number,
+      baz: number,
+    ) {
       return { foo, bar, baz };
     });
 

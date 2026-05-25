@@ -6,7 +6,7 @@ import FormStream from 'formstream';
 import _BigIntJSON from 'json-bigint';
 import { nanoid } from 'nanoid';
 import type { SociablyWorker } from '@sociably/core/engine';
-import Queue from '@sociably/core/queue';
+import Queue, { JobResponse } from '@sociably/core/queue';
 import TwitterUser from './User.js';
 import TwitterApiError from './Error.js';
 import { AgentSettingsAccessorI } from './interface.js';
@@ -220,8 +220,10 @@ export default class TwitterWorker
     appendForm.field('command', 'APPEND');
     appendForm.field('media_id', mediaId);
     appendForm.field('segment_index', '0');
-    if (typeof fileData === 'string' || Buffer.isBuffer(fileData)) {
+    if (typeof fileData === 'string') {
       appendForm.buffer('media', Buffer.from(fileData), '');
+    } else if (Buffer.isBuffer(fileData)) {
+      appendForm.buffer('media', fileData, '');
     } else {
       appendForm.stream('media', fileData, '');
     }
@@ -309,12 +311,15 @@ export default class TwitterWorker
       oauth_version: '1.0',
     };
 
-    const paramsToSign = { ...oauthParams, ...additionalParams };
+    const paramsToSign: Record<string, string | number> = {
+      ...oauthParams,
+      ...additionalParams,
+    };
     const paramsStr = Object.keys(paramsToSign)
       .sort()
       .map((k) => {
         const v = paramsToSign[k];
-        return v ? `${k}=${encodeURIComponent(v)}` : undefined;
+        return v ? `${k}=${encodeURIComponent(String(v))}` : undefined;
       })
       .filter((param) => !!param)
       .join('&');
@@ -372,7 +377,7 @@ export default class TwitterWorker
   ) {
     try {
       await queue.acquireAt(idx, 1, this._executeJobCallback);
-    } catch (e) {
+    } catch {
       // NOTE: leave the error to the request side
     } finally {
       this.connectionCount -= 1;
@@ -389,7 +394,9 @@ export default class TwitterWorker
 
   private _executeJobCallback = this._executeJob.bind(this);
 
-  private async _executeJob([job]: TwitterJob[]) {
+  private async _executeJob([job]: TwitterJob[]): Promise<
+    JobResponse<TwitterJob, TwitterApiResult>[]
+  > {
     const {
       target: initialTarget,
       key,
@@ -436,7 +443,7 @@ export default class TwitterWorker
 
     return [
       {
-        success: true,
+        success: true as const,
         result: {
           code,
           body,

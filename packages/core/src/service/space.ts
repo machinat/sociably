@@ -12,10 +12,17 @@ import type {
   PolymorphicValueBinding,
 } from './types.js';
 
-const hasOwnProperty = (obj, prop) =>
+const hasOwnProperty = (obj: object, prop: PropertyKey): boolean =>
   Object.prototype.hasOwnProperty.call(obj, prop);
 
-const printInterface = (obj) => obj?.$$name || obj?.name || String(obj);
+const printInterface = (obj: unknown): string => {
+  if (typeof obj === 'object' || typeof obj === 'function') {
+    const named = obj as { $$name?: string; name?: string };
+    return named.$$name || named.name || String(obj);
+  }
+
+  return String(obj);
+};
 
 const isPolymorphic = <T>(
   target: ServiceBinding<T>,

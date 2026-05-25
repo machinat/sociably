@@ -1,3 +1,4 @@
+import type { SociablyNode } from '@sociably/core';
 import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import Renderer from '@sociably/core/renderer';
@@ -6,11 +7,13 @@ import { Photo } from '../Media.js';
 import { UrlButton } from '../UrlButton.js';
 import { QuickReply } from '../QuickReply.js';
 import { DirectMessage } from '../DirectMessage.js';
+import type { TwitterComponent, TwitterSegmentValue } from '../../types.js';
 
-const renderer = new Renderer('twitter', async (node, path) => [
-  { type: 'text', path, node, value: node.type },
-]);
-const render = (element) => renderer.render(element, null, null);
+const renderer = new Renderer<TwitterSegmentValue, TwitterComponent<unknown>>(
+  'twitter',
+  async (node, path) => [{ type: 'text', path, node, value: node.type }],
+);
+const render = (element: SociablyNode) => renderer.render(element, null, null);
 
 it('is a valid Component', () => {
   expect(isNativeType(<DirectMessage placeId="12345" />)).toBe(true);

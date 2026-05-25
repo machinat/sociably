@@ -57,7 +57,7 @@ export class RegexIntentRecognizer<
   }
 
   async detectText(
-    _,
+    _: unknown,
     text: string,
     options?: DetectTextOptions,
   ): Promise<DetectIntentResult<Recognition, null>> {

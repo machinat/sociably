@@ -5,7 +5,7 @@ import {
   serviceContainer,
   ServiceScope,
 } from '@sociably/core/service';
-import moxy from '@moxyjs/moxy';
+import moxy, { type Moxy } from '@moxyjs/moxy';
 import type createNextApp from 'next';
 import { NextReceiver } from '../Receiver.js';
 
@@ -32,13 +32,15 @@ const req = moxy<IncomingMessage>({
   url: 'http://sociably.io/hello?foo=bar',
   headers: { 'x-y-z': 'abc' },
 } as never);
+type TestResponse = Moxy<ServerResponse>;
+
 const routing = {
   originalPath: '/hello',
   basePath: '/',
   matchedPath: '',
   trailingPath: 'hello',
 };
-let res;
+let res: TestResponse;
 
 beforeEach(() => {
   nextDefaultHandler.mock.clear();

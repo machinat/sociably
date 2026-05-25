@@ -240,7 +240,7 @@ class MetaApiWorker implements SociablyWorker<MetaApiJob, MetaApiResult> {
         if (consumeResult) {
           const { keys: consummingKeys, accomplishRequest } = consumeResult;
 
-          const getPreviousResult = (requestKey, path) => {
+          const getPreviousResult = (requestKey: string, path: string) => {
             const currentBatchRegistered = resultRegistry.get(requestKey);
             if (currentBatchRegistered) {
               return `{result=${currentBatchRegistered.name}:${path}}`;

@@ -121,7 +121,7 @@ class AuthClient<
   private _initiatedPlatforms: Set<string>;
 
   private _authPromise: null | Promise<AuthResult<Authenticator>>;
-  private _minAuthBeginTime: number;
+  private _authRevision: number;
 
   private _refreshTimeoutId: null | TimeoutID;
   private _expireTimeoutId: null | TimeoutID;
@@ -168,7 +168,7 @@ class AuthClient<
 
     this._initiatingPlatforms = new Set();
     this._initiatedPlatforms = new Set();
-    this._minAuthBeginTime = -1;
+    this._authRevision = 0;
 
     this._platform = undefined;
     this._authData = null;
@@ -222,14 +222,14 @@ class AuthClient<
       this._authData = null;
     }
     this._clearTimeouts();
-    // Make sure auth operation executing now will not update auth
-    this._minAuthBeginTime = Date.now();
+    // Make sure auth operations already in flight cannot restore auth state.
+    this._authRevision += 1;
   }
 
   private async _authFlow(
     platformInput: undefined | string,
   ): Promise<AuthResult<Authenticator>> {
-    const beginTime = Date.now();
+    const authRevision = this._authRevision;
 
     let [existedErr, existedAuth] = getExistedAuthResult();
     // use platform in the following order
@@ -324,8 +324,8 @@ class AuthClient<
     }
 
     // Update auth only when no signOut() call or another succeeded auth() call
-    // have happened during the operation time
-    if (beginTime < this._minAuthBeginTime) {
+    // has happened during the operation.
+    if (authRevision !== this._authRevision) {
       throw new AuthError(undefined, 403, 'signed out during authenticating');
     }
 
@@ -334,8 +334,8 @@ class AuthClient<
       throw ctxErr;
     }
 
-    // Block any other auth() call begun before this time from updating auth
-    this._minAuthBeginTime = beginTime;
+    // Block any auth operation that started before this successful one.
+    this._authRevision += 1;
     this._setAuth(token, payload, context);
 
     return {
@@ -395,7 +395,7 @@ class AuthClient<
   }
 
   private async _refreshFlow(token: string): Promise<void> {
-    const beginTime = Date.now();
+    const authRevision = this._authRevision;
 
     const [err, authenticator] = this._getAuthenticator(this._platform);
     if (err) {
@@ -416,11 +416,9 @@ class AuthClient<
     }
 
     if (
-      this._authData
-        ? // auth updated during refreshment
-          this._authData.token !== token
-        : // signed out during refreshment
-          beginTime < this._minAuthBeginTime
+      authRevision !== this._authRevision ||
+      !this._authData ||
+      this._authData.token !== token
     ) {
       return;
     }
@@ -434,6 +432,7 @@ class AuthClient<
       throw ctxErr;
     }
 
+    this._authRevision += 1;
     this._setAuth(newToken, payload, context);
     this.emit('refresh', context);
   }

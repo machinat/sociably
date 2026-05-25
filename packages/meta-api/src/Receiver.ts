@@ -79,7 +79,7 @@ const handleWebhook = <Context extends MetaApiEventContext>({
     let body;
     try {
       body = JSON.parse(rawBody);
-    } catch (e) {
+    } catch {
       return { code: 400 };
     }
     if (!Array.isArray(body.entry)) {

@@ -29,7 +29,9 @@ jest.mock('@sociably/meta-api', () =>
 );
 
 const initScope = moxy(() => moxy());
-const dispatchWrapper = moxy((x) => x);
+const dispatchWrapper = moxy(function dispatch<T>(x: T): T {
+  return x;
+});
 
 const businessNumber = '1234567890';
 const accessToken = '_ACCESS_TOKEN_';
@@ -45,7 +47,13 @@ const message = (
   </ButtonsTemplate>
 );
 
-let graphApi;
+type BatchRequest = {
+  body: string;
+  method?: string;
+  relative_url?: string;
+};
+
+let graphApi: nock.Interceptor;
 const bodySpy = moxy(() => true);
 
 beforeEach(() => {
@@ -151,7 +159,7 @@ describe('#render(thread, message, options)', () => {
     messages: [{ id: 'wamid....' }],
   };
 
-  let apiStatus;
+  let apiStatus: nock.Scope;
   beforeEach(() => {
     const messageResult = {
       code: 200,
@@ -193,7 +201,7 @@ describe('#render(thread, message, options)', () => {
     expect(bodySpy).toHaveBeenCalledTimes(1);
     const body = bodySpy.mock.calls[0].args[0];
 
-    for (const request of JSON.parse(body.batch)) {
+    for (const request of JSON.parse(body.batch) as BatchRequest[]) {
       expect(request.method).toBe('POST');
       expect(request.relative_url).toMatchInlineSnapshot(
         `"1234567890/messages?access_token=_ACCESS_TOKEN_&appsecret_proof=932e1d758c8379099e1b7f9e75e1abf41ab496760d64ddb05e3d21979d13c31f"`,

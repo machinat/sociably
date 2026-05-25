@@ -1,6 +1,9 @@
 import { EventEmitter } from 'events';
 import moxy, { Mock } from '@moxyjs/moxy';
+import type { PopEventWrapper } from '@sociably/core';
 import { ServerAuthenticator } from '@sociably/auth';
+import type { AnyServerAuthenticator } from '@sociably/auth';
+import type { EventValue, WebviewEventContext } from '../types.js';
 import type { WebviewSocketServer } from '../interface.js';
 import { WebviewReceiver } from '../Receiver.js';
 import WebviewConnection from '../Connection.js';
@@ -54,9 +57,9 @@ server.id = '_SERVER_ID_';
 server.handleUpgrade = (async () => {}) as never;
 
 const popEventMock = new Mock();
-const popEventWrapper = moxy((finalHandler) =>
-  popEventMock.proxify(finalHandler),
-);
+const popEventWrapper = moxy<
+  PopEventWrapper<WebviewEventContext<AnyServerAuthenticator, EventValue>, null>
+>((finalHandler) => popEventMock.proxify(finalHandler));
 const popError = moxy();
 
 const request = {

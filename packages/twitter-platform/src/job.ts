@@ -14,8 +14,9 @@ import type {
   TweetResult,
 } from './types.js';
 
-const useCreatedTweetTarget = (agentId: string) => (_, result: TweetResult) =>
-  new TweetTarget(agentId, result.data.id);
+const useCreatedTweetTarget =
+  (agentId: string) => (_target: TweetTarget, result: TweetResult) =>
+    new TweetTarget(agentId, result.data.id);
 
 const useCurrentTarget = (curTarget: TweetTarget) => curTarget;
 

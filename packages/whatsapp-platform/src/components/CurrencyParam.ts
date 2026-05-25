@@ -20,7 +20,7 @@ export type CurrencyParamProps = {
  */
 export const CurrencyParam: WhatsAppComponent<
   CurrencyParamProps,
-  PartSegment<{ type: 'currency'; currency: {} }>
+  PartSegment<{ type: 'currency'; currency: object }>
 > = makeWhatsAppComponent(function CurrencyParam(node, path) {
   const { code, fallbackValue, amount1000 } = node.props;
 

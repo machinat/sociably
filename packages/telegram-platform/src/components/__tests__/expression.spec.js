@@ -1,4 +1,3 @@
-import Sociably from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import Renderer from '@sociably/core/renderer';
 import renderGeneralType from '../general';

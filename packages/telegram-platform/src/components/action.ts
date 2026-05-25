@@ -458,7 +458,7 @@ export const SetChatPhoto: TelegramComponent<
  * @guides Check official [reference](https://core.telegram.org/bots/api#deletechatphoto).
  */
 export const DeleteChatPhoto: TelegramComponent<
-  {},
+  object,
   UnitSegment<TelegramSegmentValue>
 > = makeTelegramComponent(function DeleteChatPhoto(node, path) {
   return [
@@ -577,7 +577,7 @@ export const PinChatMessage: TelegramComponent<
  * @guides Check official [reference](https://core.telegram.org/bots/api#unpinchatmessage).
  */
 export const UnpinChatMessage: TelegramComponent<
-  {},
+  object,
   UnitSegment<TelegramSegmentValue>
 > = makeTelegramComponent(function UnpinChatMessage(node, path) {
   return [
@@ -596,7 +596,7 @@ export const UnpinChatMessage: TelegramComponent<
  * @guides Check official [reference](https://core.telegram.org/bots/api#leavechat).
  */
 export const LeaveChat: TelegramComponent<
-  {},
+  object,
   UnitSegment<TelegramSegmentValue>
 > = makeTelegramComponent(function LeaveChat(node, path) {
   return [
@@ -644,7 +644,7 @@ export const SetChatStickerSet: TelegramComponent<
  * @guides Check official [reference](https://core.telegram.org/bots/api#deletechatstickerset).
  */
 export const DeleteChatStickerSet: TelegramComponent<
-  {},
+  object,
   UnitSegment<TelegramSegmentValue>
 > = makeTelegramComponent(function DeleteChatStickerSet(node, path) {
   return [

@@ -19,6 +19,10 @@ import FacebookUserProfile from '../UserProfile.js';
 import { FacebookProfiler } from '../Profiler.js';
 import { FacebookReceiver } from '../Receiver.js';
 import { FacebookSender } from '../Sender.js';
+import type {
+  FacebookDispatchMiddleware,
+  FacebookEventMiddleware,
+} from '../types.js';
 
 it('export interfaces', () => {
   expect(Facebook.Receiver).toBe(FacebookReceiver);
@@ -36,8 +40,9 @@ it('export interfaces', () => {
 
 describe('initModule(configs)', () => {
   it('create module object', () => {
-    const eventMiddleware = (ctx, next) => next(ctx);
-    const dispatchMiddleware = (ctx, next) => next(ctx);
+    const eventMiddleware: FacebookEventMiddleware = (ctx, next) => next(ctx);
+    const dispatchMiddleware: FacebookDispatchMiddleware = (ctx, next) =>
+      next(ctx);
 
     const module = Facebook.initModule({
       agentSettings: {
@@ -78,7 +83,7 @@ describe('initModule(configs)', () => {
       appSecret: '_APP_SECRET_',
       webhookVerifyToken: '_VERIFY_TOKEN_',
       webhookPath: 'webhook/facebook',
-      eventMiddlewares: [(ctx, next) => next(ctx)],
+      eventMiddlewares: [((ctx, next) => next(ctx)) as FacebookEventMiddleware],
     };
 
     const app = Sociably.createApp({

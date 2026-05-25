@@ -21,7 +21,7 @@ export type TextReplyProps = {
 export function TextReply(
   node: NativeElement<TextReplyProps, AnyNativeComponent>,
   path: string,
-): PartSegment<{}>[] {
+): PartSegment<object>[] {
   const { title, payload, imageUrl } = node.props;
   return [
     makePartSegment(node, path, {

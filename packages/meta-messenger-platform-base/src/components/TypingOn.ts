@@ -11,7 +11,7 @@ const TYPING_ON_VALUE = {
 };
 
 export function TypingOn(
-  node: NativeElement<{}, AnyNativeComponent>,
+  node: NativeElement<object, AnyNativeComponent>,
   path: string,
 ): UnitSegment<SenderActionValue>[] {
   return [makeUnitSegment(node, path, TYPING_ON_VALUE)];

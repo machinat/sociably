@@ -44,7 +44,7 @@ export type ImageMapAreaProps = {
  */
 export const ImageMapArea: LineComponent<
   ImageMapAreaProps,
-  PartSegment<{}>
+  PartSegment<object>
 > = makeLineComponent(async function ImageMapArea(node, path, render) {
   const { action, x, y, width, height } = node.props;
   const actionSegments = await render(action, '.action');
@@ -115,7 +115,7 @@ export type ImageMapVideoAreaProps = {
  */
 export const ImageMapVideoArea: LineComponent<
   ImageMapVideoAreaProps,
-  PartSegment<{}>
+  PartSegment<object>
 > = makeLineComponent(async function ImageMapVideoArea(node, path, render) {
   const { originalContentUrl, previewImageUrl, x, y, width, height, action } =
     node.props;

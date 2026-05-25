@@ -1,3 +1,4 @@
+import type { GeneralElement, SociablyNode } from '@sociably/core';
 import { isNativeType } from '@sociably/core/utils';
 import Renderer from '@sociably/core/renderer';
 import { InlineKeyboard, CallbackButton } from '../replyMarkup.js';
@@ -13,16 +14,19 @@ import {
   Sticker,
 } from '../media.js';
 
-const renderer = new Renderer('telegram', async (node, path) => [
-  {
-    type: 'text',
-    node,
-    path,
-    value: `<${node.type}>${node.props.children}</${node.type}>`,
-  },
-]);
+const renderer = new Renderer(
+  'telegram',
+  async (node: GeneralElement, path) => [
+    {
+      type: 'text',
+      node,
+      path,
+      value: `<${node.type}>${node.props.children}</${node.type}>`,
+    },
+  ],
+);
 
-const render = (node) => renderer.render(node, null, null);
+const render = (node: SociablyNode) => renderer.render(node, null, null);
 
 describe.each([
   Photo,

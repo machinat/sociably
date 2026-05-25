@@ -7,7 +7,7 @@ import {
   dirname,
   extname,
 } from 'path';
-import { writeFile, copyFile, existsSync as fileExistsSync, mkdir } from 'fs';
+import { existsSync as fileExistsSync, promises as fsPromises } from 'fs';
 import { spawn as spawnChildProcess } from 'child_process';
 import glob from 'glob';
 import chalk from 'chalk';
@@ -134,12 +134,13 @@ const createSociablyApp = async ({
       }
 
       if (!fileExistsSync(targetDir)) {
-        await thenifiedly.call(mkdir, targetDir, { recursive: true });
+        await fsPromises.mkdir(targetDir, {
+          recursive: true,
+        });
       }
 
       if (binary) {
-        await thenifiedly.call(
-          copyFile,
+        await fsPromises.copyFile(
           joinPath(
             resolvePath(
               `${process.platform === 'win32' ? '' : '/'}${
@@ -164,7 +165,7 @@ const createSociablyApp = async ({
           : ext === '.md'
           ? formatCode(content, 'markdown')
           : content);
-        await thenifiedly.call(writeFile, targetPath, prettifiedContent, {
+        await fsPromises.writeFile(targetPath, prettifiedContent, {
           mode,
         });
       }
@@ -201,7 +202,8 @@ const createSociablyApp = async ({
     { cwd: projectPath, shell: true, stdio: 'inherit' },
   );
 
-  const installCode = await thenifiedly.tillEvent('close', npmInstallProcess);
+  const installCode: number =
+    (await thenifiedly.tillEvent('close', npmInstallProcess)) ?? 1;
   if (installCode !== 0) {
     return installCode;
   }
@@ -214,7 +216,8 @@ const createSociablyApp = async ({
     { cwd: projectPath, shell: true, stdio: 'inherit' },
   );
 
-  const gitInitCode = await thenifiedly.tillEvent('close', gitInitProcess);
+  const gitInitCode: number =
+    (await thenifiedly.tillEvent('close', gitInitProcess)) ?? 1;
   if (gitInitCode !== 0) {
     return gitInitCode;
   }

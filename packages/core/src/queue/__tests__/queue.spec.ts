@@ -1,28 +1,36 @@
 /* eslint-disable no-await-in-loop, no-loop-func, no-return-assign, no-fallthrough, default-case */
 import moxy from '@moxyjs/moxy';
 import SociablyQueue from '../queue.js';
+import type { JobResponse } from '../types.js';
 
-const delay = (t) => new Promise((resolve) => setTimeout(resolve, t));
-const makeJobs = (n) => new Array(n).fill(0).map((_, i) => ({ id: i }));
+type Job = { id: number };
+type Result = string;
 
-const successJobResponses = (ids) =>
+const delay = (t: number) => new Promise((resolve) => setTimeout(resolve, t));
+const makeJobs = (n: number): Job[] =>
+  new Array(n).fill(0).map((_, i) => ({ id: i }));
+
+const successJobResponses = (ids: number[]): JobResponse<Job, Result>[] =>
   ids.map((id) => ({
-    success: true,
+    success: true as const,
     result: `Success${id}`,
     error: undefined,
     job: { id },
   }));
 
-const failedJobResponses = (ids) =>
+const failedJobResponses = (ids: number[]): JobResponse<Job, Result>[] =>
   ids.map((id) => ({
-    success: false,
+    success: false as const,
     result: `Fail${id}`,
     error: new Error(`Fail${id}`),
     job: { id },
   }));
 
-let queue;
-const consume = jest.fn();
+let queue: SociablyQueue<Job, Result>;
+const consume: jest.Mock<
+  Promise<JobResponse<Job, Result>[]>,
+  [Job[]]
+> = jest.fn();
 
 const jobs = makeJobs(9);
 const batch1Resolved = jest.fn();
@@ -31,9 +39,9 @@ const batch3Resolved = jest.fn();
 
 beforeEach(() => {
   jest.useFakeTimers();
-  queue = new SociablyQueue();
+  queue = new SociablyQueue<Job, Result>();
 
-  consume.mockImplementation(async (acquired) => {
+  consume.mockImplementation(async (acquired: Job[]) => {
     await delay(10);
     return successJobResponses(acquired.map((job) => job.id));
   });
@@ -239,7 +247,7 @@ describe('as a FIFO queue', () => {
     queue.executeJobs(jobs.slice(3, 6)).then(batch2Resolved);
     queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
 
-    consume.mockImplementation(async (acquired) => {
+    consume.mockImplementation(async (acquired: Job[]) => {
       await delay(10);
       if (acquired[0].id === 2 || acquired[0].id === 4) {
         throw new Error('somthing wrong');
@@ -316,7 +324,7 @@ describe('as a FIFO queue', () => {
 
     consume.mockImplementation(async (acquired) => {
       await delay(10);
-      return acquired.map((job) => {
+      return acquired.map((job: Job) => {
         const success = ![3, 6, 8].includes(job.id);
 
         const [response] = success
@@ -394,7 +402,7 @@ describe('as a FIFO queue', () => {
     queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
 
     const promises = new Array(5).fill(0).map(async (_, i) =>
-      queue.acquire(2, async (acquired) => {
+      queue.acquire(2, async (acquired: Job[]) => {
         expect(acquired).toEqual(jobs.slice(i * 2, i * 2 + 2));
         expect(queue.length).toBe(Math.max(0, 9 - i * 2 - 2));
 
@@ -498,7 +506,7 @@ describe('as a FIFO queue', () => {
     queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
 
     const promises = new Array(5).fill(0).map(async (_, i) =>
-      queue.acquire(2, async (acquired) => {
+      queue.acquire(2, async (acquired: Job[]) => {
         expect(acquired).toEqual(jobs.slice(i * 2, i * 2 + 2));
         expect(queue.length).toBe(Math.max(0, 9 - (i + 1) * 2));
 
@@ -582,14 +590,21 @@ describe('as a FIFO queue', () => {
           case 4:
         }
 
-        return acquired.map((job) => {
+        return acquired.map((job): JobResponse<Job, Result> => {
           const success = ![0, 2, 3, 8].includes(job.id);
-          return {
-            success,
-            result: `${success ? 'Success' : 'Fail'}${job.id}`,
-            error: success ? undefined : new Error(`Fail${job.id}`),
-            job,
-          };
+          return success
+            ? {
+                success: true,
+                result: `Success${job.id}`,
+                error: undefined,
+                job,
+              }
+            : {
+                success: false,
+                result: `Fail${job.id}`,
+                error: new Error(`Fail${job.id}`),
+                job,
+              };
         });
       }),
     );
@@ -639,9 +654,9 @@ describe('as a FIFO queue', () => {
     queue.executeJobs(jobs.slice(3, 6)).then(batch2Resolved);
     queue.executeJobs(jobs.slice(6, 9)).then(batch3Resolved);
 
-    const execSuccessfully = async ([job]) => [
-      { success: true, result: `Success${job.id}`, job },
-    ];
+    const execSuccessfully = async ([job]: Job[]): Promise<
+      JobResponse<Job, Result>[]
+    > => [{ success: true, result: `Success${job.id}`, error: undefined, job }];
 
     await Promise.allSettled([
       queue.acquireAt(0, 1, execSuccessfully),
@@ -653,14 +668,18 @@ describe('as a FIFO queue', () => {
       }),
       queue.acquireAt(0, 1, execSuccessfully),
 
-      queue.acquireAt(1, 1, () => [
-        {
-          success: false,
-          result: 'Fail6',
-          job: jobs[6],
-          error: new Error('Fail6'),
-        },
-      ]),
+      queue.acquireAt(
+        1,
+        1,
+        async (): Promise<JobResponse<Job, Result>[]> => [
+          {
+            success: false,
+            result: 'Fail6',
+            job: jobs[6],
+            error: new Error('Fail6'),
+          },
+        ],
+      ),
       queue.acquireAt(1, 1, execSuccessfully),
     ]);
 

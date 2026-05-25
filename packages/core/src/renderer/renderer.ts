@@ -206,16 +206,17 @@ export default class SociablyRenderer<
     if (isGeneralType(node)) {
       // delegate to the delegator function of platform
 
-      const renderPromise = this.generalComponentDelegator(
-        node,
-        path,
-        this._renderImpl.bind(
-          this,
+      const renderPromise = this.generalComponentDelegator(node, path, ((
+        childNode,
+        childPath,
+      ) =>
+        this._renderImpl(
           scope,
           servicesProvided,
           `${path}#${node.type}`,
-        ),
-      );
+          childNode,
+          childPath,
+        )) as InnerRenderFn);
 
       renderings.push(renderPromise);
     } else if (isRawType(node)) {
@@ -300,11 +301,17 @@ export default class SociablyRenderer<
 
       const pathInner = `${path}#${nativeComponent.$$name}`;
 
-      const renderPromise = nativeComponent.$$render(
-        node,
-        path,
-        this._renderImpl.bind(this, scope, servicesProvided, pathInner),
-      );
+      const renderPromise = nativeComponent.$$render(node, path, ((
+        childNode,
+        childPath,
+      ) =>
+        this._renderImpl(
+          scope,
+          servicesProvided,
+          pathInner,
+          childNode,
+          childPath,
+        )) as InnerRenderFn);
 
       renderings.push(renderPromise);
     } else if (isContainerType(node)) {

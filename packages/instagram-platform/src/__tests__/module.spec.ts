@@ -19,6 +19,10 @@ import InstagramUserProfile from '../UserProfile.js';
 import { InstagramProfiler } from '../Profiler.js';
 import { InstagramReceiver } from '../Receiver.js';
 import { InstagramSender } from '../Sender.js';
+import type {
+  InstagramDispatchMiddleware,
+  InstagramEventMiddleware,
+} from '../types.js';
 
 it('export interfaces', () => {
   expect(Instagram.Receiver).toBe(InstagramReceiver);
@@ -43,8 +47,9 @@ const agentSettings = {
 
 describe('initModule(configs)', () => {
   it('create module object', () => {
-    const eventMiddleware = (ctx, next) => next(ctx);
-    const dispatchMiddleware = (ctx, next) => next(ctx);
+    const eventMiddleware: InstagramEventMiddleware = (ctx, next) => next(ctx);
+    const dispatchMiddleware: InstagramDispatchMiddleware = (ctx, next) =>
+      next(ctx);
 
     const module = Instagram.initModule({
       agentSettings,
@@ -79,7 +84,9 @@ describe('initModule(configs)', () => {
       appSecret: '_APP_SECRET_',
       webhookVerifyToken: '_VERIFY_TOKEN_',
       webhookPath: 'webhook/instagram',
-      eventMiddlewares: [(ctx, next) => next(ctx)],
+      eventMiddlewares: [
+        ((ctx, next) => next(ctx)) as InstagramEventMiddleware,
+      ],
     };
 
     const app = Sociably.createApp({

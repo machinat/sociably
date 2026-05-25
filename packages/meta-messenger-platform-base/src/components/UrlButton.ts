@@ -30,7 +30,7 @@ export type UrlButtonProps = {
 export function UrlButton(
   node: NativeElement<UrlButtonProps, AnyNativeComponent>,
   path: string,
-): PartSegment<{}>[] {
+): PartSegment<object>[] {
   const {
     title,
     url,

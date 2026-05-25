@@ -41,7 +41,7 @@ export async function GenericItem(
   node: NativeElement<GenericItemProps, AnyNativeComponent>,
   path: string,
   render: InnerRenderFn,
-): Promise<PartSegment<{}>[]> {
+): Promise<PartSegment<object>[]> {
   const {
     buttons,
     title,

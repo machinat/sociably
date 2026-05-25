@@ -39,7 +39,7 @@ const UNLINK_RICHMENU_VALUE = {
  *   and [reference](https://developers.line.biz/en/reference/messaging-api/#unlink-rich-menu-from-user).
  */
 export const UnlinkRichMenu: LineComponent<
-  {},
+  object,
   UnitSegment<ChatActionSegmentValue>
 > = makeLineComponent(function UnlinkRichMenu(node, path) {
   return [makeUnitSegment(node, path, UNLINK_RICHMENU_VALUE)];

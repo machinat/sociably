@@ -7,7 +7,7 @@ import TelegramChat from '../../Chat.js';
 import TelegramUser from '../../User.js';
 import TelegramApiError from '../../Error.js';
 
-const createReq = ({ url }) =>
+const createReq = ({ url }: { url?: string }) =>
   moxy<IncomingMessage>({
     method: 'GET',
     headers: {},

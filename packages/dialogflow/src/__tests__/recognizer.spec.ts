@@ -20,6 +20,15 @@ const EnvironmentsClient: Moxy<typeof _EnvironmentsClient> =
 type EnvironmentsClient = _EnvironmentsClient;
 const IntentsClient: Moxy<typeof _IntentsClient> = _IntentsClient as never;
 type IntentsClient = _IntentsClient;
+type DialogflowPathId = string;
+type MockBatchUpdateIntent = {
+  displayName: string;
+};
+type MockBatchUpdateIntentsRequest = {
+  intentBatchInline: {
+    intents: MockBatchUpdateIntent[];
+  };
+};
 
 jest.mock('@google-cloud/dialogflow', () =>
   moxy({
@@ -89,13 +98,27 @@ test('throw if recognitionData is empty', () => {
 describe('.detectText()', () => {
   const client = moxy<InstanceType<typeof SessionsClient>>({
     detectIntent: () => [detectTextResponse],
-    projectAgentSessionPath: (pId, sId) =>
+    projectAgentSessionPath: (pId: DialogflowPathId, sId: DialogflowPathId) =>
       `projects/${pId}/agent/sessions/${sId}`,
-    projectAgentEnvironmentUserSessionPath: (pId, eId, uId, sId) =>
+    projectAgentEnvironmentUserSessionPath: (
+      pId: DialogflowPathId,
+      eId: DialogflowPathId,
+      uId: DialogflowPathId,
+      sId: DialogflowPathId,
+    ) =>
       `projects/${pId}/agent/environments/${eId}/users/${uId}/sessions/${sId}`,
-    projectAgentSessionContextPath: (pId, sId, cId) =>
-      `projects/${pId}/agent/sessions/${sId}/contexts/${cId}`,
-    projectAgentEnvironmentUserSessionContextPath: (pId, eId, uId, sId, cId) =>
+    projectAgentSessionContextPath: (
+      pId: DialogflowPathId,
+      sId: DialogflowPathId,
+      cId: DialogflowPathId,
+    ) => `projects/${pId}/agent/sessions/${sId}/contexts/${cId}`,
+    projectAgentEnvironmentUserSessionContextPath: (
+      pId: DialogflowPathId,
+      eId: DialogflowPathId,
+      uId: DialogflowPathId,
+      sId: DialogflowPathId,
+      cId: DialogflowPathId,
+    ) =>
       `projects/${pId}/agent/environments/${eId}/users/${uId}/sessions/${sId}/contexts/${cId}`,
   } as never);
   const recognitionData = {
@@ -339,8 +362,8 @@ describe('.train()', () => {
     state: 'RUNNING',
   };
 
-  const projectPath = (pId) => `projects/${pId}`;
-  const projectAgentPath = (pId) => `projects/${pId}/agent`;
+  const projectPath = (pId: DialogflowPathId) => `projects/${pId}`;
+  const projectAgentPath = (pId: DialogflowPathId) => `projects/${pId}/agent`;
   const agentsClient = moxy<InstanceType<typeof AgentsClient>>({
     projectPath,
     getAgent: async () => [agentResult],
@@ -366,11 +389,13 @@ describe('.train()', () => {
     projectAgentPath,
     listIntents: async () => [defaultIntents],
     batchDeleteIntents: async () => [{ promise: () => Promise.resolve([{}]) }],
-    batchUpdateIntents: async ({ intentBatchInline: { intents } }) => [
+    batchUpdateIntents: async ({
+      intentBatchInline: { intents },
+    }: MockBatchUpdateIntentsRequest) => [
       {
         promise: async () => [
           {
-            intents: intents.map(({ displayName }) => ({
+            intents: intents.map(({ displayName }: MockBatchUpdateIntent) => ({
               name: `projects/test/agent/intents/_ID_OF_${displayName.toUpperCase()}_`,
               displayName,
             })),
@@ -383,8 +408,10 @@ describe('.train()', () => {
     {
       projectPath,
       projectAgentPath,
-      projectAgentEnvironmentPath: (pId, eId) =>
-        `projects/${pId}/agent/environments${eId}`,
+      projectAgentEnvironmentPath: (
+        pId: DialogflowPathId,
+        eId: DialogflowPathId,
+      ) => `projects/${pId}/agent/environments${eId}`,
       getEnvironment: async () => [environment],
       createEnvironment: async () => [environment],
       auth: { request: async () => {} },

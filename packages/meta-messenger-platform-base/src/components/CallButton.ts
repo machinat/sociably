@@ -15,7 +15,7 @@ export type CallButtonProps = {
 export function CallButton(
   node: NativeElement<CallButtonProps, AnyNativeComponent>,
   path: string,
-): PartSegment<{}>[] {
+): PartSegment<object>[] {
   const { title, number } = node.props;
   return [
     makePartSegment(node, path, {

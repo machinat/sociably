@@ -21,7 +21,9 @@ const doAsyncByKey =
         if (key && (queued = buffersByThread.get(key))) {
           if (queued.length > 0) {
             const nextFrame = queued.shift();
-            execute(nextFrame);
+            if (nextFrame) {
+              execute(nextFrame);
+            }
           } else {
             buffersByThread.delete(key);
           }

@@ -187,8 +187,11 @@ describe('.init()', () => {
     );
 
     expect(location.mock.setter('href')).toHaveBeenCalledTimes(2);
-    expect(location.mock.setter('href').calls.map(({ args }) => args[0]))
-      .toMatchInlineSnapshot(`
+    expect(
+      location.mock
+        .setter('href')
+        .calls.map((call: { args: [string] }) => call.args[0]),
+    ).toMatchInlineSnapshot(`
       [
         "https://sociably.io/auth/telegram/login?botId=54321&redirectUrl=https%3A%2F%2Fsociably.io%2Fwebview%2Ffoo%3Fbar%3Dbaz",
         "https://sociably.io/auth/telegram/login?botId=54321&redirectUrl=https%3A%2F%2Fsociably.io%2Fwebview%2Ffoo%3Fbar%3Dbaz",
@@ -230,8 +233,11 @@ describe('.init()', () => {
     );
 
     expect(location.mock.setter('href')).toHaveBeenCalledTimes(3);
-    expect(location.mock.setter('href').calls.map(({ args }) => args[0]))
-      .toMatchInlineSnapshot(`
+    expect(
+      location.mock
+        .setter('href')
+        .calls.map((call: { args: [string] }) => call.args[0]),
+    ).toMatchInlineSnapshot(`
       [
         "https://sociably.io/auth/telegram/login?botId=12345&redirectUrl=https%3A%2F%2Fsociably.io%2Fwebview%2Ffoo%3Fbar%3Dbaz&chatId=54321",
         "https://sociably.io/auth/telegram/login?botId=12345&redirectUrl=https%3A%2F%2Fsociably.io%2Fwebview%2Ffoo%3Fbar%3Dbaz&chatId=54321",

@@ -5,12 +5,17 @@
     "target": "es2020",
     "moduleResolution": "Node16",
     "strictNullChecks": true,
+    "noImplicitAny": false,
+    "strictFunctionTypes": false,
+    "strictPropertyInitialization": false,
+    "useUnknownInCatchVariables": false,
     "esModuleInterop": true,
     "jsx": "react-jsx",
     "jsxImportSource": "@sociably/core",
     "skipLibCheck": true,
     "noUnusedLocals": true,
     "types": ["node"],
-    "baseUrl": "."
+    "baseUrl": ".",
+    "ignoreDeprecations": "6.0"
   }
 }

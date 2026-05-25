@@ -12,10 +12,10 @@ jest.mock('http', () =>
 
 const mockServer = moxy({
   addListener() {},
-  listen(_, cb) {
+  listen(_: unknown, cb: () => void) {
     cb();
   },
-  close(cb) {
+  close(cb: () => void) {
     cb();
   },
 });
@@ -154,7 +154,7 @@ test('noServer mode', async () => {
 
 test('change http server', async () => {
   const myServer = moxy({
-    listen: (_, cb) => cb(),
+    listen: (_: unknown, cb: () => void) => cb(),
     addListener: () => {},
   });
 

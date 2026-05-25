@@ -1,5 +1,6 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { Readable } from 'stream';
+import { HttpRequestInfo } from '@sociably/http';
 import jwt from 'jsonwebtoken';
 import moxy, { Moxy } from '@moxyjs/moxy';
 import { AuthController } from '../Controller.js';
@@ -11,31 +12,33 @@ import {
 import HttpOperator from '../HttpOperator.js';
 import { getCookies } from './utils.js';
 
-const prepareToken = (payload) => {
+const makeRes = () => moxy(new ServerResponse({} as never));
+
+const prepareToken = (payload: Record<string, unknown>) => {
   const [head, body, signature] = jwt.sign(payload, '__SECRET__').split('.');
 
   return [`${head}.${body}`, signature];
 };
 
 const prepareReq = (
-  method,
-  url,
-  headers,
-  body,
-): Moxy<IncomingMessage & { method: string; url: string }> => {
+  method: string,
+  url: string,
+  headers: Record<string, string>,
+  body: string | Record<string, unknown>,
+) => {
   const req = moxy(
     new Readable({
       read() {
         this.push(typeof body === 'string' ? body : JSON.stringify(body));
         this.push(null);
       },
-    }),
+    }) as IncomingMessage & HttpRequestInfo,
   );
   req.mock.getter('url').fake(() => url);
   req.mock.getter('method').fake(() => method);
   req.mock.getter('headers').fake(() => headers);
 
-  return req as never;
+  return req;
 };
 
 type FooAuthContext = AnyAuthContext & { foo: string };
@@ -144,9 +147,10 @@ describe('#constructor()', () => {
 
 describe('#delegateAuthRequest(req, res)', () => {
   describe('handling request', () => {
-    let res;
+    let res: Moxy<ServerResponse>;
+
     beforeEach(() => {
-      res = moxy(new ServerResponse({} as never));
+      res = makeRes();
     });
 
     it('respond 403 if being called outside fo apiPath scope', async () => {
@@ -168,7 +172,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         }
       `);
 
-      res = moxy(new ServerResponse({} as never));
+      res = makeRes();
       req = prepareReq('GET', 'https://sociably.io/someWhereElse', {}, '');
       await controller.handleRequest(req, res);
       expect(res.statusCode).toBe(403);
@@ -318,16 +322,17 @@ describe('#delegateAuthRequest(req, res)', () => {
   });
 
   describe('_sign api', () => {
-    let req;
-    let res;
+    let req: Moxy<IncomingMessage & HttpRequestInfo>;
+    let res: Moxy<ServerResponse>;
+
     beforeEach(() => {
-      res = moxy(new ServerResponse({} as never));
       req = prepareReq(
         'POST',
         'http://auth.sociably.io/_sign',
         {},
         { platform: 'foo', credential: { foo: 'data' } },
       );
+      res = makeRes();
     });
 
     it('sign cookie and respond token if provider verfication passed', async () => {
@@ -375,7 +380,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       expect(
         jwt.verify(
-          `${resBody.token}.${cookies.get('sociably_auth_signature').value}`,
+          `${resBody.token}.${cookies.get('sociably_auth_signature')!.value}`,
           '__SECRET__',
         ),
       ).toMatchInlineSnapshot(`
@@ -448,7 +453,7 @@ describe('#delegateAuthRequest(req, res)', () => {
       const { token } = JSON.parse(res.end.mock.calls[0].args[0]);
       expect(
         jwt.verify(
-          `${token}.${cookies.get('sociably_auth_signature').value}`,
+          `${token}.${cookies.get('sociably_auth_signature')!.value}`,
           '__SECRET__',
         ),
       ).toMatchInlineSnapshot(`
@@ -537,7 +542,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       await controller.handleRequest(
         prepareReq('POST', url, {}, '"Woooof"'),
-        (res = moxy(new ServerResponse({} as never))),
+        (res = makeRes()),
       );
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
@@ -551,7 +556,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       await controller.handleRequest(
         prepareReq('POST', url, {}, 'Prrrrrrr'),
-        (res = moxy(new ServerResponse({} as never))),
+        (res = makeRes()),
       );
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
@@ -565,7 +570,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       await controller.handleRequest(
         prepareReq('POST', url, {}, { hey: 'Roarrrr' }),
-        (res = moxy(new ServerResponse({} as never))),
+        (res = makeRes()),
       );
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
@@ -622,8 +627,8 @@ describe('#delegateAuthRequest(req, res)', () => {
   });
 
   describe('_refresh api', () => {
-    let req;
-    let res;
+    let req: Moxy<IncomingMessage>;
+    let res: Moxy<ServerResponse>;
 
     beforeEach(() => {
       const [token, signature] = prepareToken({
@@ -640,7 +645,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         { cookie: `sociably_auth_signature=${signature}` },
         { token },
       );
-      res = moxy(new ServerResponse({} as never));
+      res = makeRes();
     });
 
     it('refresh token if provider.verifyRefreshment() passed', async () => {
@@ -682,7 +687,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       expect(
         jwt.verify(
-          `${resBody.token}.${cookies.get('sociably_auth_signature').value}`,
+          `${resBody.token}.${cookies.get('sociably_auth_signature')!.value}`,
           '__SECRET__',
         ),
       ).toMatchInlineSnapshot(`
@@ -752,7 +757,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       expect(
         jwt.verify(
-          `${resBody.token}.${cookies.get('sociably_auth_signature').value}`,
+          `${resBody.token}.${cookies.get('sociably_auth_signature')!.value}`,
           '__SECRET__',
         ),
       ).toMatchInlineSnapshot(`
@@ -924,7 +929,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       await controller.handleRequest(
         prepareReq('POST', url, header, '"Woooof"'),
-        (res = moxy(new ServerResponse({} as never))),
+        (res = makeRes()),
       );
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
@@ -938,7 +943,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       await controller.handleRequest(
         prepareReq('POST', url, header, 'Prrrrrrr'),
-        (res = moxy(new ServerResponse({} as never))),
+        (res = makeRes()),
       );
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
@@ -952,7 +957,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       await controller.handleRequest(
         prepareReq('POST', url, header, { hey: 'Roarrrr' }),
-        (res = moxy(new ServerResponse({} as never))),
+        (res = makeRes()),
       );
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
@@ -1008,8 +1013,8 @@ describe('#delegateAuthRequest(req, res)', () => {
   });
 
   describe('_verify api', () => {
-    let token;
-    let signature;
+    let token: string;
+    let signature: string;
     beforeEach(() => {
       [token, signature] = prepareToken({
         platform: 'foo',
@@ -1033,7 +1038,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         { cookie: `sociably_auth_signature=${signature}` },
         { token },
       );
-      const res = moxy(new ServerResponse({} as never));
+      const res = makeRes();
 
       await controller.handleRequest(req, res);
 
@@ -1064,7 +1069,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         { cookie: `sociably_auth_signature=${signature}` },
         { token },
       );
-      const res = moxy(new ServerResponse({} as never));
+      const res = makeRes();
 
       await controller.handleRequest(req, res);
 
@@ -1102,7 +1107,7 @@ describe('#delegateAuthRequest(req, res)', () => {
         { cookie: `sociably_auth_signature=${signature}` },
         { token },
       );
-      const res = moxy(new ServerResponse({} as never));
+      const res = makeRes();
 
       await controller.handleRequest(req, res);
 
@@ -1124,11 +1129,11 @@ describe('#delegateAuthRequest(req, res)', () => {
         new HttpOperator({ secret, serverUrl }),
         authenticators,
       );
-      let res;
+      let res: Moxy<ServerResponse>;
 
       await controller.handleRequest(
         prepareReq('POST', 'http://auth.sociably.io/_verify', {}, { token }),
-        (res = moxy(new ServerResponse({} as never))),
+        (res = makeRes()),
       );
 
       expect(res.statusCode).toBe(401);
@@ -1149,7 +1154,7 @@ describe('#delegateAuthRequest(req, res)', () => {
           { cookie: `sociably_auth_signature=INVALID_SIGNATURE` },
           { token },
         ),
-        (res = moxy(new ServerResponse({} as never))),
+        (res = makeRes()),
       );
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
@@ -1171,11 +1176,11 @@ describe('#delegateAuthRequest(req, res)', () => {
       );
       const url = 'http://auth.sociably.io/_verify';
       const header = { cookie: `sociably_auth_signature=SOMETHING_WHATEVER` };
-      let res;
+      let res: Moxy<ServerResponse>;
 
       await controller.handleRequest(
         prepareReq('POST', url, header, '"Woooof"'),
-        (res = moxy(new ServerResponse({} as never))),
+        (res = makeRes()),
       );
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
@@ -1189,7 +1194,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       await controller.handleRequest(
         prepareReq('POST', url, header, 'Prrrrrrr'),
-        (res = moxy(new ServerResponse({} as never))),
+        (res = makeRes()),
       );
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`
@@ -1203,7 +1208,7 @@ describe('#delegateAuthRequest(req, res)', () => {
 
       await controller.handleRequest(
         prepareReq('POST', url, header, { hey: 'Roarrrr' }),
-        (res = moxy(new ServerResponse({} as never))),
+        (res = makeRes()),
       );
       expect(res.statusCode).toBe(400);
       expect(JSON.parse(res.end.mock.calls[0].args[0])).toMatchInlineSnapshot(`

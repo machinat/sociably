@@ -8,6 +8,7 @@ import {
 } from '@sociably/core';
 import HttpOperator from '../../HttpOperator.js';
 import { BasicAuthenticator } from '../BasicAuthenticator.js';
+import type { CodeMessageComponentProps } from '../types.js';
 
 const state = moxy({
   update: async () => undefined,
@@ -28,7 +29,7 @@ const operator = moxy<HttpOperator>({
   redirect: () => true,
   signToken: () => '__TOKEN_HEAD__.__TOKEN_BODY__.__TOKEN_SIGNATURE__',
   verifyToken: () => ({ credential: { foo: 'bar' } }),
-  getAuthUrl: (platform, subpath = '') =>
+  getAuthUrl: (platform: string, subpath = '') =>
     `https://sociably.io/myApp/auth/${platform}/${subpath}`,
   getRedirectUrl: (subpath = '') =>
     `https://sociably.io/myApp/webview/${subpath}`,
@@ -51,11 +52,11 @@ const delegateOptions = moxy({
   platformColor: '#009',
   platformImageUrl: 'http://sociably.test/platform/img/icon.png',
   checkCurrentAuthUsability: () => ({ ok: true }),
-  verifyCredential: async (credential) => ({
+  verifyCredential: async (credential: unknown) => ({
     ok: true as const,
     data: { verified: credential },
   }),
-  checkAuthData: (data) => ({
+  checkAuthData: (data: unknown) => ({
     ok: true as const,
     data,
     thread,
@@ -63,7 +64,7 @@ const delegateOptions = moxy({
   }),
 });
 
-const createReq = (url, header = {}) => {
+const createReq = (url: string, header: Record<string, string> = {}) => {
   const req = moxy(new IncomingMessage({} as never));
   req.mock.getter('url').fakeReturnValue(url);
   req.mock.getter('headers').fakeReturnValue(header);
@@ -659,7 +660,9 @@ describe('login page', () => {
   });
 
   test('with customized options', async () => {
-    const CodeMessage = ({ code }) => <>Yo! Check your login code {code}</>;
+    const CodeMessage = ({ code }: CodeMessageComponentProps) => (
+      <>Yo! Check your login code {code}</>
+    );
     const authenticator = new BasicAuthenticator(stateRepository, operator, {
       appName: 'My Test App',
       appIconUrl: 'https://sociably.io/myApp/img/icon.png',
@@ -929,7 +932,9 @@ describe('verify code api', () => {
     trailingPath: 'verify',
   };
 
-  const prepareReq = (body): Moxy<IncomingMessage> => {
+  const prepareReq = (
+    body: string | Record<string, unknown>,
+  ): Moxy<IncomingMessage> => {
     const req = moxy(
       new Readable({
         read() {
@@ -1017,8 +1022,8 @@ describe('verify code api', () => {
       redirect: 'foo/bar',
     }));
 
-    let count;
-    state.update.mock.fake(async (key, updator) => {
+    let count: number | undefined;
+    state.update.mock.fake(async (key, updator: (value?: number) => number) => {
       if (/^\$/.test(key)) {
         return updator();
       }

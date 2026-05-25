@@ -37,7 +37,7 @@ export type MultiProductParamProps = {
  */
 export const MultiProductParam: WhatsAppComponent<
   MultiProductParamProps,
-  PartSegment<{}>
+  PartSegment<object>
 > = makeWhatsAppComponent(function MultiProductParam(node, path) {
   const { index, thumbnailProductRetailerId } = node.props;
   return [

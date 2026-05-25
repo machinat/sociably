@@ -25,7 +25,7 @@ import PostgresStateAccessor from './PostgresStateAccessor.js';
 import tableId from './utils/tableId.js';
 import { ConnectionPoolI, ConfigsI } from './interface.js';
 
-const identity = (x) => x;
+const identity = <T>(x: T): T => x;
 
 export type TableNamingOptions = {
   schemaName?: string;

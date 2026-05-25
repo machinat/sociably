@@ -181,7 +181,9 @@ function serviceProviderClass<_T, Deps extends AnyDep[]>({
         $$typeof: { value: SOCIABLY_SERVICE_PROVIDER, configurable: true },
         $$deps: { value: requirements, configurable: true },
         $$factory: {
-          value: factory || ((...args) => new klazz(...args)), // eslint-disable-line new-cap
+          value:
+            factory ||
+            ((...args: ResolveDependencies<Deps>) => new klazz(...args)), // eslint-disable-line new-cap
           configurable: true,
         },
         $$lifetime: { value: lifetime, configurable: true },

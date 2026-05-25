@@ -15,7 +15,7 @@ const debounce = <T>(t: number): OperatorFunction<T, T[]> => {
   return (source: Stream<T>) => {
     const destination = new Stream<T[]>();
 
-    const emitBufferedResult = (key) => {
+    const emitBufferedResult = (key: string) => {
       const cache = debouncingCaches.get(key);
       if (!cache) {
         return;
