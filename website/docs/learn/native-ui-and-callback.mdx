@@ -2,7 +2,7 @@
 title: Native UI and Callback
 ---
 
-> General UI like `<p>...</p>` are supported on every chat platform,
+> Plain text and textual tags like `<b>...</b>` work across platforms,
 > but you might want to use some special features on the specific platform.
 > In this lesson, we'll learn how to use the native UI to provide richer experiences.
 >
@@ -45,7 +45,7 @@ import * as Facebook from '@sociably/facebook/components';
           const todoName = matchingAddTodo[2].trim();
           return reply(
             <>
-              <p>Todo "<b>{todoName}</b>" is added!</p>
+              <i>Todo "<b>{todoName}</b>" is added!</i>
               <Sociably.Pause time={1500} />
 
               <Facebook.ButtonTemplate
@@ -93,7 +93,7 @@ import * as Telegram from '@sociably/telegram/components';
           const todoName = matchingAddTodo[2].trim();
           return reply(
             <>
-              <p>Todo "<b>{todoName}</b>" is added!</p>
+              <i>Todo "<b>{todoName}</b>" is added!</i>
               <Sociably.Pause time={1500} />
 
               <Telegram.Text
@@ -144,7 +144,7 @@ import * as Line from '@sociably/line/components';
         const todoName = matchingAddTodo[2].trim();
         return reply(
           <>
-            <p>Todo "<b>{todoName}</b>" is added!</p>
+            <i>Todo "<b>{todoName}</b>" is added!</i>
             <Sociably.Pause time={1500} />
 
             <Line.ButtonTemplate
@@ -184,7 +184,7 @@ If you are building a cross-platform app, reply according to the platform like:
 ```tsx {6-14}
 //...
     <>
-      <p>Todo "<b>{todoName}</b>" is added!</p>
+      <i>Todo "<b>{todoName}</b>" is added!</i>
       <Sociably.Pause time={1500} />
 
       {
@@ -193,7 +193,7 @@ If you are building a cross-platform app, reply according to the platform like:
         ) : event.platform === 'telegram' ? (
           // telegram component
         ) : (
-          <p>You have <b>{3}</b> todos now.</p>
+          <i>You have <b>{3}</b> todos now.</i>
         )
       }
     </>
@@ -247,8 +247,8 @@ We can handle it by adding these codes in `handleChat`:
       if (intent.type === 'list') {
         return reply(
           <>
-            <p>You have <b>3</b> todos:</p>
-            <p>......</p>
+            <i>You have <b>3</b> todos:</i>
+            <i>......</i>
           </>
         );
       }

@@ -15,14 +15,14 @@ It can be used as the element tag like:
 
 ```jsx
 function Hello() {
-  return <p>Hello World!</p>;
+  return <i>Hello World!</i>;
 }
 
 bot.render(
   thread,
   <>
     <Hello />
-    <p>I'm a bot.</p>
+    <i>I'm a bot.</i>
   </>
 );
 ```
@@ -33,14 +33,15 @@ The code above works the same as:
 bot.render(
   thread,
   <>
-    <p>Hello World!</p>
-    <p>I'm a bot.</p>
+    <i>Hello World!</i>
+    <i>I'm a bot.</i>
   </>
 );
 ```
 
 The name of a component must be **capitalized**.
-An element with an uncapitalized tag is treated as a general element.
+An element with an uncapitalized tag is treated as a textual element like
+`<b/>` or `<br />`.
 
 ### Component Props
 
@@ -50,14 +51,14 @@ For example:
 
 ```jsx
 function Hello(props) {
-  return <p>Hello {props.name}!</p>;
+  return <i>Hello {props.name}!</i>;
 }
 
 bot.render(
   thread,
   <>
     <Hello name="John Doe" />
-    <p>I'm a bot.</p>
+    <i>I'm a bot.</i>
   </>
 );
 ```
@@ -75,7 +76,7 @@ For example:
 function Hello(props) {
   return (
     <>
-      <p>Hello {props.name}!</p>;
+      <i>Hello {props.name}!</i>
       {props.children}
     </>
   );
@@ -84,12 +85,12 @@ function Hello(props) {
 bot.render(
   thread,
   <Hello name="John Doe">
-    <p>I'm a bot.</p>
+    <i>I'm a bot.</i>
   </Hello>
 );
 ```
 
-In the above codes, we pass the `<p>I'm a bot.</p>` children to the component.
+In the above codes, we pass the `<i>I'm a bot.</i>` child to the component.
 The `props.children` is then returned with the hello message attached.
 
 The `children` is useful to decorate messages,
@@ -101,11 +102,13 @@ Other components can be used in the output of a component too.
 Like:
 
 ```js
+import * as Facebook from '@sociably/facebook/components';
+
 function RecommendDailySpecial() {
   return (
     <>
-      <p>Today's special is Chirashi Sushi!</p>
-      <img src="http://..." />
+      <i>Today's special is Chirashi Sushi!</i>
+      <Facebook.Image url="http://..." />
     </>
   );
 }
@@ -163,12 +166,12 @@ function AskForOrder(props, { platform }) {
       </Telegram.Text>
     );
   }
-  return <p>Would you like <b>hotdog</b> or <b>taco</b>?</p>
+  return <i>Would you like <b>hotdog</b> or <b>taco</b>?</i>;
 }
 ```
 
 `platform` of the second param shows which platform is rendering to.
 We can return different native components according to it.
 
-At the end of the function, we can add a default UI using only general elements.
+At the end of the function, we can add a default UI using only textual content.
 This ensures the component can be used on all the platforms.

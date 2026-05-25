@@ -95,9 +95,9 @@ app.onEvent(async ({ platform, event, reply }) => {
           </Telegram.ReplyKeyboard>
         }
       >
-        <p>Hello Telegram! 👋</p>
-        <p>It's your daily 🐱</p>
-        <img src="https://cataas.com/cat" />
+        <i>Hello Telegram! 👋</i>
+        <i>It's your daily 🐱</i>
+        <Telegram.Photo url="https://cataas.com/cat" />
       </Telegram.Expression>,
     );
   }
@@ -160,7 +160,7 @@ app.onEvent(async ({ reply }) => {
         </Telegram.InlineKeyboard>
       }
     >
-      Hello Webview!
+      <i>Hello Webview!</i>
     </Telegram.Expression>,
   );
 });

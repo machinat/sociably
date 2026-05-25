@@ -29,7 +29,7 @@ export default build(
     name: 'AddingTodo',
   },
   <$.BLOCK>
-    {() => <p>Please enter new todo name:</p>}
+    {() => <i>Please enter new todo name:</i>}
   </$.BLOCK>
 );
 ```
@@ -39,7 +39,7 @@ The script body is a special JSX block to describe the flow.
 
 ### Script Content
 
-In the script body, the function `{() => <p>...</p>}` is a content node.
+In the script body, the function `{() => <i>...</i>}` is a content node.
 The function will be called when it's met in the flow,
 and the returned messages will be sent in the chat.
 
@@ -138,7 +138,7 @@ export default build<AddingTodoVars>(
     initVars: () => ({ todoName: '' }),
   },
   <$.BLOCK>
-    {() => <p>Please enter new todo name:</p>}
+    {() => <i>Please enter new todo name:</i>}
 
     <$.PROMPT<AddingTodoVars>
       key="ask-todo"
@@ -191,7 +191,7 @@ export default build<AddingTodoVars>(
     initVars: () => ({ todoName: '', todosCount: 0 }),
   },
   <$.BLOCK>
-    {() => <p>Please enter new todo name:</p>}
+    {() => <i>Please enter new todo name:</i>}
 
     <$.PROMPT<AddingTodoVars>
       key="ask-todo"
@@ -260,7 +260,7 @@ We can use `WHILE` keyword to verify the input:
     <$.WHILE<AddingTodoVars>
       condition={({ vars }) => vars.todoName === ''}
     >
-      {() => <p>Please enter new todo name:</p>}
+      {() => <i>Please enter new todo name:</i>}
 
       <$.PROMPT<AddingTodoVars>
         key="ask-todo"
@@ -313,7 +313,7 @@ export default build<AskingFirstTodoVars>(
     initVars: () => ({ ok: false }),
   },
   <>
-    {() => <p>You have no todo now. Do you want to create one?</p>}
+    {() => <i>You have no todo now. Do you want to create one?</i>}
 
     <$.PROMPT<AskingFirstTodoVars>
       key="ask-adding"
@@ -330,7 +330,7 @@ export default build<AskingFirstTodoVars>(
 
     <$.IF<AskingFirstTodoVars> condition={({ vars: { ok } }) => !ok}>
       <$.THEN>
-        {() => <p>Ok, tell me when you need.</p>}
+        {() => <i>Ok, tell me when you need.</i>}
         <$.RETURN />
       </$.THEN>
     </$.IF>
@@ -358,7 +358,7 @@ import AskingFirstTodo from '../scenes/AskingFirstTodo';
     const profile = await profiler.getUserProfile(event.user);
     const { data } = await todoController.getTodos(event.thread);
     const hello = (
-      <p>Hello{profile ? `, ${profile.name}` : ''}! I'm a Todo Bot 🤖</p>
+      <i>Hello{profile ? `, ${profile.name}` : ''}! I'm a Todo Bot 🤖</i>
     );
 
     if (data.todos.length === 0) {

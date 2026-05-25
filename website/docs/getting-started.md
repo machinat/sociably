@@ -188,7 +188,7 @@ Sociably.createApp({
   ],
 })
   .onEvent(async ({ reply, event }) => {
-    await reply(<p>Hello World!</p>);
+    await reply('Hello World!');
   })
   .start();
 ```
@@ -240,7 +240,7 @@ Finally you have to import `Sociably` in the file before using JSX:
 ```js
 import Sociably from '@sociably/core';
 
-const greeting = <p>Hello World!</p>;
+const greeting = <i>Hello <b>World</b>!</i>;
 ```
 
 :::info

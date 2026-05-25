@@ -2,22 +2,24 @@
 title: Introducing JSX
 ---
 
-In Sociably, we use the _JSX_ API to build _Chat UI_ in a more expressive way.
+In Sociably, we use the _JSX_ API to describe agent responses in a more
+expressive way.
 
 ```js
 app.onEvent(async ({ reply }) => {
   await reply(
     <>
-      <p>Hello World!</p>
-      <img src="https://sociably.io/greeting.jpg" />
+      <i>Hello <b>World</b>!</i>
+      <Facebook.Image url="https://sociably.io/greeting.jpg" />
     </>
   );
 });
 ```
 
 The code above that looks like HTML is _JSX_.
-Each JSX element may represent a part of the chat UI.
-For example, `<p>...</p>` represents a message bubble in the chatroom.
+Each JSX node may represent textual content or a platform UI.
+For example, `<b>...</b>` formats text, while `<Facebook.Image />` sends a
+Facebook-specific image message.
 
 ## JSX Syntax
 
@@ -31,7 +33,7 @@ It may also contain nesting details and logic no less than a graphical view.
 We believe a rendering process is necessary to make dynamic and complicated chat UI,
 which helps to ship the best user experiences in chat.
 
-_JSX_ brings some significant advantages while building chat UI:
+_JSX_ brings some significant advantages while building agent interfaces:
 
 ### Declarative View
 
@@ -46,9 +48,9 @@ In Sociably, we build an _expression view_ like:
 ```js
 await reply(
   <>
-    <p>This is my cat!</p>
-    <img src="http://foo.bar/cat.jpg" />
-    <p>Do you like it?</p>
+    <i>This is my cat!</i>
+    <Facebook.Image url="http://foo.bar/cat.jpg" />
+    <i>Do you like it?</i>
   </>
 );
 ```
@@ -69,12 +71,8 @@ Like:
 
 ```js
 await reply(
-  <>
-    <p>
-      <b>foo</b>
-      <i>bar</i>
-      <code>baz</code>
-    </p>
+  <Facebook.Expression>
+    <i>Hello <b>foo</b> bar <code>baz</code></i>
 
     <Facebook.GenericTemplate>
       <Facebook.GenericItem
@@ -83,7 +81,7 @@ await reply(
         imageUrl="http://..."
       />
     </Facebook.GenericTemplate>
-  </>
+  </Facebook.Expression>
 );
 ```
 
@@ -99,11 +97,11 @@ await reply(
     <Facebook.MarkSeen />
     <Sociably.Pause time={1000} />
 
-    <p>Hakuna Matata!</p>
+    <i>Hakuna Matata!</i>
     <Facebook.TypingOn />
 
     <Sociably.Pause time={2000} />
-    <p>It means no worry!</p>
+    <i>It means no worry!</i>
   </>
 );
 ```
@@ -117,18 +115,19 @@ we can use several manners to achieve that:
 ```js
 await reply(
   <>
-    These videos all work:
-
-    <video src="http://..." />
+    <i>Here are some videos:</i>
 
     {platform === 'facebook'
       ? <Facebook.Video attachmentId="_UPLOADED_VIDEO_" />
+      : platform === 'telegram'
+      ? <Telegram.Video url="http://..." />
       : null}
-  
+   
     <MyCrossPlatformVideo />
   </>
 );
 ```
 
-The expression above works on every platform.
+The textual content works everywhere, while the capitalized components branch to
+platform-specific UIs.
 We'll introduce these APIs in later chapters.

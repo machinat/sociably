@@ -445,7 +445,7 @@ app.onEvent(
       if (platform === 'webview' && event.type === 'connect') {
         await basicBot.render(
           metadata.auth.thread,
-          <p>I see you on the webview!</p>
+          <i>I see you on the webview!</i>
         );
       }
     }

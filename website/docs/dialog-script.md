@@ -41,14 +41,14 @@ export default build(
     }),
   },
   <>
-    {() => <p>What main dish would you like?</p>}
+    {() => <i>What main dish would you like?</i>}
 
     <$.WHILE
       condition={({ vars: { mainDishes, mainDishChoice } }) =>
         !mainDishes.includes(mainDishChoice)
       }
     >
-      {({ vars }) => <p>We have {vars.mainDishes.join(', ')}.</p>}
+      {({ vars }) => <i>We have {vars.mainDishes.join(', ')}.</i>}
 
       <$.PROMPT
         key="ask-main-dish"
@@ -59,7 +59,7 @@ export default build(
       />
     </$.WHILE>
 
-    {({ vars }) => <p>Our {vars.mainDishChoice} is good!</p>}
+    {({ vars }) => <i>Our {vars.mainDishChoice} is good!</i>}
 
     <$.RETURN value={({ vars: { mainDishChoice } }) => ({ mainDishChoice })} />
   </>,
@@ -103,7 +103,7 @@ A content node is a function that returns the messages to be sent.
 It's placed in a script like:
 
 ```js
-<>{() => <p>Pick a main dish you like.</p>}</>
+<>{() => <i>Pick a main dish you like.</i>}</>
 ```
 
 The function is called when the node is met in the script runtime.
@@ -117,9 +117,9 @@ Like:
 
 ```js
 <>
-  {({ vars }) => <p>We have {vars.mainDishes.join(', ')}.</p>}
+  {({ vars }) => <i>We have {vars.mainDishes.join(', ')}.</i>}
 
-  {({ vars }) => <p>Our {vars.mainDishChoice} is good!</p>}
+  {({ vars }) => <i>Our {vars.mainDishChoice} is good!</i>}
 </>
 ```
 
@@ -245,7 +245,7 @@ Like `WHILE` keyword in the example above:
 
 ```js
 <$.WHILE condition={({ vars }) => !MAIN_DISHES.includes(vars.mainDish)}>
-  {() => <p>We have {MAIN_DISHES.join(', ')}.</p>}
+  {() => <i>We have {MAIN_DISHES.join(', ')}.</i>}
 
   <$.PROMPT
     key="ask-main-dish"
@@ -423,7 +423,7 @@ For example:
 import Sociably, { serviceContainer, IntentRecognizer } from '@sociably/core';
 //...
 <>
-  {() => <p>Would you like any side dish?</p>}
+  {() => <i>Would you like any side dish?</i>}
   <$.PROMPT
     key="ask-side-dish"
     set={serviceContainer({ deps: [IntentRecognizer] })(
@@ -451,9 +451,9 @@ including content nodes.
       async ({ vars: { user, mainDishChoice } }) => {
         const profile = await profiler.getUserProfile(user);
         return (
-          <p>
+          <>
             Hi, {profile.name}! Here's your {mainDishChoice}
-          </p>
+          </>
         );
       },
   )}
@@ -496,10 +496,10 @@ For example:
 ```js
 const ASKING_DISH = (dishType, choices) => (
   <>
-    {() => <p>What would you like for {dishType}?</p>}
+    {() => <i>What would you like for {dishType}?</i>}
 
     <$.WHILE condition={({ vars }) => !choices.includes(vars[dishType])}>
-      {() => <p>We have {choices.join(', ')}.</p>}
+      {() => <i>We have {choices.join(', ')}.</i>}
 
       <$.PROMPT
         key={`ask-${dishType}`}
@@ -517,7 +517,7 @@ The macro function can be used in the script like this:
 
 ```js
 <>
-  {() => <p>Welcome!</p>}
+  {() => <i>Welcome!</i>}
   {ASKING_DISH('main dish', ['🍖', '🍛', '🍜'])}
   {ASKING_DISH('dessert', ['🍰', '🍦', '🍮'])}
   {ASKING_DISH('drink', ['🍸', '🍵', '🍺'])}

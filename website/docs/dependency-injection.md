@@ -118,7 +118,7 @@ app.onEvent(
     (profiler) =>
       async ({ event, reply }) => {
         const profile = await profiler.getUserProfile(event.user);
-        await reply(<p>Hello {profile.lastName}!</p>);
+        await reply(<i>Hello {profile.lastName}!</i>);
       },
   ),
 );

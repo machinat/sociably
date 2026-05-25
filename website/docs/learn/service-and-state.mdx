@@ -43,7 +43,7 @@ const handleChat = serviceContainer({
       return reply(
         <WithMenu todoCount={3}>
           {/* highlight-next-line */}
-          <p>Hello{profile ? \`, \${profile.name}\` : ''}! I'm a Todo Bot 🤖</p>
+          <i>Hello{profile ? \`, \${profile.name}\` : ''}! I'm a Todo Bot 🤖</i>
         </WithMenu>
       );
     }
@@ -336,9 +336,9 @@ const handleChat = serviceContainer({
         return reply(
           <WithMenu todoCount={data.todos.length}>
             {todo ? (
-              <p>Todo "<b>{todo.name}</b>" is done!</p>
+              <i>Todo "<b>{todo.name}</b>" is done!</i>
             ) : (
-              <p>This todo is closed.</p>
+              <i>This todo is closed.</i>
             )}
           </WithMenu>
         );
@@ -353,7 +353,7 @@ const handleChat = serviceContainer({
           return reply(
             // highlight-next-line
             <WithMenu todoCount={data.todos.length}>
-              <p>Todo "<b>{todoName}</b>" is added!</p>
+              <i>Todo "<b>{todoName}</b>" is added!</i>
             </WithMenu>
           );
         }
@@ -364,7 +364,7 @@ const handleChat = serviceContainer({
       return reply(
         // highlight-next-line
         <WithMenu todoCount={data.todos.length}>
-          <p>Hello{profile ? \`, \${profile.name}\` : ''}! I'm a Todo Bot 🤖</p>
+          <i>Hello{profile ? \`, \${profile.name}\` : ''}! I'm a Todo Bot 🤖</i>
         </WithMenu>
       );
     }

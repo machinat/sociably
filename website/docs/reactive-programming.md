@@ -66,7 +66,7 @@ event$.subscribe(
     (profiler) =>
       async ({ event, reply }) => {
         const profile = await profiler.getUserProfile(event.user);
-        await reply(<p>Hello {profile?.name || 'there'}!</p>);
+        await reply(<i>Hello {profile?.name || 'there'}!</i>);
       },
   ),
 );
@@ -153,7 +153,7 @@ event$.pipe(
         .threadState(event.thread)
         .update((curCount = 0) => curCount + 1);
 
-      await reply(<p>Hello #{count}!</p>);
+      await reply(<i>Hello #{count}!</i>);
     }),
   ),
 );

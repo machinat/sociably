@@ -29,7 +29,7 @@ export const DiffAddTodoCodes = ({platform}) => (
         return;
       }` : ''}\n
 +     if (intent.type === 'add') {
-+       return reply(<p>Please enter new todo name:</p>);
++       return reply(<i>Please enter new todo name:</i>);
 +     }
       // ...\n
 -     if (event.type === 'text') {
@@ -40,7 +40,7 @@ export const DiffAddTodoCodes = ({platform}) => (
 -         const { data } = await todoController.addTodo(event.thread, todoName);
 -         return reply(
 -           <WithMenu todoCount={data.todos.length}>
--             <p>Todo "<b>{todoName}</b>" is added!</p>
+-             <i>Todo "<b>{todoName}</b>" is added!</i>
 -           </WithMenu>
 -         );
 -       }

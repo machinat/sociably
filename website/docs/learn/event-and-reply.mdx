@@ -39,12 +39,13 @@ That's [JSX](../introducing-jsx).
 Try editing the content of reply to this:
 
 ```tsx
-  return reply(<p>Hello! I'm a <b>Todo Bot</b> 🤖</p>);
+  return reply(<i>Hello! I'm a <b>Todo Bot</b> 🤖</i>);
 ```
 
 The html alike syntax is a **JSX** expression.
 It represents a section of chat UI in a conversation.
-For example, the `<p>...</p>` element displays a message bubble containing the inner text.
+Here the plain text becomes the message content, and `<b>...</b>` formats part
+of that text.
 
 You'll learn more useful JSX features in the lessons.
 
@@ -68,7 +69,7 @@ There are more text formatting tags like `i`, `s` and `code`.
 You can check the full list of them [here](/docs/rendering-messages#textual-element-types).
 
 
-For example, `<p><b>Hello!</b> <s>I'm a</s> <i>Todo</i> <code>Bot 🤖</code></p>` might look like this:
+For example, `<i><b>Hello!</b> <s>I'm a</s> Todo <code>Bot 🤖</code></i>` might look like this:
 
 <img width={250} src={require("./assets/hello-with-formatting-text.png").default} />
 
@@ -93,11 +94,11 @@ Edit the `handleChat` function like this:
 
         if (matchingAddTodo) {
           const todoName = matchingAddTodo[2].trim();
-          return reply(<p>Todo "<b>{todoName}</b>" is added!</p>);
+          return reply(<i>Todo "<b>{todoName}</b>" is added!</i>);
         }
       }
 
-      return reply(<p>Hello! I'm a <b>Todo Bot</b> 🤖</p>);
+      return reply(<i>Hello! I'm a <b>Todo Bot</b> 🤖</i>);
     }
 // ...
 ```
@@ -152,8 +153,8 @@ Let's add some details after adding a todo. Edit the result message like this:
       const todoName = matchingAddTodo[2].trim();
       return reply(
         <>
-          <p>Todo "<b>{todoName}</b>" is added!</p>
-          <p>You have <b>{3}</b> todos now.</p>
+          <i>Todo "<b>{todoName}</b>" is added!</i>
+          <i>You have <b>{3}</b> todos now.</i>
         </>
       );
     }
@@ -173,9 +174,9 @@ We can use the `Sociably.Pause` tag to do that.
 ```tsx {4}} title="src/handlers/handleChat.tsx"
 // ...
       <>
-        <p>Todo "<b>{todoName}</b>" is added!</p>
+        <i>Todo "<b>{todoName}</b>" is added!</i>
         <Sociably.Pause time={1500} />
-        <p>You have <b>{3}</b> todos now.</p>
+        <i>You have <b>{3}</b> todos now.</i>
       </>
 // ...
 ```

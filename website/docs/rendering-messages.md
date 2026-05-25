@@ -9,9 +9,9 @@ Typically there are two ways to render the messages: `reply` and `bot.render`.
 
 ```js
 app.onEvent(async ({ event, bot, reply }) => {
-  await reply(<p>Hello World</p>);
+  await reply(<i>Hello <b>World</b></i>);
   // is the same as
-  await bot.render(event.thread, <p>Hello World</p>);
+  await bot.render(event.thread, <i>Hello <b>World</b></i>);
 });
 ```
 
@@ -25,11 +25,12 @@ await bot.render(thread, 'hello world');
 
 This is supported by all the platforms.
 
-### The General Element Tags
+### The Textual Element Tags
 
-The JSX elements with an uncapitalized tag are _general_ elements, like `<p></p>`.
-They can be rendered onto all the platforms,
-so you can use them to make cross-platform UI easily.
+The JSX elements with an uncapitalized tag are _textual_ elements, like `<b></b>`
+or `<br />`.
+They format or structure text content, and they can be used anywhere textual
+content is accepted on a platform.
 
 The supported element tags and their props are listed below:
 
@@ -47,7 +48,7 @@ The supported element tags and their props are listed below:
   - `children` - textual content.
 
 
-- `s` - render the children with underline.
+- `u` - render the children with underline.
   - `children` - textual content.
 
 
@@ -60,37 +61,17 @@ The supported element tags and their props are listed below:
 
 - `br` - add a line break.
 
-##### Non-textual element types:
-
-- `p` - send a text message bubble.
-  - `children` - textual content.
-
-- `img` - send an image message.
-  - `src` - image URL.
-
-
-- `audio` - send an audio message.
-  - `src` - audio URL.
-
-
-- `video` - send a video message.
-  - `src` - video URL.
-
-
-- `file` - send a file message.
-  - `src` - file URL.
-
 ### Textual Element
 
 Some element types are *textual*,
-which means they're equivalent to pure text in JSX.
-Some element accept only textual content as prop,
-like `<p></p>`:
+which means they are equivalent to pure text in JSX.
+Some platform components accept only textual content as children or props.
+For example:
 
 ```js
 await bot.render(
   thread,
-  <p>foo <b>bar</b> <i>baz</i></p>
+  <i>foo <b>bar</b> baz</i>
 );
 ```
 
@@ -103,9 +84,9 @@ To do this, wrap the messages in a `<>...</>` element, like:
 await bot.render(
   thread,
   <>
-    <p>Look at the kitten!</p>
-    <img src="http://..." />
-    <p>Aww I'm melting!</p>
+    Look at the kitten!
+    <Facebook.Image url="http://..." />
+    Aww I'm melting!
   </>
 );
 ```
@@ -117,8 +98,9 @@ so you only have to focus on UI.
 
 ### Native Component
 
-The general tags provide a set of cross-platform APIs.
-But you might want to use more special features on a particular platform.
+Lowercased tags only cover textual content.
+To render message bubbles, media, templates, or other rich UI, you use
+capitalized native components from platform packages.
 
 These platform-specific features are available as **Native Components**.
 You can require them from platform packages and use them like:
@@ -140,7 +122,8 @@ await bot.render(
 
 You should only use the native components corresponding to the platform.
 If you're making a cross-platform UI,
-you can check `context.platform` and choose the native component to use.
+you can check `context.platform` and choose the native component to use, while
+keeping textual fallbacks as plain text and textual elements.
 Like:
 
 ```js
@@ -152,7 +135,7 @@ app.onEvent(async ({ platform, reply }) => {
         ? <Facebook.Image url="..." />
         : platform === 'telegram'
         ? <Telegram.Photo url="..." />
-        : <img src="..." />}
+        : <i>Check this image: https://...</i>}
     </>
   );
 });

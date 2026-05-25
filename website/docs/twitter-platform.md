@@ -73,9 +73,9 @@ app.onEvent(async ({ platform, event, reply }) => {
           <Twitter.QuickReply label="I want 🐶" metadata="doggo" />
         }
       >
-        <p>Hello Twitter! 👋</p>
+        <i>Hello Twitter! 👋</i>
         <Twitter.Photo url="https://cataas.com/cat" />
-        <p>You daily 🐱</p>
+        <i>Your daily 🐱</i>
       </Twitter.Expression>
     );
   }
