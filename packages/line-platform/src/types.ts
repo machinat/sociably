@@ -51,7 +51,7 @@ export type LineWebhookRequestBody = {
 export type QuickReplyPartValue = {
   type: 'action';
   imageUrl: string;
-  action: any;
+  action: unknown;
 };
 
 export type QuickRepliable = {
@@ -117,19 +117,19 @@ export type ImagemapMessageParams = {
     externalLink: string;
     label: string;
   };
-  actions: any[]; // TODO: type the imagemap action object
+  actions: unknown[]; // TODO: type the imagemap action object
 } & QuickRepliable;
 
 export type TemplateMessageParams = {
   type: 'template';
   altText: string;
-  template: any; // TODO: type the template object
+  template: unknown; // TODO: type the template object
 } & QuickRepliable;
 
 export type FlexMessageParams = {
   type: 'flex';
   altText: string;
-  contents: any;
+  contents: unknown;
 } & QuickRepliable;
 
 export type MessageParams =
@@ -203,7 +203,7 @@ export type LineJob = {
   key: undefined | string;
 };
 
-export type MessagingApiResult = Record<string, any>;
+export type MessagingApiResult = Record<string, unknown>;
 
 export type FailMessagingApiResult = {
   message: string;
@@ -553,7 +553,7 @@ export type LineRawThingsData = {
   /** Type of LINE Things event */
   type?: string;
   /** Allow additional properties for Things events */
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 export type LineRawEvent = {

@@ -35,7 +35,7 @@ describe('#constructor()', () => {
 
   it('throw if options.secret is empty', () => {
     expect(
-      () => new HttpOperator({ redirectUrl } as any),
+      () => new HttpOperator({ redirectUrl } as never),
     ).toThrowErrorMatchingInlineSnapshot(`"options.secret must not be empty"`);
     expect(
       () => new HttpOperator({ secret: '', serverUrl }),
@@ -44,7 +44,7 @@ describe('#constructor()', () => {
 
   it('throw if options.redirectUrl is empty', () => {
     expect(
-      () => new HttpOperator({ secret } as any),
+      () => new HttpOperator({ secret } as never),
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.serverUrl must not be empty"`,
     );

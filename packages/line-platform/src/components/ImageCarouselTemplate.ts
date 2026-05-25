@@ -91,7 +91,9 @@ export const ImageCarouselTemplate: LineComponent<
           typeof altText === 'function'
             ? altText(templateMessage)
             : altText ||
-              templateMessage.template.columns
+              (
+                templateMessage.template as { columns: { imageUrl: string }[] }
+              ).columns
                 .map(({ imageUrl }: { imageUrl: string }) => imageUrl)
                 .join('\n'),
       },

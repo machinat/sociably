@@ -72,7 +72,7 @@ export type FlexButtonProps = {
  */
 export const FlexButton: LineComponent<
   FlexButtonProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeLineComponent(async function FlexButton(node, path, render) {
   const {
     action,
@@ -129,7 +129,7 @@ export type FlexFillerProps = {
  */
 export const FlexFiller: LineComponent<
   FlexFillerProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeLineComponent(function FlexFiller(node, path) {
   return [
     makePartSegment(node, path, {
@@ -180,7 +180,7 @@ export type FlexIconProps = {
  */
 export const FlexIcon: LineComponent<
   FlexIconProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeLineComponent(function FlexIcon(node, path) {
   const {
     url,
@@ -265,7 +265,7 @@ export type FlexImageProps = {
  */
 export const FlexImage: LineComponent<
   FlexImageProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeLineComponent(async function FlexImage(node, path, render) {
   const {
     url,
@@ -330,7 +330,7 @@ export type FlextSeparatorProps = {
  */
 export const FlexSeparator: LineComponent<
   FlextSeparatorProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeLineComponent(function FlexSeparator(node, path) {
   const { margin, color } = node.props;
   return [
@@ -357,7 +357,7 @@ export type FlexSpacerProps = {
  */
 export const FlexSpacer: LineComponent<
   FlexSpacerProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeLineComponent(function FlexSpacer(node, path) {
   return [
     makePartSegment(node, path, {
@@ -429,7 +429,7 @@ export type FlexTextProps = {
  */
 export const FlexText: LineComponent<
   FlexTextProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeLineComponent(async function FlexText(node, path, render) {
   const {
     children,
@@ -462,21 +462,24 @@ export const FlexText: LineComponent<
   } else if (textSegments.length === 1 && textSegments[0].type === 'text') {
     text = textSegments?.[0].value || '';
   } else {
-    contents = textSegments.reduce((spans, { type, value, node: spanNode }) => {
-      if (type === 'text') {
-        spans.push({ type: 'span', text: value });
-      } else if (type === 'part' || type === 'raw') {
-        spans.push(value);
-      } else {
-        invariant(
-          type === 'break',
-          `invalid children ${formatNode(
-            spanNode,
-          )} received, only <FlexSpan/> and text allowed`,
-        );
-      }
-      return spans;
-    }, [] as any[]);
+    contents = textSegments.reduce<unknown[]>(
+      (spans, { type, value, node: spanNode }) => {
+        if (type === 'text') {
+          spans.push({ type: 'span', text: value });
+        } else if (type === 'part' || type === 'raw') {
+          spans.push(value);
+        } else {
+          invariant(
+            type === 'break',
+            `invalid children ${formatNode(
+              spanNode,
+            )} received, only <FlexSpan/> and text allowed`,
+          );
+        }
+        return spans;
+      },
+      [],
+    );
   }
 
   const actionSegments = await render(action, '.action');
@@ -534,7 +537,7 @@ export type FlexSpanProps = {
  */
 export const FlexSpan: LineComponent<
   FlexSpanProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeLineComponent(async function FlexBox(node, path, render) {
   const { children, size, weight, color, style, decoration } = node.props;
 
@@ -644,7 +647,7 @@ export type FlexBoxProps = {
  */
 export const FlexBox: LineComponent<
   FlexBoxProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeLineComponent(async function FlexBox(node, path, render) {
   const {
     children,
@@ -783,7 +786,7 @@ const createBlockComponent = (
  */
 export const FlexHeader: LineComponent<
   FlexBlockProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = createBlockComponent('header', FlexBox);
 
 /**
@@ -795,7 +798,7 @@ export const FlexHeader: LineComponent<
  */
 export const FlexHero: LineComponent<
   FlexBlockProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = createBlockComponent('hero', FlexImage);
 
 /**
@@ -807,7 +810,7 @@ export const FlexHero: LineComponent<
  */
 export const FlexBody: LineComponent<
   FlexBlockProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = createBlockComponent('body', FlexBox);
 
 /**
@@ -819,7 +822,7 @@ export const FlexBody: LineComponent<
  */
 export const FlexFooter: LineComponent<
   FlexBlockProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = createBlockComponent('footer', FlexBox);
 
 /** @category Props */
@@ -852,7 +855,7 @@ export type FlexBubbleContainerProps = {
  */
 export const FlexBubbleContainer: LineComponent<
   FlexBubbleContainerProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeLineComponent(async function FlexBubbleContainer(node, path, render) {
   const { children, direction, rightToLeft, action } = node.props;
   const actionSegments = await render(action, '.action');
@@ -899,7 +902,7 @@ export type FlexCarouselContainerProps = {
  */
 export const FlexCarouselContainer: LineComponent<
   FlexCarouselContainerProps,
-  PartSegment<any>
+  PartSegment<unknown>
 > = makeLineComponent(async function FlexCarouselContainer(node, path, render) {
   const contentSegments = await render(node.props.children, '.children');
   const bubbleContainers = contentSegments?.map((segment) => segment.value);

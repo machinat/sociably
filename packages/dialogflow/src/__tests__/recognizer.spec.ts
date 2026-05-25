@@ -29,6 +29,7 @@ type MockBatchUpdateIntentsRequest = {
     intents: MockBatchUpdateIntent[];
   };
 };
+type RequestMock = Moxy<(...args: unknown[]) => Promise<unknown>>;
 
 jest.mock('@google-cloud/dialogflow', () =>
   moxy({
@@ -464,15 +465,15 @@ describe('.train()', () => {
     agentsClient.getAgent.mock.fake(async () => {
       const err = new Error(
         "5 NOT_FOUND: com.google.apps.framework.request.NotFoundException: No DesignTimeAgent found for project 'test'",
-      );
-      (err as any).code = 5;
+      ) as Error & { code?: number };
+      err.code = 5;
       throw err;
     });
     environmentsClient.getEnvironment.mock.fake(async () => {
       const err = new Error(
         "5 NOT_FOUND: com.google.apps.framework.request.NotFoundException: Environment 'sociably-entry' not found for agent with internal ID '51adb532-5bfd-429e-94af-3fbcf2029d33'",
-      );
-      (err as any).code = 5;
+      ) as Error & { code?: number };
+      err.code = 5;
       throw err;
     });
 
@@ -544,7 +545,7 @@ describe('.train()', () => {
       }
     `);
     expect(
-      (environmentsClient.auth.request as any).mock,
+      (environmentsClient.auth.request as RequestMock).mock,
     ).not.toHaveBeenCalled();
   });
 
@@ -590,9 +591,12 @@ describe('.train()', () => {
     `);
 
     expect(environmentsClient.createEnvironment).not.toHaveBeenCalled();
-    expect(environmentsClient.auth.request as any).toHaveBeenCalledTimes(1);
-    expect((environmentsClient.auth.request as any).mock.calls[0].args[0])
-      .toMatchInlineSnapshot(`
+    expect(
+      environmentsClient.auth.request as RequestMock,
+    ).toHaveBeenCalledTimes(1);
+    expect(
+      (environmentsClient.auth.request as RequestMock).mock.calls[0].args[0],
+    ).toMatchInlineSnapshot(`
       {
         "data": {
           "agentVersion": "projects/test/agent/versions/2",
@@ -630,7 +634,7 @@ describe('.train()', () => {
     expect(versionsClient.createVersion).not.toHaveBeenCalled();
     expect(environmentsClient.createEnvironment).not.toHaveBeenCalled();
     expect(
-      (environmentsClient.auth.request as any).mock,
+      (environmentsClient.auth.request as RequestMock).mock,
     ).not.toHaveBeenCalled();
   });
 
@@ -657,9 +661,12 @@ describe('.train()', () => {
     expect(versionsClient.createVersion).not.toHaveBeenCalled();
     expect(environmentsClient.createEnvironment).not.toHaveBeenCalled();
 
-    expect(environmentsClient.auth.request as any).toHaveBeenCalledTimes(1);
-    expect((environmentsClient.auth.request as any).mock.calls[0].args[0])
-      .toMatchInlineSnapshot(`
+    expect(
+      environmentsClient.auth.request as RequestMock,
+    ).toHaveBeenCalledTimes(1);
+    expect(
+      (environmentsClient.auth.request as RequestMock).mock.calls[0].args[0],
+    ).toMatchInlineSnapshot(`
       {
         "data": {
           "agentVersion": "projects/test/agent/versions/2",
@@ -677,8 +684,8 @@ describe('.train()', () => {
     environmentsClient.getEnvironment.mock.fake(async () => {
       const err = new Error(
         "5 NOT_FOUND: com.google.apps.framework.request.NotFoundException: Environment 'sociably-entry' not found for agent with internal ID '51adb532-5bfd-429e-94af-3fbcf2029d33'",
-      );
-      (err as any).code = 5;
+      ) as Error & { code?: number };
+      err.code = 5;
       throw err;
     });
 
@@ -746,9 +753,12 @@ describe('.train()', () => {
     });
 
     expect(environmentsClient.createEnvironment).not.toHaveBeenCalled();
-    expect(environmentsClient.auth.request as any).toHaveBeenCalledTimes(1);
-    expect((environmentsClient.auth.request as any).mock.calls[0].args[0])
-      .toMatchInlineSnapshot(`
+    expect(
+      environmentsClient.auth.request as RequestMock,
+    ).toHaveBeenCalledTimes(1);
+    expect(
+      (environmentsClient.auth.request as RequestMock).mock.calls[0].args[0],
+    ).toMatchInlineSnapshot(`
       {
         "data": {
           "agentVersion": "projects/test/agent/versions/2",

@@ -1,5 +1,5 @@
-type AbstractConstructor = abstract new (...args: any[]) => any;
-type Constructor = new (...args: any[]) => any;
+type AbstractConstructor = abstract new (...args: unknown[]) => unknown;
+type Constructor = new (...args: unknown[]) => unknown;
 
 function mixin(bases: AbstractConstructor[]) {
   return function mixinImpl<C extends Constructor>(

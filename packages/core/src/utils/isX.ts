@@ -1,4 +1,5 @@
 import type {
+  AnyNativeComponent,
   SociablyEmpty,
   SociablyElement,
   FragmentElement,
@@ -12,7 +13,6 @@ import type {
   ContainerComponent,
   GeneralElement,
   NativeElement,
-  NativeComponent,
 } from '../types.js';
 import {
   SOCIABLY_FRAGMENT_TYPE,
@@ -28,10 +28,12 @@ import {
 export const isEmpty = (node: unknown): node is SociablyEmpty =>
   typeof node === 'boolean' || node === null || node === undefined;
 
-export const isElement = (node: any): node is SociablyElement<unknown, any> =>
+export const isElement = (
+  node: unknown,
+): node is SociablyElement<unknown, unknown> =>
   typeof node === 'object' &&
   node !== null &&
-  node.$$typeof === SOCIABLY_ELEMENT_TYPE;
+  (node as Record<string, unknown>).$$typeof === SOCIABLY_ELEMENT_TYPE;
 
 export const isFragmentType = (
   node: SociablyElement<unknown, unknown>,
@@ -54,26 +56,31 @@ export const isProviderType = (
 ): node is ProviderElement<unknown> => node.type === SOCIABLY_PROVIDER_TYPE;
 
 export const isFunctionalType = (
-  node: SociablyElement<unknown, any>,
+  node: SociablyElement<unknown, unknown>,
 ): node is FunctionalElement<unknown, FunctionalComponent<unknown>> =>
   typeof node.type === 'function' &&
-  node.type.$$typeof !== SOCIABLY_NATIVE_TYPE &&
-  node.type.$$typeof !== SOCIABLY_SERVICE_CONTAINER;
+  (node.type as unknown as Record<string, unknown>).$$typeof !==
+    SOCIABLY_NATIVE_TYPE &&
+  (node.type as unknown as Record<string, unknown>).$$typeof !==
+    SOCIABLY_SERVICE_CONTAINER;
 
 export const isContainerType = (
-  node: SociablyElement<unknown, any>,
+  node: SociablyElement<unknown, unknown>,
 ): node is ContainerElement<unknown, ContainerComponent<unknown>> =>
   typeof node.type === 'function' &&
-  node.type.$$typeof === SOCIABLY_SERVICE_CONTAINER;
+  (node.type as unknown as Record<string, unknown>).$$typeof ===
+    SOCIABLY_SERVICE_CONTAINER;
 
 export const isGeneralType = (
   node: SociablyElement<unknown, unknown>,
 ): node is GeneralElement => typeof node.type === 'string';
 
-export const isNativeType = <Component extends NativeComponent<unknown, any>>(
-  node: SociablyElement<unknown, any>,
+export const isNativeType = <Component extends AnyNativeComponent>(
+  node: SociablyElement<unknown, unknown>,
 ): node is NativeElement<unknown, Component> =>
-  typeof node.type === 'object' && node.type.$$typeof === SOCIABLY_NATIVE_TYPE;
+  typeof node.type === 'object' &&
+  node.type !== null &&
+  (node.type as Record<string, unknown>).$$typeof === SOCIABLY_NATIVE_TYPE;
 
 export const isElementTypeValid = (
   node: SociablyElement<unknown, unknown>,

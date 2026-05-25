@@ -137,7 +137,7 @@ describe('#constructor()', () => {
       () =>
         new AuthController(
           new HttpOperator({ secret, serverUrl }),
-          null as any,
+          null as never,
         ),
     ).toThrowErrorMatchingInlineSnapshot(
       `"options.authenticators must not be empty"`,

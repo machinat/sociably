@@ -141,7 +141,11 @@ export const CarouselTemplate: LineComponent<
           typeof altText === 'function'
             ? altText(templateMessage)
             : altText ||
-              templateMessage.template.columns
+              (
+                templateMessage.template as {
+                  columns: { title?: string; text: string }[];
+                }
+              ).columns
                 .map(
                   (column: { title?: string; text: string }) =>
                     `${column.title}\n${column.text}\n`,
